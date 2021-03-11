@@ -43,7 +43,7 @@ export default {
   margin-right: 3vw;
   min-width: 30vw;
   max-width: 35vw;
-  min-height: 35vh;
+  min-height: 15vh;
   max-height: 45vh;
 }
 </style>

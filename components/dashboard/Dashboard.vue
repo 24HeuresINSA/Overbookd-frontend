@@ -1,14 +1,11 @@
 <template>
   <div fill-height fluid class="container">
     <dashboard-item-wrapper
-      v-for="module in modules.filter((m) => moduleIDs.includes(m.id))"
-      :key="module.id"
-      :id="module.id"
-      :title="module.title"
+      id="teams"
+      title="My Teams"
+      v-if="moduleIDs.includes('teams')"
     >
-      <v-card-text>
-        {{ module.id }}
-      </v-card-text>
+      <dashboard-teams class="module" />
     </dashboard-item-wrapper>
     <v-menu min-width="120px" min-height="120px" top offset-y>
       <template v-slot:activator="{ on, attrs }">
@@ -54,14 +51,7 @@ export default {
   name: "dashboard",
   data: () => ({
     configureDashboard: false,
-    modules: [
-      { id: "userDashboard", title: "User Dashboard" },
-      { id: "comptePerso", title: "Compte Perso" },
-      { id: "activityToValidate", title: "Activities to Validate" },
-      { id: "tasksToValidate", title: "Tasks to Validate" },
-      { id: "40vg49", title: "module 5" },
-      { id: "19gb50", title: "module 6" },
-    ],
+    modules: [{ id: "teams", title: "My Teams" }],
   }),
   computed: {
     ...mapState({
@@ -90,5 +80,8 @@ export default {
   height: 100%;
   width: 100%;
   padding: 10px;
+}
+.module {
+  height: 100%;
 }
 </style>
