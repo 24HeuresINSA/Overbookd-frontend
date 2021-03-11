@@ -2,8 +2,8 @@
   <v-app>
     <navigation-app-bar></navigation-app-bar>
     <navigation-menu></navigation-menu>
-    <v-main>
-      <v-container>
+    <v-main fill-height fluid>
+      <v-container fill-height fluid>
         <nuxt />
       </v-container>
     </v-main>
