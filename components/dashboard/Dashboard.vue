@@ -10,7 +10,7 @@
     <v-menu min-width="120px" min-height="120px" top offset-y>
       <template v-slot:activator="{ on, attrs }">
         <v-btn fab fixed bottom right v-bind="attrs" v-on="on">
-          <v-icon>mdi-plus</v-icon>
+          <v-icon>mdi-wrench</v-icon>
         </v-btn>
       </template>
       <v-list>

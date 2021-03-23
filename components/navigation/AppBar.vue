@@ -28,7 +28,7 @@
     </v-btn>
     <v-menu offset-y :close-on-content-click="false">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn v-bind="attrs" v-on="on" icon flat>
+        <v-btn v-bind="attrs" v-on="on" icon>
           <v-icon>mdi-cog</v-icon>
         </v-btn>
       </template>
@@ -46,7 +46,7 @@
     </v-menu>
     <v-menu offset-y :close-on-content-click="false" class="notificationMenu">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn v-bind="attrs" v-on="on" icon flat>
+        <v-btn v-bind="attrs" v-on="on" icon>
           <v-icon :color="notificationIcon.color">
             mdi-{{ notificationIcon.icon }}
           </v-icon>
@@ -60,16 +60,11 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapState, mapMutations } from "vuex";
 
 export default {
   name: "AppBar",
   data: () => ({
-    user: {
-      first_name: "Thibaut",
-      last_name: "Bellanger",
-      email: "t.bellanger34@gmail.com",
-    },
     darkMode: false,
     searchBarActive: false,
     searchContent: "",
@@ -92,6 +87,13 @@ export default {
           : { icon: "bell", color: "grey" };
       } else return { icon: "bell", color: "grey" };
     },
+    ...mapState({
+      user: (state) => state.user.user,
+    }),
+  },
+  async mounted() {
+    // const user = await this.$axios.$get("http://localhost:2424/user?id=1");
+    // this.$store.user.setUser({ user: user });
   },
   methods: {
     ...mapMutations({
