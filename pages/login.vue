@@ -45,10 +45,13 @@
 </template>
 
 <script>
+import jwt_decode from "jwt-decode";
+import { mapActions } from "vuex";
 const REDIRECT_URL = "/"; // TODO change this to eventSelector page
 
 export default {
   name: "login",
+  layout: "empty",
   auth: false,
   data: () => ({
     credentials: {
@@ -72,6 +75,10 @@ export default {
     login: async function () {
       try {
         await this.$auth.loginWith("keycloak", this.credentials); // try to log user in
+        const keycloakUserId = jwt_decode(this.$auth.strategy.token.get()).sub;
+        await this.$store.dispatch("user/getUserByKeycloakId", {
+          keycloakUserId,
+        });
         await this.$router.push({
           path: REDIRECT_URL,
         }); // redirect to homepage

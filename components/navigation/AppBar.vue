@@ -55,12 +55,13 @@
       <navigation-notification-menu></navigation-notification-menu>
     </v-menu>
     <v-divider vertical></v-divider>
-    <v-btn text tile> Disconnect </v-btn>
+    <v-btn text tile @click="logout"> Disconnect </v-btn>
   </v-app-bar>
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+import jwt_decode from "jwt-decode";
+import { mapState, mapMutations, mapActions } from "vuex";
 
 export default {
   name: "AppBar",
@@ -71,7 +72,7 @@ export default {
   }),
   computed: {
     userName: function () {
-      return this.user.first_name + " " + this.user.last_name;
+      return this.user.firstName + " " + this.user.lastName;
     },
     drawerIcon: function () {
       return this.$store.state.navigation.drawer
@@ -92,12 +93,26 @@ export default {
     }),
   },
   async mounted() {
-    // const user = await this.$axios.$get("http://localhost:2424/user?id=1");
-    // this.$store.user.setUser({ user: user });
+    if (!this.$store.state.user.userFetched) {
+      const keycloakUserId = jwt_decode(this.$auth.strategy.token.get()).sub;
+      const user = await this.$axios.$get(
+        `user?keycloakUserId=${keycloakUserId}`
+      );
+      this.$store.commit("user/setUser", { user: user[0] });
+    }
+    await this.getNotifications(this.$store.state.user.user.id);
+    this.$store.commit("navigation/loaded");
   },
   methods: {
+    async logout() {
+      await this.$auth.logout();
+      await this.$router.push("/login");
+    },
     ...mapMutations({
       changeDrawerStatus: "navigation/changeDrawerStatus",
+    }),
+    ...mapActions({
+      getNotifications: "notification/getNotifications",
     }),
   },
   watch: {

@@ -4,7 +4,7 @@
     <navigation-menu></navigation-menu>
     <v-main fill-height fluid>
       <v-container fill-height fluid>
-        <nuxt />
+        <nuxt v-if="loaded" />
       </v-container>
     </v-main>
     <navigation-footer></navigation-footer>
@@ -12,5 +12,13 @@
 </template>
 
 <script>
-export default {};
+import { mapState } from "vuex";
+
+export default {
+  computed: {
+    ...mapState({
+      loaded: (state) => state.navigation.loaded,
+    }),
+  },
+};
 </script>

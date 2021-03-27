@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapActions } from "vuex";
 
 export default {
   name: "NotificationMenu",
@@ -32,8 +32,10 @@ export default {
   },
   methods: {
     ...mapMutations({
-      readNotification: "notification/readNotification",
       clearNotifications: "notification/clearNotifications",
+    }),
+    ...mapActions({
+      readNotification: "notification/readNotification",
     }),
   },
 };

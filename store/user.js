@@ -1,28 +1,22 @@
 export const state = () => ({
   id: 1,
-  user: {
-    first_name: "Thibaut",
-    last_name: "Bellanger",
-    email: "t.bellanger34@gmail.com",
-    teams: [
-      { id: "orga", title: "Organizer" },
-      { id: "admin", title: "Admin" },
-      { id: "oldTimer", title: "Old Timer" },
-      { id: "t1", title: "Old Timer" },
-      { id: "t2", title: "Old Timer" },
-      { id: "t3", title: "Old Timer" },
-    ],
-  },
+  user: {},
+  userFetched: false,
+  teams: [],
   authenticated: false,
   config: {
     modulesConfigurable: false,
-    modules: ["teams"],
+    modules: ["teams", "infos"],
   },
 });
 
 export const mutations = {
   setUser(state, payload) {
     state.user = payload.user;
+    state.userFetched = true;
+  },
+  setTeams(state, payload) {
+    state.teams = payload.teams;
   },
   toggleModulesConfigurable(state) {
     state.config.modulesConfigurable = !state.config.modulesConfigurable;
@@ -34,5 +28,20 @@ export const mutations = {
     if (!state.config.modules.includes(id)) {
       state.config.modules.push(id);
     }
+  },
+};
+
+export const actions = {
+  async getUserByKeycloakId({ commit, state }, payload) {
+    if (!state.userFetched) {
+      const user = await this.$axios.$get(
+        `user?keycloakUserId=${payload.keycloakUserId}`
+      );
+      commit("setUser", { user: user[0] });
+    }
+  },
+  async getUserTeams({ commit, state }) {
+    const user = await this.$axios.$get(`user/team?id=${state.user.id}`);
+    commit("setTeams", { teams: user[0].teams });
   },
 };
