@@ -1,6 +1,13 @@
 <template>
   <div fill-height fluid class="container">
     <dashboard-item-wrapper
+      id="infos"
+      title="My Infos"
+      v-if="moduleIDs.includes('infos')"
+    >
+      <dashboard-user class="module" />
+    </dashboard-item-wrapper>
+    <dashboard-item-wrapper
       id="teams"
       title="My Teams"
       v-if="moduleIDs.includes('teams')"
@@ -51,7 +58,10 @@ export default {
   name: "dashboard",
   data: () => ({
     configureDashboard: false,
-    modules: [{ id: "teams", title: "My Teams" }],
+    modules: [
+      { id: "teams", title: "My Teams" },
+      { id: "infos", title: "My Infos" },
+    ],
   }),
   computed: {
     ...mapState({
