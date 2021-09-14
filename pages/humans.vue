@@ -385,7 +385,6 @@ export default {
       if (!this.selectedUser.transactionHistory) {
         this.selectedUser.transactionHistory = [];
       }
-      this.selectedUser.transactionHistory.unshift(this.newTransaction);
 
       if (this.selectedUser.balance === undefined) {
         this.selectedUser.balance = 0;
@@ -393,14 +392,18 @@ export default {
 
       if (isNegative) {
         this.selectedUser.balance =
-          +this.selectedUser.balance - +this.newTransaction.amount;
+            +this.selectedUser.balance - +this.newTransaction.amount;
       } else {
         this.selectedUser.balance +=
-          +this.selectedUser.balance + +this.newTransaction.amount;
+            +this.selectedUser.balance + +this.newTransaction.amount;
       }
+
+      this.newTransaction.amount = (isNegative ? '- ' : '+ ') + this.newTransaction.amount
+      this.selectedUser.transactionHistory.unshift(this.newTransaction);
+
       await this.$axios.put(
-        "/user/" + this.selectedUser.keycloakID,
-        this.selectedUser
+          "/user/" + this.selectedUser.keycloakID,
+          this.selectedUser
       );
       this.isSnackbarOpen = true;
       this.isTransactionDialogOpen = false;
