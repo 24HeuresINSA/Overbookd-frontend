@@ -57,7 +57,7 @@
         v-text="version"
       />
       <v-spacer />
-      <v-btn text @click="isDialogOpen = true"> 🐞 Signaler un bug </v-btn>
+      <v-btn text href="https://gitlab.com/24-heures-insa/overbookd/frontend/-/issues/new#"> 🐞 Signaler un bug</v-btn>
       <v-btn text @click="logout()"> DÉCONNEXION</v-btn>
     </v-app-bar>
     <v-main>
