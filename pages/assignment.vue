@@ -172,6 +172,7 @@
 
 <script>
 import {getConfig, hasRole} from "../common/role";
+import Fuse from "fuse.js";
 
 export default {
   name: "assignment",
@@ -215,7 +216,7 @@ export default {
 
   methods: {
     getStupidAmericanTimeFormat(date) {
-      return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+      return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
     },
 
     getConfig(key) {
@@ -329,6 +330,7 @@ export default {
               reason.days.forEach((day) => {
                 if (day.frames) {
                   day.frames.forEach((frame) => {
+                    console.log(day)
                     let timeframe = {
                       start: new Date(Date.parse(day.date + " " + frame.start)),
                       end: new Date(Date.parse(day.date + " " + frame.end)),
@@ -358,38 +360,6 @@ export default {
       // selected assignment changed...
       let user = this.getSelectedUser;
       this.$set(user, "assigned", this.selectedAssignments);
-
-      console.log("sat, ", this.selectedAssignments);
-      console.log("user.assigned", user.assigned);
-
-      // save in FT
-      // user.assigned.forEach(assignment => {
-      //   // get FT
-      //   let FT = this.FTs.find(FT => FT._id === assignment.FTID);
-      //   let schedule = FT.schedules.find(({date, start, end}) => {
-      //     const mSchedule = assignment.schedule;
-      //     return mSchedule.start === start && mSchedule.end === end && mSchedule.date === date
-      //   });
-      //   if(schedule.assigned === undefined){
-      //     schedule.assigned = [];
-      //   }
-      //   const isUserAlreadyAssigned = schedule.assigned.find(assignedUser => {
-      //     return assignedUser.keycloakID === user.keycloakID
-      //   })
-      //   if (!isUserAlreadyAssigned){
-      //     schedule.assigned.push({
-      //       username : `${user.lastname}.${user.firstname}`,
-      //       keycloakID: user.keycloakID,
-      //       id: user._id,
-      //     })
-      //   }
-      //   let oldFTIndex = this.updatedFTs.findIndex(mFT => mFT._id === FT._id);
-      //   if(oldFTIndex === -1){
-      //     this.updatedFTs.push(FT)
-      //   } else {
-      //     this.updatedFTs[oldFTIndex] = FT
-      //   }
-      // })
     },
 
     filters: {
@@ -401,18 +371,13 @@ export default {
 
         // filter by name
         if (filters.name) {
-          let search = filters.name.toLowerCase();
-          users = users.filter((user) => {
-            let isNickname = false;
-            if (user.nickname) {
-              isNickname = user.nickname.toLowerCase().includes(search);
-            }
-            return (
-              user.firstname.toLowerCase().includes(search) ||
-              user.lastname.toLowerCase().includes(search) ||
-              isNickname
-            );
-          });
+          const options = {
+            // Search in `author` and in `tags` array
+            keys: ["firstname", "lastname", 'nickname'],
+          };
+          const fuse = new Fuse(users, options);
+
+          users = fuse.search(filters.name).map((e) => e.item);
         }
 
         // filter by team
