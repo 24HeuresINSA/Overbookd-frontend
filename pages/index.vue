@@ -55,8 +55,8 @@
                   </thead>
                   <tbody>
                     <tr
-                      v-for="(notification, index) in user.notifications"
-                      v-bind:key="notification.date"
+                        v-for="(notification, index) in user.notifications"
+                        v-bind:key="index"
                     >
                       <td>
                         {{
@@ -134,10 +134,10 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="item in user.transactionHistory" v-bind:key="item">
-                    <td>{{ item.reason }}</td>
-                    <td class="text-right">{{ item.amount }} €</td>
-                  </tr>
+                <tr v-for="(item, i2) in user.transactionHistory" v-bind:key="i2">
+                  <td>{{ item.reason }}</td>
+                  <td class="text-right">{{ item.amount }} €</td>
+                </tr>
                 </tbody>
               </v-simple-table>
             </v-card-text>
@@ -175,10 +175,11 @@
               </v-container>
             </v-card-text>
             <v-card-actions>
-              <v-text-field
-                label="prénom.nom de ton pote"
-                v-model="newFriend"
-              ></v-text-field>
+              <v-autocomplete
+                  label="prénom.nom de ton pote"
+                  v-model="newFriend"
+                  :items="usernames"
+              ></v-autocomplete>
               <v-btn text @click="sendFriendRequest">demander en ami</v-btn>
             </v-card-actions>
           </v-card>
@@ -267,6 +268,7 @@
 import { getUser, hasRole } from "../common/role";
 import OverChips from "../components/overChips";
 import OverForm from "../components/overForm";
+import axios from "axios";
 
 export default {
   components: { OverForm, OverChips },
@@ -303,6 +305,7 @@ export default {
       },
       hasNotBeenApproved: false,
       PP: undefined,
+      usernames: [],
       snackbarMessage: "",
       snackbarMessages: {
         friendRequest: {
@@ -324,6 +327,8 @@ export default {
 
   async mounted() {
     this.user = await getUser(this);
+
+    this.usernames = (await this.$axios.get('/user/all')).data;
 
     this.notValidatedCount = await this.getNotValidatedCount();
 
