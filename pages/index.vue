@@ -20,11 +20,14 @@
               <h3>📞 +33 {{ user.phone }}</h3>
               <h3>😎 {{ user.charisma || 0 }} points de charisme</h3>
               <h3>❤️ {{ user.friends ? user.friends.length : 0 }} amis</h3>
-              <h3>📆 {{ new Date(user.birthdate).getDate() }}/{{
-                  new Date(user.birthdate).getMonth()
-                }}/{{ new Date(user.birthdate).getFullYear() }}</h3>
               <h3>
-                🗣 {{ user.assigned ? user.assigned.length : 0 }} tâches affectées
+                📆 {{ new Date(user.birthdate).getDate() }}/{{
+                  new Date(user.birthdate).getMonth()
+                }}/{{ new Date(user.birthdate).getFullYear() }}
+              </h3>
+              <h3>
+                🗣 {{ user.assigned ? user.assigned.length : 0 }} tâches
+                affectées
               </h3>
               <h3>🚗 {{ user.hasDriverLicense ? "✅" : "🛑" }}</h3>
 
@@ -33,8 +36,13 @@
               <v-progress-linear :value="user.charisma"></v-progress-linear>
             </v-card-text>
             <v-card-actions>
-              <v-btn text @click="isPPDialogOpen = true">📸
-                {{ user.pp ? `Mettre à jour la photo de profil` : `Ajouter une photo de profil` }}
+              <v-btn text @click="isPPDialogOpen = true"
+              >📸
+                {{
+                  user.pp
+                      ? `Mettre à jour la photo de profil`
+                      : `Ajouter une photo de profil`
+                }}
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -54,17 +62,17 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr
-                        v-for="(notification, index) in user.notifications"
-                        v-bind:key="index"
-                    >
-                      <td>
-                        {{
-                          notification.type === "friendRequest" ? "👨‍👩‍👧" : "📣"
-                        }}
-                      </td>
-                      <td>{{ notification.message }}</td>
-                      <td
+                  <tr
+                      v-for="(notification, index) in user.notifications"
+                      v-bind:key="index"
+                  >
+                    <td>
+                      {{
+                        notification.type === "friendRequest" ? "👨‍👩‍👧" : "📣"
+                      }}
+                    </td>
+                    <td>{{ notification.message }}</td>
+                    <td
                         v-if="notification.type === 'friendRequest'"
                         style="display: flex; justify-content: space-between"
                       >
@@ -100,21 +108,20 @@
             <template v-if="hasRole(['admin', 'bureau'])">
               <v-card-title
               >{{ notValidatedCount }} Orgas non validés
-              </v-card-title
-              >
+              </v-card-title>
             </template>
 
             <v-card-actions>
-              <v-btn text v-if="hasRole('hard')" @click="isBroadcastDialogOpen = true"
+              <v-btn
+                  text
+                  v-if="hasRole('hard')"
+                  @click="isBroadcastDialogOpen = true"
               >broadcast
-              </v-btn
-              >
+              </v-btn>
               <v-btn text v-if="hasRole(['admin', 'bureau'])" to="/humans"
               >Liste des Orgas
-              </v-btn
-              >
+              </v-btn>
             </v-card-actions>
-
           </v-card>
         </v-col>
 
@@ -123,8 +130,7 @@
             <v-card-title>Compte Perso 💰</v-card-title>
             <v-card-subtitle
             >Balance : {{ user.balance || 0 }} €
-            </v-card-subtitle
-            >
+            </v-card-subtitle>
             <v-card-text v-if="user.transactionHistory">
               <v-simple-table>
                 <thead>
@@ -134,7 +140,10 @@
                   </tr>
                 </thead>
                 <tbody>
-                <tr v-for="(item, i2) in user.transactionHistory" v-bind:key="i2">
+                <tr
+                    v-for="(item, i2) in user.transactionHistory"
+                    v-bind:key="i2"
+                >
                   <td>{{ item.reason }}</td>
                   <td class="text-right">{{ item.amount }} €</td>
                 </tr>
@@ -170,7 +179,8 @@
                   src="https://media.giphy.com/media/ISOckXUybVfQ4/giphy.gif"
                 ></v-img>
                 <p>
-                  Pour demander un orga (ou un soft) en ami, mets le prénom.nom de tes potes !
+                  Pour demander un orga (ou un soft) en ami, mets le prénom.nom
+                  de tes potes !
                 </p>
               </v-container>
             </v-card-text>
@@ -193,8 +203,7 @@
             <v-card-title>Le Clicker ⏱</v-card-title>
             <v-card-subtitle
             >Le compteur de blagues qui dérapent 🚗
-            </v-card-subtitle
-            >
+            </v-card-subtitle>
             <v-card-text>
               <h2>{{ user.clicks || 0 }} 🚗</h2>
             </v-card-text>
@@ -328,7 +337,7 @@ export default {
   async mounted() {
     this.user = await getUser(this);
 
-    this.usernames = (await this.$axios.get('/user/all')).data;
+    this.usernames = (await this.$axios.get("/user/all")).data;
 
     this.notValidatedCount = await this.getNotValidatedCount();
 

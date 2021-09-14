@@ -68,8 +68,7 @@
                   item.lastname
                 "
               >F
-              </v-btn
-              >
+              </v-btn>
               <v-btn
                 fab
                 @click="openTransactionDialog(item)"
@@ -398,7 +397,8 @@ export default {
             +this.selectedUser.balance + +this.newTransaction.amount;
       }
 
-      this.newTransaction.amount = (isNegative ? '- ' : '+ ') + this.newTransaction.amount
+      this.newTransaction.amount =
+          (isNegative ? "- " : "+ ") + this.newTransaction.amount;
       this.selectedUser.transactionHistory.unshift(this.newTransaction);
 
       await this.$axios.put(

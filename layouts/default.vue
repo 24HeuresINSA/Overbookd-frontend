@@ -50,14 +50,20 @@
       <v-btn icon @click.stop="fixed = !fixed">
         <v-icon>mdi-minus</v-icon>
       </v-btn>
-      <v-toolbar-title @click="clickOnTitle()" v-text="title" />
+      <v-toolbar-title @click="clickOnTitle()" v-text="title"/>
 
       <v-toolbar-title
-        style="color: red; margin-left: 4px; font-weight: bold"
-        v-text="version"
+          style="color: red; margin-left: 4px; font-weight: bold"
+          v-text="version"
       />
-      <v-spacer />
-      <v-btn text href="https://gitlab.com/24-heures-insa/overbookd/frontend/-/issues/new#"> 🐞 Signaler un bug</v-btn>
+      <v-spacer/>
+      <v-btn
+          text
+          href="https://gitlab.com/24-heures-insa/overbookd/frontend/-/issues/new#"
+      >
+        🐞 Signaler un bug
+      </v-btn
+      >
       <v-btn text @click="logout()"> DÉCONNEXION</v-btn>
     </v-app-bar>
     <v-main>
@@ -100,7 +106,10 @@
           ></v-textarea>
           <template v-if="!newRequest.isFeatureRequest">
             <v-list>
-              <v-list-item v-for="(step, index) in newRequest.steps" :key="index">
+              <v-list-item
+                  v-for="(step, index) in newRequest.steps"
+                  :key="index"
+              >
                 <v-list-item-content>{{ step }}</v-list-item-content>
               </v-list-item>
             </v-list>
@@ -275,8 +284,10 @@ export default {
     },
 
     addStep() {
-      this.newRequest.steps.push(`${this.newRequest.steps.length + 1} - ${this.stepDetail}`);
-      this.stepDetail = '';
+      this.newRequest.steps.push(
+          `${this.newRequest.steps.length + 1} - ${this.stepDetail}`
+      );
+      this.stepDetail = "";
     },
 
     hasRole(role) {

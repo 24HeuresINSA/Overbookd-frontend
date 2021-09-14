@@ -28,7 +28,6 @@
             <li>🔨 fix des validateur de FT</li>
             <li>📸 fix de l'UI des horraires dans les FT FA</li>
             <li>💻 lint du projet</li>
-
           </ul>
         </v-row>
         <v-row> </v-row>

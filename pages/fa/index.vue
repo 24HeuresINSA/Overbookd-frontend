@@ -112,9 +112,9 @@ export default {
       headers: [
         {text: "status", value: "status"},
         {text: "nom", value: "name"},
-        { text: "equipe", value: "team" },
-        { text: "Resp", value: "inCharge" },
-        { text: "action", value: "action" },
+        {text: "equipe", value: "team"},
+        {text: "Resp", value: "inCharge"},
+        {text: "action", value: "action"},
       ],
       color: {
         submitted: "warning",
@@ -136,13 +136,13 @@ export default {
       mFAs = this.filterBySelectedTeam(mFAs, this.selectedTeam);
       const options = {
         // Search in `author` and in `tags` array
-        keys: ['name', 'description']
-      }
-      const fuse = new Fuse(mFAs, options)
+        keys: ["name", "description"],
+      };
+      const fuse = new Fuse(mFAs, options);
       if (this.search === undefined || this.search === "") {
-        return mFAs
+        return mFAs;
       }
-      return fuse.search(this.search).map(e => e.item)
+      return fuse.search(this.search).map((e) => e.item);
     },
   },
 

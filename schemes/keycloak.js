@@ -21,7 +21,10 @@ export default class KeycloakScheme extends RefreshScheme {
       grant_type: "password",
     });
 
-    const response = await axios.post('http://localhost:8080/' + KEYCLOAK.TOKEN, data);
+    const response = await axios.post(
+        "http://localhost:8080/" + KEYCLOAK.TOKEN,
+        data
+    );
     if (response.status !== 200 && response.data === null) {
       // wrong credentials
       throw Error;
