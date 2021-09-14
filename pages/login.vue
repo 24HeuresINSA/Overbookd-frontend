@@ -23,11 +23,13 @@
         <v-row>
           <h3>🤯 Rectification de bugs</h3>
           <ul>
-            <li>📝 les FAs ont des id simple comme dans assomaker</li>
-            <li>🗑 fix de le boutton delete des horaires dans les FA/FT</li>
-            <li>🔨 fix des validateur de FT</li>
-            <li>📸 fix de l'UI des horraires dans les FT FA</li>
-            <li>💻 lint du projet</li>
+            <li>🔒 require robust password</li>
+            <li>💻 lint project</li>
+            <li>🐞 signalisation de bug rederige vers le gitlab</li>
+            <li>❤️ autocomplete des amis</li>
+            <li>💰 recharge des compte perso s'affiche mieux</li>
+            <li>🐞 fix de bug</li>
+            <li>📝 fix spelling errors</li>
           </ul>
         </v-row>
         <v-row> </v-row>
