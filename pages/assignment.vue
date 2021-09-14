@@ -339,6 +339,7 @@ export default {
                       name: "Disponible",
                       start: this.getStupidAmericanTimeFormat(timeframe.start),
                       end: this.getStupidAmericanTimeFormat(timeframe.end),
+                      color: "rgba(222,121,226,0.45)",
                     });
                   });
                 }
