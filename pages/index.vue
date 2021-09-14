@@ -18,11 +18,13 @@
             <v-card-text>
               <h3>📩 {{ user.email }}</h3>
               <h3>📞 +33 {{ user.phone }}</h3>
-              <h3>😎 {{ user.charisma || 0 }} charisme</h3>
+              <h3>😎 {{ user.charisma || 0 }} points de charisme</h3>
               <h3>❤️ {{ user.friends ? user.friends.length : 0 }} amis</h3>
-              <h3>📆 {{ new Date(user.birthdate).toLocaleString() }}</h3>
+              <h3>📆 {{ new Date(user.birthdate).getDate() }}/{{
+                  new Date(user.birthdate).getMonth()
+                }}/{{ new Date(user.birthdate).getFullYear() }}</h3>
               <h3>
-                🗣 {{ user.assigned ? user.assigned.length : 0 }} taches affectés
+                🗣 {{ user.assigned ? user.assigned.length : 0 }} tâches affectées
               </h3>
               <h3>🚗 {{ user.hasDriverLicense ? "✅" : "🛑" }}</h3>
 
@@ -31,14 +33,16 @@
               <v-progress-linear :value="user.charisma"></v-progress-linear>
             </v-card-text>
             <v-card-actions>
-              <v-btn icon @click="isPPDialogOpen = true">📸</v-btn>
+              <v-btn text @click="isPPDialogOpen = true">📸
+                {{ user.pp ? `Mettre à jour la photo de profil` : `Ajouter une photo de profil` }}
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
 
         <v-col cols="12" sm="4" md="6">
           <v-card v-if="user">
-            <v-card-title>Notification 📣️</v-card-title>
+            <v-card-title>Notifications 📣️</v-card-title>
             <v-card-text v-if="user.notifications">
               <v-simple-table>
                 <template v-slot:default>
@@ -91,24 +95,35 @@
                   </tbody>
                 </template>
               </v-simple-table>
-              <v-card-actions>
-                <v-btn text @click="isBroadcastDialogOpen = true"
-                  >broadcast</v-btn
-                >
-              </v-card-actions>
             </v-card-text>
 
-            <v-card-title v-if="hasRole('admin')"
-              >{{ notValidatedCount }} Orgas Non validé</v-card-title
-            >
+            <template v-if="hasRole(['admin', 'bureau'])">
+              <v-card-title
+              >{{ notValidatedCount }} Orgas non validés
+              </v-card-title
+              >
+            </template>
+
+            <v-card-actions>
+              <v-btn text v-if="hasRole('hard')" @click="isBroadcastDialogOpen = true"
+              >broadcast
+              </v-btn
+              >
+              <v-btn text v-if="hasRole(['admin', 'bureau'])" to="/humans"
+              >Liste des Orgas
+              </v-btn
+              >
+            </v-card-actions>
+
           </v-card>
         </v-col>
 
         <v-col cols="12" sm="6" md="4" v-if="hasRole('hard')">
           <v-card v-if="user">
-            <v-card-title>Compte perso 💰</v-card-title>
+            <v-card-title>Compte Perso 💰</v-card-title>
             <v-card-subtitle
-              >Balance: {{ user.balance || 0 }} €</v-card-subtitle
+            >Balance : {{ user.balance || 0 }} €
+            </v-card-subtitle
             >
             <v-card-text v-if="user.transactionHistory">
               <v-simple-table>
@@ -155,7 +170,7 @@
                   src="https://media.giphy.com/media/ISOckXUybVfQ4/giphy.gif"
                 ></v-img>
                 <p>
-                  pour demander en amis met le prenom.nom de tes potes puis a
+                  Pour demander un orga (ou un soft) en ami, mets le prénom.nom de tes potes !
                 </p>
               </v-container>
             </v-card-text>
@@ -176,7 +191,8 @@
             ></v-img>
             <v-card-title>Le Clicker ⏱</v-card-title>
             <v-card-subtitle
-              >Le compteur de blague qui derrape 🚗</v-card-subtitle
+            >Le compteur de blagues qui dérapent 🚗
+            </v-card-subtitle
             >
             <v-card-text>
               <h2>{{ user.clicks || 0 }} 🚗</h2>
@@ -227,7 +243,7 @@
           <v-file-input v-model="PP"> </v-file-input>
         </v-card-text>
         <v-card-actions>
-          <v-btn text @click="uploadPP()">update</v-btn>
+          <v-btn text @click="uploadPP()">Enregistrer</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -240,7 +256,7 @@
           </over-form>
         </v-card-text>
         <v-card-actions>
-          <v-btn @click="transferMoney()">validé</v-btn>
+          <v-btn @click="transferMoney()">Enregistrer</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
