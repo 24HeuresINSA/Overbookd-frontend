@@ -3,10 +3,13 @@
     <v-form>
       <v-container class="form-container">
         <v-row>
+          <v-img src="img/memes/home_meme.jpg"></v-img>
+        </v-row>
+        <v-row>
           <v-img
-            :src="'img/logo/' + overbookd_logo"
-            alt="overbookd logo"
-            class="logo"
+              :src="'img/logo/' + overbookd_logo"
+              alt="overbookd logo"
+              class="logo"
           ></v-img>
         </v-row>
         <v-row>
@@ -14,25 +17,6 @@
             {{ version }}
           </h2>
         </v-row>
-        <v-row>
-          <v-img src="img/memes/home_meme.jpg"></v-img>
-        </v-row>
-        <v-row>
-          <h2>Patch note {{ version }}</h2>
-        </v-row>
-        <v-row>
-          <h3>🤯 Rectification de bugs</h3>
-          <ul>
-            <li>🔒 require robust password</li>
-            <li>💻 lint project</li>
-            <li>🐞 signalisation de bug rederige vers le gitlab</li>
-            <li>❤️ autocomplete des amis</li>
-            <li>💰 recharge des compte perso s'affiche mieux</li>
-            <li>🐞 fix de bug</li>
-            <li>📝 fix spelling errors</li>
-          </ul>
-        </v-row>
-        <v-row> </v-row>
         <v-row>
           <v-text-field
             v-model="credentials.username"
