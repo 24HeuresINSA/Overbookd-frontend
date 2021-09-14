@@ -9,15 +9,16 @@
       display: flex;
     "
   >
-    <div style="display: flex; flex-flow: column">
+    <div style="display: flex; flex-flow: column; max-width: 300px">
       <!-- list of  filtered users -->
       <v-card>
-        <v-card-title>User</v-card-title>
         <v-card-text>
           <h3>Filtres</h3>
+          <v-select label="evenements"></v-select>
           <v-text-field
-            prepend-icon="mdi-card-search"
-            v-model="filters.name"
+              prepend-icon="mdi-card-search"
+              v-model="filters.name"
+              label="recherche d'orga"
           ></v-text-field>
           <v-combobox
             chips
@@ -42,6 +43,7 @@
             </template>
           </v-combobox>
           <v-divider></v-divider>
+
           <v-list style="overflow-y: auto; height: 500px">
             <v-list-item-group v-model="selectedUserIndex">
               <v-list-item v-for="user of filteredUsers" v-bind:key="user._id">
@@ -84,18 +86,17 @@
     </div>
     <!-- calendar --->
     <v-calendar
-      style="flex-grow: 2; max-height: 100%"
-      ref="calendar"
-      :value="selectedDay"
-      :events="selectedUserAvailabilities"
-      color="primary"
-      type="week"
-      :weekdays="[1, 2, 3, 4, 5, 6, 0]"
+        style="flex-grow: 2; height: 800px; overflow-y: auto"
+        ref="calendar"
+        :value="selectedDay"
+        :events="selectedUserAvailabilities"
+        color="primary"
+        type="week"
+        :weekdays="[1, 2, 3, 4, 5, 6, 0]"
     ></v-calendar>
 
     <div style="display: flex; flex-flow: column">
-      <v-btn icon @click="isInfoDisplayed = true"> </v-btn>
-
+      <v-btn text @click="isInfoDisplayed = !isInfoDisplayed">info</v-btn>
       <v-card v-if="getSelectedUser">
         <v-img
           v-if="getSelectedUser.pp"
@@ -399,7 +400,10 @@ export default {
             return false;
           });
         }
-
+        this.filteredUsers.sort((user1, user2) => {
+          return Math.sign((user1.charisma || 0) - (user2.charisma || 0))
+        })
+        console.log(this.filteredUsers)
         this.filteredUsers = users;
       },
     },
