@@ -42,14 +42,18 @@
             </template>
           </v-combobox>
           <v-divider></v-divider>
-          <v-list>
+          <v-list style="overflow-y: auto; height: 500px">
             <v-list-item-group v-model="selectedUserIndex">
               <v-list-item v-for="user of filteredUsers" v-bind:key="user._id">
                 <v-list-item-content>
-                  <h4>
+                  <v-list-item-title>
                     {{ user.firstname }} {{ user.lastname.toUpperCase() }}
                     {{ user.nickname ? `(${user.nickname})` : "" }}
-                  </h4>
+                    {{ user.charisma }}
+                  </v-list-item-title>
+                  <v-list-item-subtitle>
+                    <over-chips :roles="user.team"></over-chips>
+                  </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </v-list-item-group>
@@ -173,10 +177,11 @@
 <script>
 import {getConfig, hasRole} from "../common/role";
 import Fuse from "fuse.js";
+import OverChips from "../components/overChips";
 
 export default {
   name: "assignment",
-
+  components: {OverChips},
   data() {
     return {
       users: [],
