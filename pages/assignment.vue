@@ -15,15 +15,24 @@
         <v-card-text>
           <h3>Filtres</h3>
           <v-select label="evenements"></v-select>
+          <div>
+            <v-btn icon @click="moveCalendar()">
+              <v-icon>mdi-arrow-left</v-icon>
+            </v-btn>
+            <v-btn icon @click="moveCalendar()">
+              <v-icon>mdi-arrow-right</v-icon>
+            </v-btn>
+          </div>
+
           <v-text-field
               prepend-icon="mdi-card-search"
               v-model="filters.name"
               label="recherche d'orga"
           ></v-text-field>
           <v-combobox
-            chips
-            multiple
-            clearable
+              chips
+              multiple
+              clearable
             label="team"
             :items="getConfig('teams').map((e) => e.name)"
             v-model="filters.teams"
@@ -57,6 +66,20 @@
                     <over-chips :roles="user.team"></over-chips>
                   </v-list-item-subtitle>
                 </v-list-item-content>
+                <v-list-item-action>
+                  <v-tooltip top @click="selectedUser = user">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-icon
+                          dark
+                          v-bind="attrs"
+                          v-on="on"
+                      >
+                        mdi-information
+                      </v-icon>
+                    </template>
+                    <span>{{ user.comment }}</span>
+                  </v-tooltip>
+                </v-list-item-action>
               </v-list-item>
             </v-list-item-group>
           </v-list>
@@ -96,7 +119,6 @@
     ></v-calendar>
 
     <div style="display: flex; flex-flow: column">
-      <v-btn text @click="isInfoDisplayed = !isInfoDisplayed">info</v-btn>
       <v-card v-if="getSelectedUser">
         <v-img
           v-if="getSelectedUser.pp"
@@ -108,36 +130,7 @@
             getSelectedUser.lastname
           }}</v-card-title
         >
-        <v-card-text v-if="isInfoDisplayed">
-          <v-list>
-            <v-list-item-group v-model="isInfoDisplayed">
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>Charisme</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ getSelectedUser.charisma }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>Date de naissance</v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ new Date(getSelectedUser.birthdate).toLocaleString() }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
-          <v-progress-linear
-            :value="getSelectedUser.charisma / getConfig('max_charisma')"
-          ></v-progress-linear>
-        </v-card-text>
       </v-card>
-
-      <v-date-picker v-model="selectedDay"></v-date-picker>
-
       <!-- list of users -->
       <v-card>
         <v-list>
@@ -170,7 +163,8 @@
     </v-btn>
 
     <v-snackbar v-model="isFeedbackSnackbarOpen" :timeout="5000"
-      >aller au suivant 🥳</v-snackbar
+    >Sauvgarder 🥳
+    </v-snackbar
     >
   </v-container>
 </template>
@@ -190,6 +184,7 @@ export default {
       selectedUserIndex: undefined,
       selectedAssignmentsIndex: undefined,
       selectedUserFriend: undefined,
+      selectedUser: undefined,
       selectedDay: undefined,
       FTs: [],
       updatedFTs: [],
@@ -229,15 +224,19 @@ export default {
       return getConfig(this, key);
     },
 
+    moveCalendar(isLeft) {
+
+    },
+
     getCalendarFormattedAssignedFTsOfSelectedUser() {
       let events = [];
       if (this.getSelectedUser && this.getSelectedUser.assigned !== undefined) {
         let assignedFTs = this.getSelectedUser.assigned;
         assignedFTs.forEach((assignedFT) => {
           let start = new Date(
-            Date.parse(
-              assignedFT.schedule.date + " " + assignedFT.schedule.start
-            )
+              Date.parse(
+                  assignedFT.schedule.date + " " + assignedFT.schedule.start
+              )
           );
           let end = new Date(
             Date.parse(assignedFT.schedule.date + " " + assignedFT.schedule.end)
@@ -411,4 +410,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.container {
+  padding: 0;
+}
+</style>
