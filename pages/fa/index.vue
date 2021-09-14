@@ -51,10 +51,10 @@
 
         <v-col cols="10">
           <v-data-table
-            :headers="headers"
-            :items="selectedFAs"
-            :items-per-page="5"
-            class="elevation-1"
+              :headers="headers"
+              :items="selectedFAs"
+              :items-per-page="20"
+              class="elevation-1"
           >
             <template v-slot:[`item.action`]="row">
               <tr>
@@ -92,7 +92,8 @@
 </template>
 
 <script>
-import { getConfig } from "../../common/role";
+import {getConfig} from "../../common/role";
+import Fuse from "fuse.js";
 
 export default {
   name: "fa",
@@ -100,7 +101,7 @@ export default {
     return {
       FAs: [],
       itemsPerPageArray: [4, 8, 12],
-      search: "",
+      search: undefined,
       filter: {},
       sortDesc: false,
       page: 1,
@@ -109,8 +110,8 @@ export default {
       selectedStatus: 0,
       selectedTeam: undefined,
       headers: [
-        { text: "status", value: "status" },
-        { text: "nom", value: "name" },
+        {text: "status", value: "status"},
+        {text: "nom", value: "name"},
         { text: "equipe", value: "team" },
         { text: "Resp", value: "inCharge" },
         { text: "action", value: "action" },
@@ -133,12 +134,15 @@ export default {
     selectedFAs() {
       let mFAs = this.filterByStatus(this.FAs, this.selectedStatus);
       mFAs = this.filterBySelectedTeam(mFAs, this.selectedTeam);
-      if (this.search === undefined) {
-        return mFAs;
-      } else {
-        const s = this.search.toLowerCase();
-        return mFAs.filter((FA) => FA?.name.toLowerCase().includes(s));
+      const options = {
+        // Search in `author` and in `tags` array
+        keys: ['name', 'description']
       }
+      const fuse = new Fuse(mFAs, options)
+      if (this.search === undefined || this.search === "") {
+        return mFAs
+      }
+      return fuse.search(this.search).map(e => e.item)
     },
   },
 
