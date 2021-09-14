@@ -8,8 +8,8 @@
           ? [
               (v) =>
                 new RegExp(this.field.regex).test(v) ||
-                (this.field.error
-                  ? this.field.regex
+                (this.field.errorMessage
+                  ? this.field.errorMessage
                   : `il y'a un probleme avec ce champ`),
             ]
           : []
