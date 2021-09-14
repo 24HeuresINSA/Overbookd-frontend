@@ -140,7 +140,7 @@
       <!-- list of users -->
       <v-card>
         <v-list>
-          <v-subheader>FT</v-subheader>
+          <v-subheader>Tâches</v-subheader>
           <v-list-item-group v-model="selectedAssignmentsIndex" multiple>
             <v-list-item
               v-for="schedule in filteredSchedules"
