@@ -116,6 +116,11 @@
         color="primary"
         type="week"
         :weekdays="[1, 2, 3, 4, 5, 6, 0]"
+        @mousedown:event="startDrag"
+        @mousedown:time="startTime"
+        @mousemove:time="mouseMove"
+        @mouseup:time="endDrag"
+        @mouseleave.native="cancelDrag"
     ></v-calendar>
 
     <div style="display: flex; flex-flow: column">
@@ -196,6 +201,13 @@ export default {
         teams: [],
       },
       teams: this.getConfig("teams"),
+
+      // calendar drag and drop
+      dragEvent: null,
+      dragStart: null,
+      createEvent: null,
+      createStart: null,
+      extendOriginal: null,
     };
   },
 
@@ -217,6 +229,97 @@ export default {
   },
 
   methods: {
+    // calendar drag and drop
+    startDrag({event, timed}) {
+      if (event && timed) {
+        this.dragEvent = event
+        this.dragTime = null
+        this.extendOriginal = null
+      }
+    },
+    startTime(tms) {
+      const mouse = this.toTime(tms)
+
+      if (this.dragEvent && this.dragTime === null) {
+        const start = this.dragEvent.start
+
+        this.dragTime = mouse - start
+      } else {
+        this.createStart = this.roundTime(mouse)
+        this.createEvent = {
+          name: `Event`,
+          start: this.createStart,
+          end: this.createStart,
+          timed: true,
+        }
+
+        this.getSelectedUser.assigned.push(this.createEvent)
+      }
+    },
+    extendBottom(event) {
+      this.createEvent = event
+      this.createStart = event.start
+      this.extendOriginal = event.end
+    },
+    mouseMove(tms) {
+      const mouse = this.toTime(tms)
+
+      if (this.dragEvent && this.dragTime !== null) {
+        const start = this.dragEvent.start
+        const end = this.dragEvent.end
+        const duration = end - start
+        const newStartTime = mouse - this.dragTime
+        const newStart = this.roundTime(newStartTime)
+        const newEnd = newStart + duration
+
+        this.dragEvent.start = newStart
+        this.dragEvent.end = newEnd
+      } else if (this.createEvent && this.createStart !== null) {
+        const mouseRounded = this.roundTime(mouse, false)
+        const min = Math.min(mouseRounded, this.createStart)
+        const max = Math.max(mouseRounded, this.createStart)
+
+        this.createEvent.start = min
+        this.createEvent.end = max
+      }
+    },
+    endDrag() {
+      this.dragTime = null
+      this.dragEvent = null
+      this.createEvent = null
+      this.createStart = null
+      this.extendOriginal = null
+    },
+    cancelDrag() {
+      if (this.createEvent) {
+        if (this.extendOriginal) {
+          this.createEvent.end = this.extendOriginal
+        } else {
+          const i = this.getSelectedUser.assigned.indexOf(this.createEvent)
+          if (i !== -1) {
+            this.getSelectedUser.assigned.splice(i, 1)
+          }
+        }
+      }
+
+      this.createEvent = null
+      this.createStart = null
+      this.dragTime = null
+      this.dragEvent = null
+    },
+    roundTime(time, down = true) {
+      const roundTo = 15 // minutes
+      const roundDownTime = roundTo * 60 * 1000
+
+      return down
+          ? time - time % roundDownTime
+          : time + (roundDownTime - (time % roundDownTime))
+    },
+    toTime(tms) {
+      return new Date(tms.year, tms.month - 1, tms.day, tms.hour, tms.minute).getTime()
+    },
+
+
     getStupidAmericanTimeFormat(date) {
       return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
     },
@@ -236,22 +339,24 @@ export default {
       if (this.getSelectedUser && this.getSelectedUser.assigned !== undefined) {
         let assignedFTs = this.getSelectedUser.assigned;
         assignedFTs.forEach((assignedFT) => {
-          let start = new Date(
-              Date.parse(
-                  assignedFT.schedule.date + " " + assignedFT.schedule.start
-              )
-          );
-          let end = new Date(
-              Date.parse(assignedFT.schedule.date + " " + assignedFT.schedule.end)
-          );
+          if (assignedFT.schedule) {
+            let start = new Date(
+                Date.parse(
+                    assignedFT.schedule.date + " " + assignedFT.schedule.start
+                )
+            );
+            let end = new Date(
+                Date.parse(assignedFT.schedule.date + " " + assignedFT.schedule.end)
+            );
 
-          // add to calendar
-          events.push({
-            name: assignedFT.name,
-            start: this.getStupidAmericanTimeFormat(start),
-            end: this.getStupidAmericanTimeFormat(end),
-            color: "#ebc034",
-          });
+            // add to calendar
+            events.push({
+              name: assignedFT.name,
+              start: this.getStupidAmericanTimeFormat(start),
+              end: this.getStupidAmericanTimeFormat(end),
+              color: "#ebc034",
+            });
+          }
         });
       }
       return events;

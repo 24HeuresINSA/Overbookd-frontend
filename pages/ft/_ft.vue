@@ -39,7 +39,7 @@
           <td>{{ schedule.start }}</td>
           <td>{{ schedule.end }}</td>
           <td>
-            <v-list-item v-for="(need, index) in schedule.needs">
+            <v-list-item v-for="(need, index) in schedule.needs" v-bind:key="index">
               <v-list-item-content>
                 <v-list-item-title>{{ need.role ? `${need.amount} ${need.role}` : need }}</v-list-item-title>
               </v-list-item-content>
@@ -133,7 +133,7 @@
         <v-card-title>Humains</v-card-title>
         <v-card-text>
           <template v-if="requiredHumans">
-            <v-list-item v-for="(need, index) in requiredHumans">
+            <v-list-item v-for="(need, index) in requiredHumans" v-bind:key="index">
               <v-list-item-content>
                 <v-list-item-title>{{ need }}</v-list-item-title>
               </v-list-item-content>
