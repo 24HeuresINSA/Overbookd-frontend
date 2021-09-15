@@ -319,7 +319,6 @@ export default {
 
             lastEvent.start = `${s.getHours()}:${s.getMinutes()}`;
             lastEvent.end = `${e.getHours()}:${e.getMinutes()}`;
-            this.isNewEventDialogOpen = true;
           }
         }
       }
@@ -330,6 +329,8 @@ export default {
       this.createEvent = null
       this.createStart = null
       this.extendOriginal = null
+      this.isNewEventDialogOpen = true;
+
     },
     cancelDrag() {
       if (this.createEvent) {
