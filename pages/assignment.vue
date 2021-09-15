@@ -87,25 +87,25 @@
       </v-card>
 
       <!-- list of selected user's friend -->
-      <v-card v-if="getSelectedUser && getSelectedUser.friends">
-        <v-list>
-          <v-subheader>les amis du user selectionné</v-subheader>
-          <v-list-item-group v-model="selectedUserFriend">
-            <v-list-item
-              v-for="friend of getSelectedUser.friends"
-              v-bind:key="friend.keycloakID"
-            >
-              <v-list-item-content>
-                <h4>{{ friend.username ? friend.username : friend }}</h4>
-                <!--          <v-chip>{{user.charisma}}</v-chip>-->
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-icon>mdi-information-outline</v-icon>
-              </v-list-item-action>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list>
-      </v-card>
+      <!--      <v-card v-if="getSelectedUser && getSelectedUser.friends">-->
+      <!--        <v-list>-->
+      <!--          <v-subheader>les amis du user selectionné</v-subheader>-->
+      <!--          <v-list-item-group v-model="selectedUserFriend">-->
+      <!--            <v-list-item-->
+      <!--              v-for="friend of getSelectedUser.friends"-->
+      <!--              v-bind:key="friend.keycloakID"-->
+      <!--            >-->
+      <!--              <v-list-item-content>-->
+      <!--                <h4>{{ friend.username ? friend.username : friend }}</h4>-->
+      <!--                &lt;!&ndash;          <v-chip>{{user.charisma}}</v-chip>&ndash;&gt;-->
+      <!--              </v-list-item-content>-->
+      <!--              <v-list-item-action>-->
+      <!--                <v-icon>mdi-information-outline</v-icon>-->
+      <!--              </v-list-item-action>-->
+      <!--            </v-list-item>-->
+      <!--          </v-list-item-group>-->
+      <!--        </v-list>-->
+      <!--      </v-card>-->
     </div>
     <!-- calendar --->
     <v-calendar
@@ -190,6 +190,7 @@ export default {
       updatedFTs: [],
       isFeedbackSnackbarOpen: false,
       isInfoDisplayed: false,
+      isAssignmentUpdated: true,
       filters: {
         name: undefined,
         teams: [],
@@ -241,8 +242,10 @@ export default {
               )
           );
           let end = new Date(
-            Date.parse(assignedFT.schedule.date + " " + assignedFT.schedule.end)
+              Date.parse(assignedFT.schedule.date + " " + assignedFT.schedule.end)
           );
+
+          // add to calendar
           events.push({
             name: assignedFT.name,
             start: this.getStupidAmericanTimeFormat(start),
@@ -266,7 +269,6 @@ export default {
 
     async saveAssignment() {
       // save FT
-      // console.log(this.updatedFTs);
       await this.$axios.put(`/user/${this.getSelectedUser.keycloakID}`, {
         assigned: this.getSelectedUser.assigned,
       });
@@ -311,7 +313,7 @@ export default {
             if (FT.schedules) {
               FT.schedules.forEach((schedule) => {
                 let start = Date.parse(schedule.date + " " + schedule.start);
-                let end = Date.parse(schedule.date + " " + schedule.start);
+                let end = Date.parse(schedule.date + " " + schedule.end);
                 if (timeframe.start <= start && timeframe.end >= end) {
                   filteredSchedules.push({
                     name: FT.name,
@@ -325,11 +327,6 @@ export default {
         });
       }
 
-      if (this.getSelectedUser && this.getSelectedUser.assigned) {
-        const assigned = this.getSelectedUser.assigned;
-        console.log(assigned);
-        console.log(this.selectedAssignments)
-      }
       return filteredSchedules;
     },
 
