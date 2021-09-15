@@ -159,10 +159,10 @@
     </div>
 
     <v-btn
-      fab
-      v-if="getSelectedUser"
-      @click="saveAssignment"
-      style="position: fixed; right: 20px; bottom: 40px; z-index: 20"
+        fab
+        v-if="getSelectedUser"
+        @click="saveAssignment"
+        style="position: fixed; right: 20px; bottom: 40px; z-index: 20"
     >
       <v-icon>mdi-content-save</v-icon>
     </v-btn>
@@ -171,6 +171,17 @@
     >Sauvgarder 🥳
     </v-snackbar
     >
+
+    <v-dialog v-model="isNewEventDialogOpen" max-width="600">
+      <v-card>
+        <v-card-title>Commentaire</v-card-title>
+        <v-card-text>
+          <v-text-field label="Commentaire" v-model="newEventName"></v-text-field>
+        </v-card-text>
+        <v-card-actions @click="saveNewEventName()">💾</v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </v-container>
 </template>
 
@@ -195,7 +206,9 @@ export default {
       updatedFTs: [],
       isFeedbackSnackbarOpen: false,
       isInfoDisplayed: false,
+      isNewEventDialogOpen: false,
       isAssignmentUpdated: true,
+      newEventName: undefined,
       filters: {
         name: undefined,
         teams: [],
@@ -203,6 +216,7 @@ export default {
       teams: this.getConfig("teams"),
 
       // calendar drag and drop
+      dragEvents: [],
       dragEvent: null,
       dragStart: null,
       createEvent: null,
@@ -229,6 +243,10 @@ export default {
   },
 
   methods: {
+    saveNewEventName() {
+      this.getSelectedUser.assigned[this.getSelectedUser.assigned.length - 1].name = this.newEventName;
+      this.isNewEventDialogOpen = false;
+    },
     // calendar drag and drop
     startDrag({event, timed}) {
       if (event && timed) {
@@ -246,14 +264,18 @@ export default {
         this.dragTime = mouse - start
       } else {
         this.createStart = this.roundTime(mouse)
+        let d = new Date(this.createStart)
         this.createEvent = {
-          name: `Event`,
-          start: this.createStart,
-          end: this.createStart,
+          name: `Event `,
+          startTimestamp: this.createStart,
+          endTimestamp: this.createStart,
+          date: `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`,
+          start: `${d.getHours()}:${d.getMinutes()}`,
+          end: `${d.getHours()}:${d.getMinutes()}`,
           timed: true,
         }
 
-        this.getSelectedUser.assigned.push(this.createEvent)
+        this.getSelectedUser.assigned.push({name: `Event `, schedule: this.createEvent})
       }
     },
     extendBottom(event) {
@@ -263,24 +285,43 @@ export default {
     },
     mouseMove(tms) {
       const mouse = this.toTime(tms)
+      if (this.getSelectedUser && this.getSelectedUser.assigned) {
+        const lastEvent = this.getSelectedUser.assigned[this.getSelectedUser.assigned.length - 1].schedule
+        if (lastEvent) {
+          if (lastEvent && this.dragTime !== null) {
+            const start = lastEvent.startTimestamp
+            const end = lastEvent.endTimestamp
+            const duration = end - start
+            const newStartTime = mouse - this.dragTime
+            const newStart = this.roundTime(newStartTime)
+            const newEnd = newStart + duration
 
-      if (this.dragEvent && this.dragTime !== null) {
-        const start = this.dragEvent.start
-        const end = this.dragEvent.end
-        const duration = end - start
-        const newStartTime = mouse - this.dragTime
-        const newStart = this.roundTime(newStartTime)
-        const newEnd = newStart + duration
+            lastEvent.startTimestamp = newStart
+            lastEvent.endTimestamp = newEnd
 
-        this.dragEvent.start = newStart
-        this.dragEvent.end = newEnd
-      } else if (this.createEvent && this.createStart !== null) {
-        const mouseRounded = this.roundTime(mouse, false)
-        const min = Math.min(mouseRounded, this.createStart)
-        const max = Math.max(mouseRounded, this.createStart)
+            let s = new Date(lastEvent.startTimestamp);
+            let e = new Date(lastEvent.endTimestamp);
 
-        this.createEvent.start = min
-        this.createEvent.end = max
+            lastEvent.start = `${s.getHours()}:${s.getMinutes()}`;
+            lastEvent.end = `${e.getHours()}:${e.getMinutes()}`;
+
+          } else if (this.createEvent && this.createStart !== null) {
+            const mouseRounded = this.roundTime(mouse, false)
+
+            const min = Math.min(mouseRounded, this.createStart)
+            const max = Math.max(mouseRounded, this.createStart)
+
+            lastEvent.startTimestamp = min
+            lastEvent.endTimestamp = max
+
+            let s = new Date(lastEvent.startTimestamp);
+            let e = new Date(lastEvent.endTimestamp);
+
+            lastEvent.start = `${s.getHours()}:${s.getMinutes()}`;
+            lastEvent.end = `${e.getHours()}:${e.getMinutes()}`;
+            this.isNewEventDialogOpen = true;
+          }
+        }
       }
     },
     endDrag() {
@@ -295,10 +336,10 @@ export default {
         if (this.extendOriginal) {
           this.createEvent.end = this.extendOriginal
         } else {
-          const i = this.getSelectedUser.assigned.indexOf(this.createEvent)
-          if (i !== -1) {
-            this.getSelectedUser.assigned.splice(i, 1)
-          }
+          // const i = this.events.indexOf(this.createEvent)
+          // if (i !== -1) {
+          //   this.events.splice(i, 1)
+          // }
         }
       }
 
@@ -318,7 +359,6 @@ export default {
     toTime(tms) {
       return new Date(tms.year, tms.month - 1, tms.day, tms.hour, tms.minute).getTime()
     },
-
 
     getStupidAmericanTimeFormat(date) {
       return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
