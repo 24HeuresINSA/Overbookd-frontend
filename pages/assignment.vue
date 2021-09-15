@@ -19,7 +19,7 @@
             <v-btn icon @click="moveCalendar()">
               <v-icon>mdi-arrow-left</v-icon>
             </v-btn>
-            <v-btn icon @click="moveCalendar()">
+            <v-btn icon @click="moveCalendar(true)">
               <v-icon>mdi-arrow-right</v-icon>
             </v-btn>
           </div>
@@ -142,7 +142,7 @@
             >
               <v-list-item-content>
                 {{ schedule.name }} {{ schedule.schedule.date }}
-                {{ schedule.schedule.start }} ➡️{{ schedule.schedule.end }}
+                {{ schedule.schedule.start }} ➡️ {{ schedule.schedule.end }}
               </v-list-item-content>
               <v-list-item-icon
                 ><v-icon> mdi-information </v-icon></v-list-item-icon
@@ -225,7 +225,9 @@ export default {
     },
 
     moveCalendar(isLeft) {
-
+      const currentDate = this.selectedDay ? new Date(this.selectedDay) : new Date()
+      currentDate.setDate(currentDate.getDate() + (isLeft ? -7 : 7));
+      this.selectedDay = `${currentDate.getFullYear()}-${currentDate.getMonth()}-${currentDate.getDate()}`
     },
 
     getCalendarFormattedAssignedFTsOfSelectedUser() {
@@ -322,6 +324,12 @@ export default {
           });
         });
       }
+
+      if (this.getSelectedUser && this.getSelectedUser.assigned) {
+        const assigned = this.getSelectedUser.assigned;
+        console.log(assigned);
+        console.log(this.selectedAssignments)
+      }
       return filteredSchedules;
     },
 
@@ -335,7 +343,6 @@ export default {
               reason.days.forEach((day) => {
                 if (day.frames) {
                   day.frames.forEach((frame) => {
-                    console.log(day)
                     let timeframe = {
                       start: new Date(Date.parse(day.date + " " + frame.start)),
                       end: new Date(Date.parse(day.date + " " + frame.end)),
@@ -402,7 +409,6 @@ export default {
         this.filteredUsers.sort((user1, user2) => {
           return Math.sign((user1.charisma || 0) - (user2.charisma || 0))
         })
-        console.log(this.filteredUsers)
         this.filteredUsers = users;
       },
     },
