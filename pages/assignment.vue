@@ -239,12 +239,28 @@ export default {
     // get user list
     this.users = (await this.$axios.get("/user")).data;
     this.filteredUsers = this.users;
+    this.sortFilteredUsers();
 
     // get FTs
     this.FTs = (await this.$axios.get("/FT")).data.data; // idk but it works
   },
 
   methods: {
+    sortFilteredUsers() {
+      this.filteredUsers = this.filteredUsers.sort((user1, user2) => {
+        user1.charisma = user1.charisma ? user1.charisma : 0;
+        user2.charisma = user2.charisma ? user2.charisma : 0;
+
+        if (user1.charisma > user2.charisma) {
+          return -1
+        }
+        if (user1.charisma < user2.charisma) {
+          return 1
+        }
+        return 0
+      })
+    },
+
     saveNewEventName() {
       this.getSelectedUser.assigned[this.getSelectedUser.assigned.length - 1].name = this.newEventName;
       this.isNewEventDialogOpen = false;
@@ -558,10 +574,9 @@ export default {
             return false;
           });
         }
-        this.filteredUsers.sort((user1, user2) => {
-          return Math.sign((user1.charisma || 0) - (user2.charisma || 0))
-        })
         this.filteredUsers = users;
+        this.sortFilteredUsers();
+
       },
     },
   },
