@@ -14,7 +14,7 @@
       <v-card>
         <v-card-text>
           <h3>Filtres</h3>
-          <v-select label="evenements"></v-select>
+          <v-select label="evenements" :items="timeframes.map(e=>e.name)" v-model="selectedTimeframe"></v-select>
           <div>
             <v-btn icon @click="moveCalendar()">
               <v-icon>mdi-arrow-left</v-icon>
@@ -202,6 +202,7 @@ export default {
       selectedUserFriend: undefined,
       selectedUser: undefined,
       selectedDay: undefined,
+      selectedTimeframe: undefined,
       FTs: [],
       updatedFTs: [],
       isFeedbackSnackbarOpen: false,
@@ -214,6 +215,7 @@ export default {
         teams: [],
       },
       teams: this.getConfig("teams"),
+      timeframes: this.getConfig("timeframes"),
 
       // calendar drag and drop
       dragEvents: [],
@@ -512,6 +514,13 @@ export default {
   },
 
   watch: {
+    selectedTimeframe() {
+      const selectedDayTimestamp = this.timeframes.find(e => e.name === this.selectedTimeframe)
+      if (selectedDayTimestamp) {
+        this.selectedDay = selectedDayTimestamp.day;
+      }
+    },
+
     selectedAssignments() {
       // selected assignment changed...
       let user = this.getSelectedUser;
