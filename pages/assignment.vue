@@ -7,19 +7,22 @@
       margin-right: 0;
       position: absolute;
       display: flex;
+      height: 100%;
+      width: 100%;
     "
   >
-    <div style="display: flex; flex-flow: column; max-width: 300px">
-      <!-- list of  filtered users -->
-      <v-card>
-        <v-card-text>
-          <h3>Filtres</h3>
-          <v-select label="evenements" :items="timeframes.map(e=>e.name)" v-model="selectedTimeframe"></v-select>
-          <div>
-            <v-btn icon @click="moveCalendar()">
-              <v-icon>mdi-arrow-left</v-icon>
-            </v-btn>
-            <v-btn icon @click="moveCalendar(true)">
+    <div style="height: 100%">
+      <div style="display: flex; flex-flow: column; max-width: 300px; height: 100%">
+        <!-- list of  filtered users -->
+        <v-card>
+          <v-card-text>
+            <h3>Filtres</h3>
+            <v-select label="evenements" :items="timeframes.map(e=>e.name)" v-model="selectedTimeframe"></v-select>
+            <div>
+              <v-btn icon @click="moveCalendar()">
+                <v-icon>mdi-arrow-left</v-icon>
+              </v-btn>
+              <v-btn icon @click="moveCalendar(true)">
               <v-icon>mdi-arrow-right</v-icon>
             </v-btn>
           </div>
@@ -53,17 +56,17 @@
           </v-combobox>
           <v-divider></v-divider>
 
-          <v-list style="overflow-y: auto; height: 500px">
-            <v-list-item-group v-model="selectedUserIndex">
-              <v-list-item v-for="user of filteredUsers" v-bind:key="user._id">
-                <v-list-item-content>
-                  <v-list-item-title>
-                    {{ user.firstname }} {{ user.lastname.toUpperCase() }}
-                    {{ user.nickname ? `(${user.nickname})` : "" }}
-                    {{ user.charisma }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    <over-chips :roles="user.team"></over-chips>
+            <v-list style="overflow-y: auto; max-height: 600px">
+              <v-list-item-group v-model="selectedUserIndex">
+                <v-list-item v-for="user of filteredUsers" v-bind:key="user._id">
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      {{ user.firstname }} {{ user.lastname.toUpperCase() }}
+                      {{ user.nickname ? `(${user.nickname})` : "" }}
+                      {{ user.charisma }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                      <over-chips :roles="user.team"></over-chips>
                   </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
@@ -97,15 +100,16 @@
       <!--            >-->
       <!--              <v-list-item-content>-->
       <!--                <h4>{{ friend.username ? friend.username : friend }}</h4>-->
-      <!--                &lt;!&ndash;          <v-chip>{{user.charisma}}</v-chip>&ndash;&gt;-->
-      <!--              </v-list-item-content>-->
-      <!--              <v-list-item-action>-->
-      <!--                <v-icon>mdi-information-outline</v-icon>-->
-      <!--              </v-list-item-action>-->
-      <!--            </v-list-item>-->
-      <!--          </v-list-item-group>-->
-      <!--        </v-list>-->
-      <!--      </v-card>-->
+        <!--                &lt;!&ndash;          <v-chip>{{user.charisma}}</v-chip>&ndash;&gt;-->
+        <!--              </v-list-item-content>-->
+        <!--              <v-list-item-action>-->
+        <!--                <v-icon>mdi-information-outline</v-icon>-->
+        <!--              </v-list-item-action>-->
+        <!--            </v-list-item>-->
+        <!--          </v-list-item-group>-->
+        <!--        </v-list>-->
+        <!--      </v-card>-->
+      </div>
     </div>
     <!-- calendar --->
     <v-calendar
@@ -126,15 +130,29 @@
     <div style="display: flex; flex-flow: column">
       <v-card v-if="getSelectedUser">
         <v-img
-          v-if="getSelectedUser.pp"
-          :src="getPPUrl() + 'api/user/pp/' + getSelectedUser.pp"
-          max-height="200px"
+            v-if="getSelectedUser.pp"
+            :src="getPPUrl() + 'api/user/pp/' + getSelectedUser.pp"
+            max-height="200px"
         ></v-img>
         <v-card-title
-          >{{ getSelectedUser.firstname }}.{{
+        >{{ getSelectedUser.firstname }}.{{
             getSelectedUser.lastname
-          }}</v-card-title
+          }}
+        </v-card-title
         >
+        <v-card-text v-if="getSelectedUser.friends">
+          <v-list>
+            <v-list-item-group>
+              <v-list-item v-for="friend in getSelectedUser.friends">
+                <v-list-item-content @click="selectedFriend(friend.id)">
+                  <v-list-item-title>
+                    {{ friend.username ? friend.username : friend }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-card-text>
       </v-card>
       <!-- list of users -->
       <v-card>
@@ -246,6 +264,14 @@ export default {
   },
 
   methods: {
+    selectedFriend(id) {
+      const filteredUsers = this.filteredUsers;
+      const friendIndex = filteredUsers.map(e => e._id).indexOf(id);
+      if (friendIndex !== -1) {
+        this.selectedUserIndex = friendIndex;
+      }
+    },
+
     sortFilteredUsers() {
       this.filteredUsers = this.filteredUsers.sort((user1, user2) => {
         user1.charisma = user1.charisma ? user1.charisma : 0;
@@ -489,6 +515,11 @@ export default {
             }
           });
         });
+        // add comments
+        if (this.getSelectedUser.assigned) {
+          const comments = this.getSelectedUser.assigned.filter(e => !e.FTID)
+          filteredSchedules.concat(comments)
+        }
       }
 
       return filteredSchedules;
