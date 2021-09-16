@@ -334,6 +334,8 @@ export default {
       if (!this.FT.schedules) {
         this.$set(this.FT, "schedules", []);
       }
+      this.schedule.start = new Date(this.schedule.date + ' ' + this.schedule.start);
+      this.schedule.end = new Date(this.schedule.date + ' ' + this.schedule.end);
       this.$set(this.FT.schedules, this.FT.schedules.length, {
         ...this.schedule,
       });
