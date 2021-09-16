@@ -98,6 +98,18 @@ export default {
           filteredTasks.concat(comments)
         }
       }
+
+      // remove assigned tasks
+      filteredTasks = filteredTasks.filter(task => {
+        if (task.FTID) {
+          if (this.user.assigned) {
+            const FTIndex = this.user.assigned.map(e => e.FTID).indexOf(task.FTID);
+            return FTIndex === -1;
+          }
+          return false
+        }
+      })
+
       this.$emit('events', filteredTasks)
       return filteredTasks
     }

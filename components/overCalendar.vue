@@ -161,8 +161,8 @@ export default {
     calendarFormattedEvents() {
       if (this.events) {
         return this.events.map(e => {
-          e.start = this.getStupidAmericanTimeFormat(e.start);
-          e.end = this.getStupidAmericanTimeFormat(e.end);
+          e.start = this.getStupidAmericanTimeFormat(e.schedule.start);
+          e.end = this.getStupidAmericanTimeFormat(e.schedule.end);
           return e
         })
       }

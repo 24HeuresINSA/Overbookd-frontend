@@ -85,7 +85,14 @@ export default {
       if (!this.selectedUser.assigned) {
         this.selectedUser.assigned = [];
       }
-      this.selectedUser.assigned.push(timeframe)
+      this.selectedUser.assigned.push({
+        name: timeframe.name,
+        FTID: timeframe.FTID,
+        schedule: {
+          start: timeframe.start,
+          end: timeframe.end,
+        }
+      })
     },
 
     getConfig(key) {
