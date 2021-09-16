@@ -7,6 +7,18 @@
       <v-btn @click="selectUser(item)" text>sélectionner</v-btn>
     </template>
 
+    <template v-slot:item.date="row">
+      {{ new Date(row.item.schedule.start).toLocaleDateString() }}
+    </template>
+
+    <template v-slot:item.start="row">
+      {{ new Date(row.item.schedule.start).toLocaleTimeString() }}
+    </template>
+
+    <template v-slot:item.end="row">
+      {{ new Date(row.item.schedule.end).toLocaleTimeString() }}
+    </template>
+
   </v-data-table>
 
 </template>
@@ -25,11 +37,14 @@ export default {
         text: 'FT',
         value: 'name',
       }, {
+        text: 'date',
+        value: 'date',
+      }, {
         text: 'début',
-        value: 'schedule.start',
+        value: 'start',
       }, {
         text: 'fin',
-        value: 'schedule.end',
+        value: 'end',
       }, {
         text: 'action',
         value: 'action',
