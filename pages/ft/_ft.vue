@@ -37,8 +37,8 @@
             :key="schedule.day + schedule.start + schedule.end"
         >
           <td>{{ schedule.date }}</td>
-          <td>{{ schedule.start }}</td>
-          <td>{{ schedule.end }}</td>
+          <td>{{ new Date(schedule.start).toLocaleTimeString() }}</td>
+          <td>{{ new Date(schedule.end).toLocaleTimeString() }}</td>
           <td>
             <v-list-item v-for="(need, index) in schedule.needs" v-bind:key="index">
               <v-list-item-content>
