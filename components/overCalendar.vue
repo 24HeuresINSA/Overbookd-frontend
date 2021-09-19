@@ -37,6 +37,8 @@ export default {
   methods: {
     // calendar drag and drop
     startDrag({event, timed}) {
+      console.log(event, timed);
+      this.$emit('delete-assignment', event);
       if (event && timed) {
         this.dragEvent = event
         this.dragTime = null

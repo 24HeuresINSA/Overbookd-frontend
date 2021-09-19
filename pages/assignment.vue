@@ -14,7 +14,7 @@
     <filtered-users @selected-user="onSelectedUser" style="max-width: 350px"></filtered-users>
 
     <!-- calendar --->
-    <over-calendar :events="calendarDisplayedEvents"></over-calendar>
+    <over-calendar :events="calendarDisplayedEvents" @delete-assignment="unassign"></over-calendar>
 
     <over-tasks :user="selectedUser" @add-task="addTask" style="max-width: 550px"></over-tasks>
   </v-container>
@@ -98,6 +98,21 @@ export default {
           schedules,
         })
       }
+    },
+
+    async unassign(timeframe) {
+      console.log(timeframe)
+      if (this.selectedUser.assigned) {
+        this.selectedUser.assigned = this.selectedUser.assigned.filter(assignedTask => assignedTask.FTID !== timeframe.FTID);
+        // save in database
+        // save user
+        await this.$axios.$put(`user/${this.selectedUser.keycloakID}`, {
+          assigned: this.selectedUser.assigned
+        })
+        // save ft
+        await this.$axios.put('FT/unassign', timeframe)
+      }
+
     },
 
     uuidv4() {
