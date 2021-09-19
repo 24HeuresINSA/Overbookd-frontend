@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container style="padding: 0">
     <v-chip-group>
       <v-chip v-for="(role, i) in mRoles" v-bind:key="i" :color="role.color">
         <v-icon left color="white">
