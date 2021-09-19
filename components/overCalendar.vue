@@ -149,6 +149,7 @@ export default {
       return new Date(tms.year, tms.month - 1, tms.day, tms.hour, tms.minute).getTime()
     },
     getStupidAmericanTimeFormat(date) {
+      date = new Date(date)
       return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
     },
     // saveNewEventName() {

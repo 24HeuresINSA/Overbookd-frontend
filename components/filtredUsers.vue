@@ -99,6 +99,45 @@ export default {
     onSelectedUser(user) {
       this.$emit('selected-user', user);
     }
+  },
+
+  watch: {
+    filters: {
+      deep: true,
+
+      handler() {
+        const filters = this.filters;
+        let users = this.users;
+
+        // filter by name
+        if (filters.name) {
+          const options = {
+            // Search in `author` and in `tags` array
+            keys: ["firstname", "lastname", 'nickname'],
+          };
+          const fuse = new Fuse(users, options);
+
+          users = fuse.search(filters.name).map((e) => e.item);
+        }
+
+        // filter by team
+        if (filters.teams.length !== 0) {
+          users = users.filter((user) => {
+            if (user.team && user.team.length !== 0) {
+              let all = true;
+              filters.teams.forEach((t) => {
+                all = all && user.team.includes(t);
+              });
+              return all;
+            }
+            return false;
+          });
+        }
+        this.filteredUsers = users;
+        this.sortFilteredUsers();
+
+      },
+    },
   }
 }
 </script>

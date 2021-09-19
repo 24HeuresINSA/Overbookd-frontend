@@ -5,8 +5,10 @@
         <v-col cols="12" sm="6" md="4">
           <v-card v-if="user">
             <v-img
-              v-if="user.pp"
-              :src="getPPUrl() + 'api/user/pp/' + user.pp"
+                v-if="user.pp"
+                :src="getPPUrl() + 'api/user/pp/' + user.pp"
+                max-width="600px"
+                max-height="500px"
             ></v-img>
             <v-card-title
               >Bonsoir

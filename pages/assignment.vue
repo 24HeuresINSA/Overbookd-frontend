@@ -14,25 +14,9 @@
     <filtered-users @selected-user="onSelectedUser" style="max-width: 350px"></filtered-users>
 
     <!-- calendar --->
-    <over-calendar :events="selectedUser ? selectedUser.assigned : []"></over-calendar>
+    <over-calendar :events="calendarDisplayedEvents"></over-calendar>
 
-    <over-tasks :user="selectedUser" @add-task="addTask"></over-tasks>
-
-    <!--    <v-btn-->
-    <!--        fab-->
-    <!--        v-if="getSelectedUser"-->
-    <!--        @click="saveAssignment"-->
-    <!--        style="position: fixed; right: 20px; bottom: 40px; z-index: 20"-->
-    <!--    >-->
-    <!--      <v-icon>mdi-content-save</v-icon>-->
-    <!--    </v-btn>-->
-
-    <v-snackbar v-model="isFeedbackSnackbarOpen" :timeout="5000"
-    >Sauvgarder 🥳
-    </v-snackbar
-    >
-
-
+    <over-tasks :user="selectedUser" @add-task="addTask" style="max-width: 550px"></over-tasks>
   </v-container>
 </template>
 
@@ -53,8 +37,6 @@ export default {
       selectedUser: undefined,
       selectedDay: undefined,
       selectedTimeframe: undefined,
-      FTs: [],
-      updatedFTs: [],
       isFeedbackSnackbarOpen: false,
       isInfoDisplayed: false,
       isNewEventDialogOpen: false,
@@ -65,6 +47,7 @@ export default {
         teams: [],
       },
       events: [],
+
       teams: this.getConfig("teams"),
       timeframes: this.getConfig("timeframes"),
     };
@@ -81,17 +64,51 @@ export default {
   },
 
   methods: {
-    addTask(timeframe) {
+    async addTask(timeframe, FT) {
       if (!this.selectedUser.assigned) {
         this.selectedUser.assigned = [];
       }
-      this.selectedUser.assigned.push({
-        name: timeframe.name,
-        FTID: timeframe.FTID,
-        schedule: {
-          start: timeframe.start,
-          end: timeframe.end,
+      const assignmentID = this.uuidv4();
+      timeframe._id = assignmentID;
+      this.selectedUser.assigned.push(timeframe)
+      await this.saveUser();
+      await this.saveFT(assignmentID, timeframe.FTID, FT)
+    },
+
+    async saveUser() {
+      return this.$axios.put(`/user/${this.selectedUser.keycloakID}`, {assigned: this.selectedUser.assigned.filter(e => e.FTID)})
+    },
+
+    async saveFT(assignmentID, FTID, FT) {
+      const newSchedule = this.selectedUser.assigned.find(e => e.FTID === FTID); // the schedule that needs to be added to the FT
+      if (newSchedule) {
+        let schedules = FT.schedules;
+        let concernedSchedule = schedules.find(s => {
+          const start = new Date(s.start);
+          const end = new Date(s.end);
+          return start.getTime() === newSchedule.schedule.start.getTime() && end.getTime() === newSchedule.schedule.end.getTime()
+        })
+        if (concernedSchedule) {
+          if (!concernedSchedule.assigned) {
+            concernedSchedule.assigned = [];
+          }
+          concernedSchedule.assigned.push({
+            _id: assignmentID,
+            userID: this.selectedUser._id,
+            username: this.selectedUser.firstname + '.' + this.selectedUser.lastname,
+          })
         }
+        return this.$axios.put('/ft', {
+          _id: FTID,
+          schedules,
+        })
+      }
+    },
+
+    uuidv4() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
       })
     },
 
@@ -102,35 +119,6 @@ export default {
     onSelectedUser(user) {
       this.selectedUser = user;
     },
-
-    // getCalendarFormattedAssignedFTsOfSelectedUser() {
-    //   let events = [];
-    //   if (this.getSelectedUser && this.getSelectedUser.assigned !== undefined) {
-    //     let assignedFTs = this.getSelectedUser.assigned;
-    //     assignedFTs.forEach((assignedFT) => {
-    //       if (assignedFT.schedule) {
-    //         let start = new Date(
-    //             Date.parse(
-    //                 assignedFT.schedule.date + " " + assignedFT.schedule.start
-    //             )
-    //         );
-    //         let end = new Date(
-    //             Date.parse(assignedFT.schedule.date + " " + assignedFT.schedule.end)
-    //         );
-    //
-    //         // add to calendar
-    //         events.push({
-    //           name: assignedFT.name,
-    //           start,
-    //           end,
-    //           color: "#ebc034",
-    //         });
-    //       }
-    //     });
-    //   }
-    //   return events;
-    // },
-
     // async saveAssignment() {
     //   // save FT
     //   await this.$axios.put(`/user/${this.getSelectedUser.keycloakID}`, {
@@ -141,39 +129,37 @@ export default {
   },
 
   computed: {
-    selectedUserAvailabilities() {
-      let events = [];
-      if (this.getSelectedUser && this.getSelectedUser.availabilities) {
-        let mAvailabilities = this.getSelectedUser.availabilities;
-        if (mAvailabilities.length !== 0) {
-          mAvailabilities.forEach((reason) => {
-            if (reason.days) {
-              reason.days.forEach((day) => {
-                if (day.frames) {
-                  day.frames.forEach((frame) => {
-                    let timeframe = {
-                      start: new Date(Date.parse(day.date + " " + frame.start)),
-                      end: new Date(Date.parse(day.date + " " + frame.end)),
-                    };
-                    events.push({
-                      name: "Disponible",
-                      start: this.getStupidAmericanTimeFormat(timeframe.start),
-                      end: this.getStupidAmericanTimeFormat(timeframe.end),
-                      color: "rgba(222,121,226,0.45)",
-                    });
-                  });
+    calendarDisplayedEvents() {
+      let events = []
+      if (this.selectedUser) {
+        if (this.selectedUser.assigned) { // add assigned tasks
+          events = this.selectedUser.assigned;
+        }
+        if (this.selectedUser.availabilities) { // add availabilities
+          this.selectedUser.availabilities.forEach(availability => {
+            availability.days.forEach(day => {
+              day.frames.forEach(frame => {
+                let existingEvent = events.find(e => {
+                  return e.name === 'Disponible' && e.schedule.start === new Date(day.date + ' ' + frame.start) && e.end === new Date(day.date + ' ' + frame.end)
+                })
+                if (!existingEvent) {
+                  events.push({
+                    name: 'Disponible',
+                    color: 'rgba(92,138,217,0.56)',
+                    schedule: {
+                      start: new Date(day.date + ' ' + frame.start),
+                      end: new Date(day.date + ' ' + frame.end),
+                    }
+                  })
                 }
-              });
-            }
-          });
+              })
+            })
+          })
         }
       }
-      // add assigned events
-      const assignedEvents =
-        this.getCalendarFormattedAssignedFTsOfSelectedUser();
-      events = events.concat(assignedEvents);
+
       return events;
-    },
+    }
   },
 
   watch: {
@@ -188,43 +174,6 @@ export default {
       // selected assignment changed...
       // let user = this.getSelectedUser;
       // this.$set(user, "assigned", this.selectedAssignments);
-    },
-
-    filters: {
-      deep: true,
-
-      handler() {
-        const filters = this.filters;
-        let users = this.users;
-
-        // filter by name
-        if (filters.name) {
-          const options = {
-            // Search in `author` and in `tags` array
-            keys: ["firstname", "lastname", 'nickname'],
-          };
-          const fuse = new Fuse(users, options);
-
-          users = fuse.search(filters.name).map((e) => e.item);
-        }
-
-        // filter by team
-        if (filters.teams.length !== 0) {
-          users = users.filter((user) => {
-            if (user.team && user.team.length !== 0) {
-              let all = true;
-              filters.teams.forEach((t) => {
-                all = all && user.team.includes(t);
-              });
-              return all;
-            }
-            return false;
-          });
-        }
-        this.filteredUsers = users;
-        this.sortFilteredUsers();
-
-      },
     },
   },
 };

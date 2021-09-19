@@ -54,7 +54,6 @@ export default {
 
   methods: {
     selectUser({item}) {
-      console.log(item)
       this.$emit('selected-task', item);
     }
   },

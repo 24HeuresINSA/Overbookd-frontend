@@ -8,7 +8,9 @@ export interface IUser {
 interface ITimeframe {
     name: string;
     FTID?: string;
-    start: Date;
-    end: Date;
+    schedule: {
+        start: Date;
+        end: Date;
+    };
 }
 

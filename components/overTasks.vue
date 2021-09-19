@@ -12,9 +12,6 @@
         }}
       </v-card-title>
       <v-card-text>
-        <h4>Affecté</h4>
-        <list-tasks v-if="user.assigned" :tasks="user.assigned"></list-tasks>
-        <h4>Disponible</h4>
         <list-tasks @selected-task="addTask" :tasks="availableTasks"></list-tasks>
       </v-card-text>
     </v-card>
@@ -50,9 +47,11 @@ export default {
       this.$emit('add-task', {
         name: task.name,
         FTID: task.FTID,
-        start: new Date(task.schedule.start),
-        end: new Date(task.schedule.end),
-      })
+        schedule: {
+          start: new Date(task.schedule.start),
+          end: new Date(task.schedule.end),
+        }
+      }, this.FTs.find(FT => FT._id === task.FTID))
     },
   },
 
