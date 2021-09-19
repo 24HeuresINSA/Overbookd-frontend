@@ -26,7 +26,8 @@
           <th class="text-left">jour</th>
           <th>debut</th>
           <th class="text-left">fin</th>
-          <th class="text-left">orga</th>
+          <th class="text-left">orga requit</th>
+          <th class="text-left">orga affecté</th>
           <th class="text-left">actions</th>
         </tr>
         </thead>
@@ -44,6 +45,15 @@
                 <v-list-item-title>{{ need.role ? `${need.amount} ${need.role}` : need }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+          </td>
+          <td>
+            <template v-if="schedule.assigned">
+              <v-list-item v-for="(assigned, index) in schedule.assigned" v-bind:key="index">
+                <v-list-item-content>
+                  <v-list-item-title>{{ assigned.username ? assigned.username : assigned }}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </template>
           </td>
           <td>
             <v-btn icon @click="deleteSchedule(schedule)">🗑</v-btn>
