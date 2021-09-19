@@ -22,7 +22,6 @@
 
 <script>
 import {getConfig, hasRole} from "../common/role";
-import Fuse from "fuse.js";
 import OverChips from "../components/overChips";
 import FilteredUsers from "../components/filtredUsers";
 import OverTasks from "../components/overTasks";
@@ -42,10 +41,6 @@ export default {
       isNewEventDialogOpen: false,
       isAssignmentUpdated: true,
       newEventName: undefined,
-      filters: {
-        name: undefined,
-        teams: [],
-      },
       events: [],
 
       teams: this.getConfig("teams"),

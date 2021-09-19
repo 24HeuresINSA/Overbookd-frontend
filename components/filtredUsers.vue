@@ -22,7 +22,6 @@
             <v-chip
                 v-bind="attrs"
                 :input-value="selected"
-                close
                 :color="getRoleMetadata(item).color"
             >
               <v-icon left color="white">
@@ -44,6 +43,7 @@
 <script>
 import UsersList from "./usersList";
 import {getConfig} from "../common/role";
+import Fuse from "fuse.js";
 
 export default {
   name: "filteredUsers",
