@@ -57,6 +57,7 @@
                   <thead>
                     <tr>
                       <th class="text-left"></th>
+                      <th class="text-left">Team</th>
                       <th class="text-left">Message</th>
                       <th class="text-left">Action</th>
                     </tr>
@@ -71,21 +72,21 @@
                         notification.type === "friendRequest" ? "👨‍👩‍👧" : "📣"
                       }}
                     </td>
+                    <td>
+                      <over-chips :roles="notification.team"></over-chips>
+                    </td>
                     <td>{{ notification.message }}</td>
                     <td
                         v-if="notification.type === 'friendRequest'"
-                        style="display: flex; justify-content: space-between"
                       >
                         <v-btn
                           icon
-                          small
                           @click="acceptFriendRequest(notification)"
                         >
                           <v-icon>mdi-account-check</v-icon>
                         </v-btn>
                         <v-btn
                           icon
-                          small
                           @click="refuseFriendRequest(notification)"
                         >
                           <v-icon>mdi-account-cancel</v-icon>
@@ -224,6 +225,8 @@
         <v-card-title>Envoyer un message a l'asso</v-card-title>
         <v-card-text>
           <v-text-field label="lien" v-model="notification.link"></v-text-field>
+          <v-autocomplete label="team" v-model="notification.team"
+                          :items="getConfig('teams').map(e=>e.name)"></v-autocomplete>
           <v-text-field
             label="message"
             v-model="notification.message"
@@ -274,7 +277,7 @@
 </template>
 
 <script>
-import {getUser, hasRole} from "../common/role";
+import {getConfig, getUser, hasRole} from "../common/role";
 import OverChips from "../components/overChips";
 import OverForm from "../components/overForm";
 
@@ -332,6 +335,7 @@ export default {
       notification: {
         link: undefined,
         message: undefined,
+        team: undefined,
       },
     };
   },
@@ -349,8 +353,12 @@ export default {
   },
 
   methods: {
+    getConfig(key) {
+      return getConfig(this, key)
+    },
+
     async getNotValidatedCount() {
-      let { data: users } = await this.$axios.get("/user");
+      let {data: users} = await this.$axios.get("/user");
       return users.filter((user) => user.team.length === 0).length;
     },
 

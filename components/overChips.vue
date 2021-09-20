@@ -20,9 +20,12 @@ export default {
 
   computed: {
     mRoles() {
-      return getConfig(this, "teams").filter((team) =>
-        this.roles.includes(team.name)
-      );
+      if (this.roles) {
+        return getConfig(this, "teams").filter((team) =>
+            this.roles.includes(team.name)
+        );
+      }
+
     },
   },
 };
