@@ -59,7 +59,7 @@
       <v-spacer/>
       <v-btn
           text
-          href="https://gitlab.com/24-heures-insa/overbookd/frontend/-/issues/new#"
+          @click="isDialogOpen=true"
       >
         🐞 Signaler un bug
       </v-btn
@@ -71,7 +71,7 @@
         <nuxt />
       </v-container>
     </v-main>
-    <v-footer :absolute="!fixed" app>
+    <v-footer :absolute="true" app>
       <span>fait avec ❤️ par {{ getRandomAuthor() }}</span>
     </v-footer>
 
@@ -82,45 +82,16 @@
           width="300px"
           style="left: 250px"
         ></v-img>
-        <v-card-title>Report un bug 🐞 (work in progess 🔨)</v-card-title>
-        <v-card-subtitle>ou de nouvelle features</v-card-subtitle>
+        <v-card-title>Signaler un bug ou feature request</v-card-title>
         <v-card-text>
-          <v-text-field label="titer" v-model="newRequest.title"></v-text-field>
-          <v-switch
-            label="nouvelle feature request ?"
-            v-model="newRequest.isFeatureRequest"
-          ></v-switch>
-          <v-select
-            :items="['hard', 'soft', 'bureau']"
-            label="scope"
-            v-model="newRequest.scope"
-          ></v-select>
-          <v-select
-              :items="priorities"
-              label="priorite"
-              v-model="newRequest.priority"
-          ></v-select>
-          <v-textarea
-              label="desciption"
-              v-model="newRequest.description"
-          ></v-textarea>
-          <template v-if="!newRequest.isFeatureRequest">
-            <v-list>
-              <v-list-item
-                  v-for="(step, index) in newRequest.steps"
-                  :key="index"
-              >
-                <v-list-item-content>{{ step }}</v-list-item-content>
-              </v-list-item>
-            </v-list>
-            <v-text-field label="etape" v-model="stepDetail"></v-text-field>
-            <v-btn @click="addStep()">Ajouter</v-btn>
-          </template>
-
-          <v-file-input label="capture d'ecran" v-model="file"></v-file-input>
+          <h4>Pour signaler un bug veuiller envoyer un mail à
+            incoming+24-heures-insa-overbookd-frontend-24512226-issue-@incoming.gitlab.com de preference en anglais</h4>
         </v-card-text>
         <v-card-actions>
-          <v-btn text right @click="submitIssue()">submit</v-btn>
+          <v-btn
+              href="mailto:incoming%2B24-heures-insa-overbookd-frontend-24512226-issue-%40incoming.gitlab.com?subject=REPLACE%20WITH%20TITLE&body=%23%20URL%20or%20page%0A%3C%21---example%3A%20%2Ffa%20or%20dashboard-humain---%3E%0A%0A%23%20Expected%20behavior%0A%3C%21---What%20did%20you%20expected---%3E%0A%0A%0A%23%20Actual%20behavior%0A%3C%21---What%20is%20happening---%3E%0A%0A%23%20Steps%20to%20reproduce%0A%0A%20-%20Step%201%0A%20-%20Step%202%0A%20...%0A%0A%2Flabel%20~bug">
+            envoyer le mail
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -307,6 +278,7 @@ export default {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
       localStorage["theme"] = this.$vuetify.theme.dark;
     },
+
 
     async clickOnTitle() {
       this.counter++;
