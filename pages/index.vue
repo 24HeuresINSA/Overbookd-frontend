@@ -141,7 +141,7 @@
                 </thead>
                 <tbody>
                 <tr
-                    v-for="(item, i2) in user.transactionHistory"
+                    v-for="(item, i2) in displayedTransactionHistory"
                     v-bind:key="i2"
                 >
                   <td>{{ item.reason }}</td>
@@ -505,6 +505,21 @@ export default {
       }
     },
   },
+
+  computed: {
+    displayedTransactionHistory() {
+      let result = [];
+      if (this.user && this.user.transactionHistory) {
+        let fullTransactionHistory = this.user.transactionHistory;
+        fullTransactionHistory.forEach((transaction, index) => {
+          if (result.length < 3) {
+            result.push(transaction)
+          }
+        })
+      }
+      return result
+    }
+  }
 };
 </script>
 <style></style>
