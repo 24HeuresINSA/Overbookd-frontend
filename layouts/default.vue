@@ -62,8 +62,7 @@
           text
       >
         🐞 Signaler un bug
-      </v-btn
-      >
+      </v-btn>
       <v-btn text @click="logout()"> DÉCONNEXION</v-btn>
     </v-app-bar>
     <v-main>
@@ -84,12 +83,16 @@
         ></v-img>
         <v-card-title>Signaler un bug ou feature request</v-card-title>
         <v-card-text>
-          <h4>Pour signaler un bug veuiller envoyer un mail à
-            incoming+24-heures-insa-overbookd-frontend-24512226-issue-@incoming.gitlab.com de preference en anglais</h4>
+          <h4>
+            Pour signaler un bug veuiller envoyer un mail à
+            incoming+24-heures-insa-overbookd-frontend-24512226-issue-@incoming.gitlab.com
+            de preference en anglais
+          </h4>
         </v-card-text>
         <v-card-actions>
           <v-btn
-              href="mailto:incoming%2B24-heures-insa-overbookd-frontend-24512226-issue-%40incoming.gitlab.com?subject=REPLACE%20WITH%20TITLE&body=%23%20URL%20or%20page%0A%3C%21---example%3A%20%2Ffa%20or%20dashboard-humain---%3E%0A%0A%23%20Expected%20behavior%0A%3C%21---What%20did%20you%20expected---%3E%0A%0A%0A%23%20Actual%20behavior%0A%3C%21---What%20is%20happening---%3E%0A%0A%23%20Steps%20to%20reproduce%0A%0A%20-%20Step%201%0A%20-%20Step%202%0A%20...%0A%0A%2Flabel%20~bug">
+              href="mailto:incoming%2B24-heures-insa-overbookd-frontend-24512226-issue-%40incoming.gitlab.com?subject=REPLACE%20WITH%20TITLE&body=%23%20URL%20or%20page%0A%3C%21---example%3A%20%2Ffa%20or%20dashboard-humain---%3E%0A%0A%23%20Expected%20behavior%0A%3C%21---What%20did%20you%20expected---%3E%0A%0A%0A%23%20Actual%20behavior%0A%3C%21---What%20is%20happening---%3E%0A%0A%23%20Steps%20to%20reproduce%0A%0A%20-%20Step%201%0A%20-%20Step%202%0A%20...%0A%0A%2Flabel%20~bug"
+          >
             envoyer le mail
           </v-btn>
         </v-card-actions>
@@ -98,8 +101,7 @@
 
     <v-snackbar v-model="isSnackbarOpen" timeout="5000"
     >Ca marche pas encore ce truc
-    </v-snackbar
-    >
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -114,7 +116,7 @@ const AUTHORS = [
   "Hugo - Cashless 💰",
   "Tom - Nimbus ☁️",
   "Paul - Craker 💥",
-  "Thomas - Ginny 💡"
+  "Thomas - Ginny 💡",
 ];
 
 export default {
@@ -278,7 +280,6 @@ export default {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
       localStorage["theme"] = this.$vuetify.theme.dark;
     },
-
 
     async clickOnTitle() {
       this.counter++;

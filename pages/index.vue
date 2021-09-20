@@ -77,14 +77,14 @@
                     <td
                         v-if="notification.type === 'friendRequest'"
                         style="display: flex; justify-content: space-between"
-                      >
-                        <v-btn
+                    >
+                      <v-btn
                           icon
                           small
                           @click="acceptFriendRequest(notification)"
-                        >
-                          <v-icon>mdi-account-check</v-icon>
-                        </v-btn>
+                      >
+                        <v-icon>mdi-account-check</v-icon>
+                      </v-btn>
                         <v-btn
                           icon
                           small
