@@ -12,7 +12,12 @@
       @mousemove:time="mouseMove"
       @mouseup:time="endDrag"
       @mouseleave.native="cancelDrag"
-  ></v-calendar>
+  >
+    <template v-slot:interval="{date , time}">
+      <div v-if='isUserAvailableInTimeframe(new Date(date +" "+ time))'
+           style="background-color: rgba(95,219,72,0.45); height: 100%; width: 100%"></div>
+    </template>
+  </v-calendar>
 </template>
 
 <script>
@@ -37,7 +42,6 @@ export default {
   methods: {
     // calendar drag and drop
     startDrag({event, timed}) {
-      console.log(event, timed);
       this.$emit('delete-assignment', event);
       if (event && timed) {
         this.dragEvent = event
@@ -154,22 +158,33 @@ export default {
       date = new Date(date)
       return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
     },
-    // saveNewEventName() {
-    //   this.getSelectedUser.assigned[this.getSelectedUser.assigned.length - 1].name = this.newEventName;
-    //   this.isNewEventDialogOpen = false;
-    // },
+    isUserAvailableInTimeframe(timeframe) {
+      // timeframe date object
+      const availabilities = this.events.filter(e => !e.FTID);
+      let isUserAvailableInTimeframe = false;
+      availabilities.forEach(availability => {
+        if (availability.schedule) {
+          let start = new Date(availability.schedule.start);
+          let end = new Date(availability.schedule.end);
+          if (start.getTime() <= timeframe.getTime() + 5000 && end.getTime() >= timeframe.getTime() + 5000) {
+            isUserAvailableInTimeframe = true;
+          }
+        }
+      })
+      return isUserAvailableInTimeframe
+    }
   },
 
   computed: {
     calendarFormattedEvents() {
       if (this.events) {
-        return this.events.map(e => {
+        return this.events.filter(e => e.FTID).map(e => {
           e.start = this.getStupidAmericanTimeFormat(e.schedule.start);
           e.end = this.getStupidAmericanTimeFormat(e.schedule.end);
           return e
         })
       }
-    }
+    },
   }
 }
 </script>

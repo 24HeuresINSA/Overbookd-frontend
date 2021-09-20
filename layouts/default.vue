@@ -1,12 +1,12 @@
 <template>
   <v-app dark>
     <v-navigation-drawer
-      v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      fixed
-      app
-      :style="isJauneActive ? jauneStyle : ''"
+        v-model="drawer"
+        :clipped="clipped"
+        :mini-variant="miniVariant"
+        :style="isJauneActive ? jauneStyle : ''"
+        app
+        fixed
     >
       <v-list>
         <v-list-item>
@@ -17,8 +17,8 @@
               v-if="hasRole(item.roles)"
               :key="i"
               :to="item.to"
-              router
               exact
+              router
           >
             <v-list-item-action>
               <v-icon>{{ item.icon }}</v-icon>
@@ -31,12 +31,12 @@
       </v-list>
     </v-navigation-drawer>
     <v-app-bar
-      :clipped-left="clipped"
-      fixed
-      app
-      :style="isJauneActive ? jauneStyle : ''"
+        :clipped-left="clipped"
+        :style="isJauneActive ? jauneStyle : ''"
+        app
+        fixed
     >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
       <v-app-bar-title></v-app-bar-title>
       <v-app-bar-nav-icon>
         <v-btn icon @click="toggleTheme">🌙</v-btn>
@@ -58,8 +58,8 @@
       />
       <v-spacer/>
       <v-btn
-          text
           href="https://gitlab.com/24-heures-insa/overbookd/frontend/-/issues/new#"
+          text
       >
         🐞 Signaler un bug
       </v-btn
@@ -68,41 +68,41 @@
     </v-app-bar>
     <v-main>
       <v-container>
-        <nuxt />
+        <nuxt/>
       </v-container>
     </v-main>
-    <v-footer :absolute="!fixed" app>
+    <v-footer app>
       <span>fait avec ❤️ par {{ getRandomAuthor() }}</span>
     </v-footer>
 
     <v-dialog v-model="isDialogOpen" max-width="800">
       <v-card>
         <v-img
-          src="img/memes/comsi_working.png"
-          width="300px"
-          style="left: 250px"
+            src="img/memes/comsi_working.png"
+            style="left: 250px"
+            width="300px"
         ></v-img>
         <v-card-title>Report un bug 🐞 (work in progess 🔨)</v-card-title>
         <v-card-subtitle>ou de nouvelle features</v-card-subtitle>
         <v-card-text>
-          <v-text-field label="titer" v-model="newRequest.title"></v-text-field>
+          <v-text-field v-model="newRequest.title" label="titer"></v-text-field>
           <v-switch
-            label="nouvelle feature request ?"
-            v-model="newRequest.isFeatureRequest"
+              v-model="newRequest.isFeatureRequest"
+              label="nouvelle feature request ?"
           ></v-switch>
           <v-select
-            :items="['hard', 'soft', 'bureau']"
-            label="scope"
-            v-model="newRequest.scope"
+              v-model="newRequest.scope"
+              :items="['hard', 'soft', 'bureau']"
+              label="scope"
           ></v-select>
           <v-select
+              v-model="newRequest.priority"
               :items="priorities"
               label="priorite"
-              v-model="newRequest.priority"
           ></v-select>
           <v-textarea
-              label="desciption"
               v-model="newRequest.description"
+              label="desciption"
           ></v-textarea>
           <template v-if="!newRequest.isFeatureRequest">
             <v-list>
@@ -113,27 +113,28 @@
                 <v-list-item-content>{{ step }}</v-list-item-content>
               </v-list-item>
             </v-list>
-            <v-text-field label="etape" v-model="stepDetail"></v-text-field>
+            <v-text-field v-model="stepDetail" label="etape"></v-text-field>
             <v-btn @click="addStep()">Ajouter</v-btn>
           </template>
 
-          <v-file-input label="capture d'ecran" v-model="file"></v-file-input>
+          <v-file-input v-model="file" label="capture d'ecran"></v-file-input>
         </v-card-text>
         <v-card-actions>
-          <v-btn text right @click="submitIssue()">submit</v-btn>
+          <v-btn right text @click="submitIssue()">submit</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <v-snackbar v-model="isSnackbarOpen" timeout="5000"
-      >Ca marche pas encore ce truc</v-snackbar
+    >Ca marche pas encore ce truc
+    </v-snackbar
     >
   </v-app>
 </template>
 
 <script>
-const { version } = require("../package.json");
-const { getUser } = require("../common/role");
+const {version} = require("../package.json");
+const {getUser} = require("../common/role");
 const AUTHORS = [
   "Hamza - Cookie 🍪",
   "Tit - Goelise 🦀",
@@ -150,7 +151,6 @@ export default {
     return {
       clipped: false,
       drawer: false,
-      fixed: false,
       isWhiteMode: true, // let this set to true
       counter: 0,
       isJauneActive: false,
@@ -329,10 +329,10 @@ export default {
       let form = new FormData();
       this.newRequest.url = window.location.href;
       this.newRequest.priority =
-        "P" + this.newRequest.priority.indexOf(this.newRequest.priority);
+          "P" + this.newRequest.priority.indexOf(this.newRequest.priority);
       this.newRequest.author = getUser(this).username
-        ? getUser(this).username
-        : getUser(this).lastname;
+          ? getUser(this).username
+          : getUser(this).lastname;
       this.newRequest.tags = [this.newRequest.priority];
       // this.newRequest.repo = '24-heures-insa/overbookd/frontend'
 
@@ -365,8 +365,8 @@ export default {
         return "Ricard.png";
       }
       return this.$vuetify.theme.dark
-        ? "overbookd_logo_blanc.png"
-        : "overbookd_logo_noir.png";
+          ? "overbookd_logo_blanc.png"
+          : "overbookd_logo_noir.png";
     },
   },
 };
