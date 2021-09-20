@@ -64,7 +64,7 @@
         🐞 Signaler un bug
       </v-btn
       >
-      <v-btn text @click="logout()"> DÉCONNEXION</v-btn>
+      <v-btn text @click="logout()">DÉCONNEXION</v-btn>
     </v-app-bar>
     <v-main>
       <v-container>

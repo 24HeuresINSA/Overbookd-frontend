@@ -23,9 +23,7 @@
               <h3>😎 {{ user.charisma || 0 }} points de charisme</h3>
               <h3>❤️ {{ user.friends ? user.friends.length : 0 }} amis</h3>
               <h3>
-                📆 {{ new Date(user.birthdate).getDate() }}/{{
-                  new Date(user.birthdate).getMonth()
-                }}/{{ new Date(user.birthdate).getFullYear() }}
+                📆 {{ new Date(user.birthdate).toLocaleDateString() }}
               </h3>
               <h3>
                 🗣 {{ user.assigned ? user.assigned.length : 0 }} tâches
