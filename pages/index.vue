@@ -277,7 +277,6 @@
 import {getUser, hasRole} from "../common/role";
 import OverChips from "../components/overChips";
 import OverForm from "../components/overForm";
-import axios from "axios";
 
 const SNACKBAR_MESSAGES = {
   friendRequest: {
@@ -517,7 +516,7 @@ export default {
       let result = [];
       if (this.user && this.user.transactionHistory) {
         let fullTransactionHistory = this.user.transactionHistory;
-        fullTransactionHistory.forEach((transaction, index) => {
+        fullTransactionHistory.forEach((transaction) => {
           if (result.length < 3) {
             result.push(transaction)
           }
