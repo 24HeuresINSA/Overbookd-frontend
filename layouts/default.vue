@@ -1,12 +1,12 @@
 <template>
   <v-app dark>
     <v-navigation-drawer
-        v-model="drawer"
-        :clipped="clipped"
-        :mini-variant="miniVariant"
-        :style="isJauneActive ? jauneStyle : ''"
-        app
-        fixed
+      v-model="drawer"
+      :mini-variant="miniVariant"
+      :clipped="clipped"
+      fixed
+      app
+      :style="isJauneActive ? jauneStyle : ''"
     >
       <v-list>
         <v-list-item>
@@ -17,8 +17,8 @@
               v-if="hasRole(item.roles)"
               :key="i"
               :to="item.to"
-              exact
               router
+              exact
           >
             <v-list-item-action>
               <v-icon>{{ item.icon }}</v-icon>
@@ -31,12 +31,12 @@
       </v-list>
     </v-navigation-drawer>
     <v-app-bar
-        :clipped-left="clipped"
-        :style="isJauneActive ? jauneStyle : ''"
-        app
-        fixed
+      :clipped-left="clipped"
+      fixed
+      app
+      :style="isJauneActive ? jauneStyle : ''"
     >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-app-bar-title></v-app-bar-title>
       <v-app-bar-nav-icon>
         <v-btn icon @click="toggleTheme">🌙</v-btn>
@@ -62,37 +62,34 @@
           @click="isDialogOpen=true"
       >
         🐞 Signaler un bug
-      </v-btn>
-      <v-btn text @click="logout()"> DÉCONNEXION</v-btn>
+      </v-btn
+      >
+      <v-btn text @click="logout()">DÉCONNEXION</v-btn>
     </v-app-bar>
     <v-main>
       <v-container>
-        <nuxt/>
+        <nuxt />
       </v-container>
     </v-main>
-    <v-footer app>
+    <v-footer :absolute="true" app>
       <span>fait avec ❤️ par {{ getRandomAuthor() }}</span>
     </v-footer>
 
     <v-dialog v-model="isDialogOpen" max-width="800">
       <v-card>
         <v-img
-            src="img/memes/comsi_working.png"
-            style="left: 250px"
-            width="300px"
+          src="img/memes/comsi_working.png"
+          width="300px"
+          style="left: 250px"
         ></v-img>
         <v-card-title>Signaler un bug ou feature request</v-card-title>
         <v-card-text>
-          <h4>
-            Pour signaler un bug veuiller envoyer un mail à
-            incoming+24-heures-insa-overbookd-frontend-24512226-issue-@incoming.gitlab.com
-            de preference en anglais
-          </h4>
+          <h4>Pour signaler un bug veuiller envoyer un mail à
+            incoming+24-heures-insa-overbookd-frontend-24512226-issue-@incoming.gitlab.com de preference en anglais</h4>
         </v-card-text>
         <v-card-actions>
           <v-btn
-              href="mailto:incoming%2B24-heures-insa-overbookd-frontend-24512226-issue-%40incoming.gitlab.com?subject=REPLACE%20WITH%20TITLE&body=%23%20URL%20or%20page%0A%3C%21---example%3A%20%2Ffa%20or%20dashboard-humain---%3E%0A%0A%23%20Expected%20behavior%0A%3C%21---What%20did%20you%20expected---%3E%0A%0A%0A%23%20Actual%20behavior%0A%3C%21---What%20is%20happening---%3E%0A%0A%23%20Steps%20to%20reproduce%0A%0A%20-%20Step%201%0A%20-%20Step%202%0A%20...%0A%0A%2Flabel%20~bug"
-          >
+              href="mailto:incoming%2B24-heures-insa-overbookd-frontend-24512226-issue-%40incoming.gitlab.com?subject=REPLACE%20WITH%20TITLE&body=%23%20URL%20or%20page%0A%3C%21---example%3A%20%2Ffa%20or%20dashboard-humain---%3E%0A%0A%23%20Expected%20behavior%0A%3C%21---What%20did%20you%20expected---%3E%0A%0A%0A%23%20Actual%20behavior%0A%3C%21---What%20is%20happening---%3E%0A%0A%23%20Steps%20to%20reproduce%0A%0A%20-%20Step%201%0A%20-%20Step%202%0A%20...%0A%0A%2Flabel%20~bug">
             envoyer le mail
           </v-btn>
         </v-card-actions>
@@ -100,14 +97,14 @@
     </v-dialog>
 
     <v-snackbar v-model="isSnackbarOpen" timeout="5000"
-    >Ca marche pas encore ce truc
-    </v-snackbar>
+      >Ca marche pas encore ce truc</v-snackbar
+    >
   </v-app>
 </template>
 
 <script>
-const {version} = require("../package.json");
-const {getUser} = require("../common/role");
+const { version } = require("../package.json");
+const { getUser } = require("../common/role");
 const AUTHORS = [
   "Hamza - Cookie 🍪",
   "Tit - Goelise 🦀",
