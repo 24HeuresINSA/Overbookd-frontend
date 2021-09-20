@@ -274,13 +274,26 @@
 </template>
 
 <script>
-import { getUser, hasRole } from "../common/role";
+import {getUser, hasRole} from "../common/role";
 import OverChips from "../components/overChips";
 import OverForm from "../components/overForm";
 import axios from "axios";
 
+const SNACKBAR_MESSAGES = {
+  friendRequest: {
+    sent: "votre demande d'ami a ete envoye",
+    accepted: "T'as un nouveau ami",
+    refused: "je suis d'accord c'est un batard",
+    lonely: "t'es seul a ce point là 🥺 ?",
+    alreadyFriend: "t'es deja ami avec ",
+  },
+  error: "🥵 sheeshh une erreur ",
+  broadcasted: "broadcast envoyé 📣",
+  imageUpdated: "image sauvgarder, rafraichissez la page pour la voir"
+};
+
 export default {
-  components: { OverForm, OverChips },
+  components: {OverForm, OverChips},
 
   data() {
     return {
@@ -316,17 +329,7 @@ export default {
       PP: undefined,
       usernames: [],
       snackbarMessage: "",
-      snackbarMessages: {
-        friendRequest: {
-          sent: "votre demande d'ami a ete envoye",
-          accepted: "T'as un nouveau ami",
-          refused: "je suis d'accord c'est un batard",
-          lonely: "t'es seul a ce point là 🥺 ?",
-          alreadyFriend: "t'es deja ami avec ",
-        },
-        error: "🥵 sheeshh une erreur ",
-        broadcasted: "broadcast envoyé 📣",
-      },
+      SNACKBAR_MESSAGES,
       notification: {
         link: undefined,
         message: undefined,
@@ -356,7 +359,7 @@ export default {
       this.notification.date = new Date();
       this.notification.type = "broadcast";
       await this.$axios.post("/user/broadcast", this.notification);
-      this.snackbarMessage = this.snackbarMessages.broadcasted;
+      this.snackbarMessage = this.SNACKBAR_MESSAGES.broadcasted;
       this.isSnackbarOpen = true;
       this.isBroadcastDialogOpen = false;
     },
@@ -376,6 +379,9 @@ export default {
       form.append("files", this.PP, this.PP.name);
       form.append("_id", getUser(this)._id);
       await this.$axios.post("/user/pp", form);
+      this.isPPDialogOpen = false;
+      this.snackbarMessage = this.SNACKBAR_MESSAGES.imageUpdated;
+      this.isSnackbarOpen = true;
     },
 
     onFormChange(form) {
@@ -398,7 +404,7 @@ export default {
       let [firstname, lastname] = this.newFriend.split(".");
       if (firstname === user.firstname && lastname === user.lastname) {
         // asked himself to be friend
-        this.snackbarMessage = this.snackbarMessages.friendRequest.lonely;
+        this.snackbarMessage = this.SNACKBAR_MESSAGES.friendRequest.lonely;
         this.isSnackbarOpen = true;
         window.open(
           "https://www.santemagazine.fr/psycho-sexo/psycho/10-facons-de-se-faire-des-amis-178690"
@@ -410,7 +416,7 @@ export default {
       ) {
         // already friends
         this.snackbarMessage =
-          this.snackbarMessages.friendRequest.alreadyFriend + this.newFriend;
+            this.SNACKBAR_MESSAGES.friendRequest.alreadyFriend + this.newFriend;
         this.isSnackbarOpen = true;
         return;
       }
@@ -420,9 +426,9 @@ export default {
           getUser(this).firstname
         } vous a envoye une demande d'ami ❤️`,
         from: `${
-          getUser(this).nickname
-            ? getUser(this).nickname
-            : getUser(this).lastname
+            getUser(this).nickname
+                ? getUser(this).nickname
+                : getUser(this).lastname
         }`,
         date: new Date(),
         data: {
@@ -430,7 +436,7 @@ export default {
           id: getUser(this)._id,
         },
       });
-      this.snackbarMessage = this.snackbarMessages.friendRequest.sent;
+      this.snackbarMessage = this.SNACKBAR_MESSAGES.friendRequest.sent;
       this.isSnackbarOpen = true;
     },
 
@@ -442,10 +448,10 @@ export default {
           from: user._id,
           to: notification.data,
         });
-        this.snackbarMessage = this.snackbarMessages.friendRequest.accepted;
+        this.snackbarMessage = this.SNACKBAR_MESSAGES.friendRequest.accepted;
         this.isSnackbarOpen = true;
       } else {
-        this.snackbarMessage = this.snackbarMessages.error;
+        this.snackbarMessage = this.SNACKBAR_MESSAGES.error;
         this.isSnackbarOpen = true;
       }
     },
@@ -461,10 +467,10 @@ export default {
         }
         user.notifications.pop();
         await this.$axios.put(`/user/${user.keycloakID}`, user);
-        this.snackbarMessage = this.snackbarMessages.friendRequest.accepted;
+        this.snackbarMessage = this.SNACKBAR_MESSAGES.friendRequest.accepted;
         this.isSnackbarOpen = true;
       } else {
-        this.snackbarMessage = this.snackbarMessages.error;
+        this.snackbarMessage = this.SNACKBAR_MESSAGES.error;
         this.isSnackbarOpen = true;
       }
     },
