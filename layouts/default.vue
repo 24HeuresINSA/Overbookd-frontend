@@ -58,8 +58,8 @@
       />
       <v-spacer/>
       <v-btn
-          href="https://gitlab.com/24-heures-insa/overbookd/frontend/-/issues/new#"
           text
+          @click="isDialogOpen=true"
       >
         🐞 Signaler un bug
       </v-btn>
