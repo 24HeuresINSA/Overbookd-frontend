@@ -9,9 +9,23 @@ containerize:
     - mv buildx ~/.docker/cli-plugins/docker-buildx
     - docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD registry.gitlab.com
+  rules:
+    - if: $CI_COMMIT_BRANCH == master
+      variables:
+        BASE_URL: $BASE_URL_PROD
+        BASE_URL_KEYCLOAK: $BASE_URL_KEYCLOAK_PROD
+    - if: $CI_COMMIT_BRANCH == pre-prod
+      variables:
+        BASE_URL: $BASE_URL_PREPROD
+        BASE_URL_KEYCLOAK: $BASE_URL_KEYCLOAK_PREPROD
+    - if: $CI_COMMIT_BRANCH == develop
+      variables:
+        BASE_URL: $BASE_URL_DEV
+        BASE_URL_KEYCLOAK: $BASE_URL_KEYCLOAK_DEV
+
   script:
     - docker buildx create --use
-    - docker buildx build --push --platform linux/amd64,linux/arm64 --tag registry.gitlab.com/24-heures-insa/overbookd/frontend:$IMAGE_TAG --build-arg BASE_URL=$BASE_URL --build-arg BASE_URL_KEYCLOAK=$BASE_URL_KEYCLOAK .
+    - docker buildx build --push --platform linux/amd64,linux/arm64 --tag registry.gitlab.com/24-heures-insa/overbookd/frontend:$CI_COMMIT_BRANCH_$CI_MERGE_REQUEST_MILESTONE --tag registry.gitlab.com/24-heures-insa/overbookd/frontend:$CI_COMMIT_BRANCH --build-arg BASE_URL=$BASE_URL --build-arg BASE_URL_KEYCLOAK=$BASE_URL_KEYCLOAK .
   only:
     - master
     - pre-prod
