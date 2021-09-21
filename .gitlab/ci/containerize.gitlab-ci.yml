@@ -5,19 +5,19 @@ workflow:
         BASE_URL: $BASE_URL_PROD
         BASE_URL_KEYCLOAK: $BASE_URL_KEYCLOAK_PROD
         TAG: latest
-        VERSION_TAG: $(node -p "require('./package.json').version"| sed 's/ /_/g')
+        VERSION_TAG: ${node -p "require('./package.json').version"| sed 's/ /_/g'}
     - if: '$CI_COMMIT_REF_NAME == "pre-prod"'
       variables:
         BASE_URL: $BASE_URL_PREPROD
         BASE_URL_KEYCLOAK: $BASE_URL_KEYCLOAK_PREPROD
         TAG: $CI_COMMIT_REF_NAME
-        VERSION_TAG: ${CI_COMMIT_REF_NAME}_$(node -p "require('./package.json').version"| sed 's/ /_/g')
+        VERSION_TAG: ${CI_COMMIT_REF_NAME}_${node -p "require('./package.json').version"| sed 's/ /_/g'}
     - if: '$CI_COMMIT_REF_NAME == "develop"'
       variables:
         BASE_URL: $BASE_URL_DEV
         BASE_URL_KEYCLOAK: $BASE_URL_KEYCLOAK_DEV
         TAG: $CI_COMMIT_REF_NAME
-        VERSION_TAG: ${CI_COMMIT_REF_NAME}_$(node -p "require('./package.json').version"| sed 's/ /_/g')
+        VERSION_TAG: ${CI_COMMIT_REF_NAME}_${node -p "require('./package.json').version"| sed 's/ /_/g'}
 
 containerize:
   image: docker
