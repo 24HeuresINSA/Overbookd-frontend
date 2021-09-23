@@ -1,20 +1,51 @@
-# frontend
+# OverBookd Frontend
+
+![](https://gitlab.com/24-heures-insa/overbookd/frontend/badges/develop/pipeline.svg?key_text=develop+pipeleine&key_width=105)
+![](https://gitlab.com/24-heures-insa/overbookd/frontend/badges/pre-prod/pipeline.svg?key_text=pre-prod+pipeleine&key_width=110)
+![](https://gitlab.com/24-heures-insa/overbookd/frontend/badges/master/pipeline.svg?key_text=master+pipeleine&key_width=100)
+
+![](https://gitlab.com/24-heures-insa/overbookd/frontend/badges/develop/pipeline.svg?key_text=develop+pipeleine&key_width=105)
+![](https://gitlab.com/24-heures-insa/overbookd/frontend/badges/pre-prod/pipeline.svg?key_text=pre-prod+pipeleine&key_width=110)
+![](https://gitlab.com/24-heures-insa/overbookd/frontend/badges/master/pipeline.svg?key_text=master+pipeleine&key_width=100)
+
+![](https://gitlab.com/24-heures-insa/overbookd/frontend/badges/develop/pipeline.svg?key_text=develop+pipeleine&key_width=105)
+![](https://gitlab.com/24-heures-insa/overbookd/frontend/badges/pre-prod/pipeline.svg?key_text=pre-prod+pipeleine&key_width=110)
+![](https://gitlab.com/24-heures-insa/overbookd/frontend/badges/master/pipeline.svg?key_text=master+pipeleine&key_width=100)
 
 ## Build Setup
 
-```bash
-# install dependencies
-$ npm install
+Overbookd is an ERM software specificly developed within the team to supply management needs of the association in the daily life.
 
-# serve with hot reload at localhost:3000
-$ npm run dev
+This webApp is made to work with this [backend](https://gitlab.com/24-heures-insa/overbookd/backend)
 
-# build for production and launch server
-$ npm run build
-$ npm run start
+## QuickStart
 
-# generate static project
-$ npm run generate
-```
+<!--
+Comment on lance cette foutue instance
+Ca a quelquechose a voir avec docker-compose
+.env d'exemple ?
+docker-compose up
+-->
 
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+### Env vars
+
+To locally deploy the app, make sure you've correctly set up the env vars in the .env file. There is a .env.sample in the repo.
+Then use `docker-compose up` to deploy the app.
+
+## Gitflow
+
+There is 3 main branches in this repo
+
+ - master: Hosting production deployment
+ - pre-prod: Hosting pre-production deployment
+ - develop: Hosting under development version of Overbookd
+
+When contributing to the codebase you have to:
+ - Open an issue
+ - Branch from develop with the issue ID in the name (ex: 24-fix-random-bugs)
+ - Create a merge request from this branch to develop
+This leverage consistency and relaibility through the whole process.
+
+## Known bugs
+
+ - No one of course :sweat:

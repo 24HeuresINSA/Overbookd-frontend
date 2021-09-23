@@ -325,7 +325,6 @@ export default {
 
     if (!this.isNewFA) {
       this.FA = (await this.fetchFAbyID(this.FAID)).data;
-      console.log(this.FA);
       // update the form that is going to be displayed
       Object.keys(this.FA).forEach((key) => {
         let mField = this.form.find((field) => field.key === key);

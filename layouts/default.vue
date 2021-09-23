@@ -111,7 +111,7 @@ const AUTHORS = [
   "Tibo - Bigouu 🍊",
   "Christophe - piStoph 🍺",
   "Hugo - Cashless 💰",
-  "Tom - Nimbus ☁️",
+  "Tom - Nimbus 🧹",
   "Paul - Craker 💥",
   "Thomas - Ginny 💡",
 ];
