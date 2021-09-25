@@ -199,7 +199,7 @@ export default {
         {
           icon: "mdi-human-greeting",
           title: "Affectation 💃",
-          roles: "hard",
+          roles: "humain",
           to: "/assignment",
         },
         {
