@@ -65,7 +65,7 @@
         <nuxt />
       </v-container>
     </v-main>
-    <v-footer :absolute="true" app>
+    <v-footer :fixed="true" app>
       <span>fait avec ❤️ par {{ getRandomAuthor() }}</span>
     </v-footer>
 
