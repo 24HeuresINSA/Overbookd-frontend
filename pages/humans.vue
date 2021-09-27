@@ -301,7 +301,7 @@
           </v-text-field>
           <v-text-field
             v-model="newCharisma.amount"
-            label="qunatité"
+            label="quantité"
             type="number"
           >
           </v-text-field>
