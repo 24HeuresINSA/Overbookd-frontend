@@ -66,9 +66,7 @@
                       :key="index"
                     >
                       <td>
-                        {{
-                          notification.type === "friendRequest" ? "👨‍👩‍👧" : "📣"
-                        }}
+                        {{ getNotificationIcon(notification.type) }}
                       </td>
                       <td>
                         <OverChips :roles="notification.team"></OverChips>
@@ -86,6 +84,11 @@
                         <v-btn icon :href="notification.link">
                           <v-icon>mdi-link</v-icon>
                         </v-btn>
+                        <v-btn icon @click="deleteNotification(index)">
+                          <v-icon>mdi-trash-can</v-icon>
+                        </v-btn>
+                      </td>
+                      <td v-else-if="notification.type === 'charisma'">
                         <v-btn icon @click="deleteNotification(index)">
                           <v-icon>mdi-trash-can</v-icon>
                         </v-btn>
@@ -397,6 +400,15 @@ export default {
       this.isSnackbarOpen = true;
     },
 
+    getNotificationIcon(notificationType) {
+      const NOTIFICATIONS_ICONS = {
+        friendRequest: "👨‍👩‍👧",
+        broadcast: "📣",
+        charisma: "😎",
+      };
+      return NOTIFICATIONS_ICONS[notificationType] || "📣";
+    },
+
     onFormChange(form) {
       this.transfer = form;
     },
@@ -502,6 +514,7 @@ export default {
     },
 
     async transferMoney() {
+      this.transfer.amount = this.transfer.amount.replace(",", ".");
       if (this.transfer.isValid) {
         if (
           this.transfer.user ===
