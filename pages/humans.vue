@@ -167,7 +167,7 @@
         <v-card-subtitle> </v-card-subtitle>
         <v-card-text>
           <OverChips :roles="selectedUser.team"></OverChips>
-          <div v-if="hasRole(['admin', 'bureau'])">
+          <div v-if="hasRole(['admin'])">
             <v-select
               v-model="newRole"
               label="ajouter un role"
@@ -175,8 +175,8 @@
             ></v-select>
             <v-btn text @click="addRole()">ajouter</v-btn>
             <v-btn text @click="deleteAllTeams()"
-              >révoquer tous les rôles</v-btn
-            >
+              >révoquer tous les rôles
+            </v-btn>
           </div>
 
           <v-simple-table>
