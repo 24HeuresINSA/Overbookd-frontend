@@ -10,26 +10,49 @@
                 v-model="filters.search"
                 label="Recherche"
               ></v-text-field>
-              <v-switch
-                v-model="filters.hasDriverLicence"
-                label="Permis"
-              ></v-switch>
-              <v-switch
-                v-model="filters.notValidated"
-                label="non validés"
-              ></v-switch>
-              <p>Cotisation</p>
-              <v-btn-toggle
-                v-if="hasRole(['admin', 'bureau'])"
-                v-model="filters.hasPayedContribution"
-                tile
-                color="deep-purple accent-3"
-                group
-              >
-                <v-btn :value="true"> Payé </v-btn>
 
-                <v-btn :value="false"> Non payé </v-btn>
-              </v-btn-toggle>
+              <template>
+                <p>Permis</p>
+                <v-btn-toggle
+                  v-model="filters.hasDriverLicence"
+                  tile
+                  color="deep-purple accent-3"
+                  group
+                >
+                  <v-btn :value="true"> Permis</v-btn>
+
+                  <v-btn :value="false"> pas de permis</v-btn>
+                </v-btn-toggle>
+              </template>
+
+              <template v-if="hasRole(['admin', 'bureau'])">
+                <p>Validé</p>
+                <v-btn-toggle
+                  v-model="filters.isValidated"
+                  tile
+                  color="deep-purple accent-3"
+                  group
+                >
+                  <v-btn :value="true"> Validé</v-btn>
+
+                  <v-btn :value="false"> Non Validé</v-btn>
+                </v-btn-toggle>
+              </template>
+
+              <template v-if="hasRole(['admin', 'bureau'])">
+                <p>Cotisation</p>
+                <v-btn-toggle
+                  v-model="filters.hasPayedContribution"
+                  tile
+                  color="deep-purple accent-3"
+                  group
+                >
+                  <v-btn :value="true"> Payé</v-btn>
+
+                  <v-btn :value="false"> Non payé</v-btn>
+                </v-btn-toggle>
+              </template>
+
               <v-container class="py-0">
                 <v-row align="center" justify="start">
                   <v-combobox
@@ -224,6 +247,16 @@
               </tr>
 
               <tr>
+                <td>Permis</td>
+                <td>
+                  <v-switch
+                    v-model="selectedUser.hasDriverLicence"
+                    :disabled="!hasRole(['admin', 'human'])"
+                  ></v-switch>
+                </td>
+              </tr>
+
+              <tr>
                 <td>Charisme</td>
                 <td>{{ selectedUser.charisma }}</td>
               </tr>
@@ -349,7 +382,7 @@ export default {
         search: undefined,
         hasDriverLicence: undefined,
         teams: [],
-        notValidated: undefined,
+        isValidated: undefined,
         hasPayedContribution: undefined,
       },
 
@@ -397,6 +430,24 @@ export default {
           );
         }
 
+        // filter by not validated
+        if (this.filters.isValidated !== undefined) {
+          console.log(this.filters.isValidated);
+          if (this.filters.isValidated) {
+            mUsers = mUsers.filter((user) => user.team.length !== 0);
+          } else {
+            mUsers = mUsers.filter((user) => user.team.length === 0);
+          }
+
+          // this.filteredUsers = mUsers.filter((user) => {
+          //   if (user.team) {
+          //     return user.team.length === 0;
+          //   } else {
+          //     return true;
+          //   }
+          // });
+        }
+
         // filter by payed contributions
         if (this.filters.hasPayedContribution !== undefined) {
           if (this.filters.hasPayedContribution) {
@@ -416,17 +467,6 @@ export default {
               );
             } else {
               return false;
-            }
-          });
-        }
-
-        // filter by not validated
-        if (this.filters.notValidated) {
-          this.filteredUsers = mUsers.filter((user) => {
-            if (user.team) {
-              return user.team.length === 0;
-            } else {
-              return true;
             }
           });
         }
@@ -600,7 +640,7 @@ export default {
 </script>
 
 <style scoped>
-.fab {
-  margin: 3px;
+p {
+  margin: 0;
 }
 </style>
