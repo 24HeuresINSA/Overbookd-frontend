@@ -18,11 +18,18 @@
                 v-model="filters.notValidated"
                 label="non validés"
               ></v-switch>
-              <v-switch
+              <p>Cotisation</p>
+              <v-btn-toggle
                 v-if="hasRole(['admin', 'bureau'])"
-                v-model="filters.hasPayedContributions"
-                label="Payé la contribution"
-              ></v-switch>
+                v-model="filters.hasPayedContribution"
+                tile
+                color="deep-purple accent-3"
+                group
+              >
+                <v-btn :value="true"> Payé </v-btn>
+
+                <v-btn :value="false"> Non payé </v-btn>
+              </v-btn-toggle>
               <v-container class="py-0">
                 <v-row align="center" justify="start">
                   <v-combobox
@@ -343,7 +350,7 @@ export default {
         hasDriverLicence: undefined,
         teams: [],
         notValidated: undefined,
-        hasPayedContributions: undefined,
+        hasPayedContribution: undefined,
       },
 
       isTransactionDialogOpen: false,
@@ -391,11 +398,12 @@ export default {
         }
 
         // filter by payed contributions
-        if (this.filters.hasPayedContributions) {
-          mUsers = mUsers.filter(
-            (user) =>
-              user.hasPayedContributions === this.filters.hasPayedContributions
-          );
+        if (this.filters.hasPayedContribution !== undefined) {
+          if (this.filters.hasPayedContribution) {
+            mUsers = mUsers.filter((user) => user.hasPayedContribution);
+          } else {
+            mUsers = mUsers.filter((user) => !user.hasPayedContribution);
+          }
         }
 
         // filter by team
