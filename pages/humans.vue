@@ -18,6 +18,11 @@
                 v-model="filters.notValidated"
                 label="non validés"
               ></v-switch>
+              <v-switch
+                v-if="hasRole(['admin', 'bureau'])"
+                v-model="filters.hasPayedContributions"
+                label="Payé la contribution"
+              ></v-switch>
               <v-container class="py-0">
                 <v-row align="center" justify="start">
                   <v-combobox
@@ -125,31 +130,6 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="isInformationDialogOpen" max-width="600">
-      <v-card>
-        <v-card-title>Info sur l'utilisateur</v-card-title>
-        <!--      <v-card-subtitle>{{this.selectedUser.nickname ? this.selectedUser.nickname : this.selectedUser.lastname}}</v-card-subtitle>-->
-        <v-card-text>
-          <v-simple-table>
-            <template #default>
-              <thead>
-                <tr>
-                  <th class="text-left">champ</th>
-                  <th class="text-left">valeur</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in desserts" :key="item.name">
-                  <td>{{ item.name }}</td>
-                  <td>{{ item.calories }}</td>
-                </tr>
-              </tbody>
-            </template>
-          </v-simple-table>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-
     <v-dialog v-model="isUserDialogOpen" max-width="600">
       <v-card>
         <v-img
@@ -181,6 +161,15 @@
 
           <v-simple-table>
             <tbody>
+              <tr>
+                <td>Cotisation</td>
+                <td>
+                  <v-switch
+                    v-model="selectedUser.hasPayedContribution"
+                    :disabled="!hasRole(['admin', 'human'])"
+                  ></v-switch>
+                </td>
+              </tr>
               <tr>
                 <td>Nom</td>
                 <td>
@@ -354,10 +343,10 @@ export default {
         hasDriverLicence: undefined,
         teams: [],
         notValidated: undefined,
+        hasPayedContributions: undefined,
       },
 
       isTransactionDialogOpen: false,
-      isInformationDialogOpen: false,
       isUserDialogOpen: false,
       isSnackbarOpen: false,
       isCharismaDialogOpen: false,
@@ -398,6 +387,14 @@ export default {
         if (this.filters.hasDriverLicence) {
           mUsers = mUsers.filter(
             (user) => user.hasDriverLicence === this.filters.hasDriverLicence
+          );
+        }
+
+        // filter by payed contributions
+        if (this.filters.hasPayedContributions) {
+          mUsers = mUsers.filter(
+            (user) =>
+              user.hasPayedContributions === this.filters.hasPayedContributions
           );
         }
 
@@ -448,6 +445,7 @@ export default {
     } else {
       // user has the HARD role
       this.users = (await this.$axios.get("/user")).data;
+      this.users.filter((user) => user.isValid);
       this.filteredUsers = this.users;
     }
   },
