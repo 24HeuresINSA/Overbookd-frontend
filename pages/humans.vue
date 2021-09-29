@@ -382,7 +382,7 @@ export default {
         search: undefined,
         hasDriverLicence: undefined,
         teams: [],
-        isValidated: undefined,
+        isValidated: true,
         hasPayedContribution: undefined,
       },
 
