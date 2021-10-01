@@ -12,20 +12,18 @@
 </template>
 
 <script>
-import { getConfig } from "@/common/role";
-
 export default {
   name: "OverChips",
-  props: ["roles"],
+  props: {
+    roles: {
+      type: Array,
+      required: true,
+    },
+  },
 
   computed: {
     mRoles() {
-      if (this.roles) {
-        return getConfig(this, "teams").filter((team) =>
-          this.roles.includes(team.name)
-        );
-      }
-      return null;
+      return this.$accessor.config.getConfigTeams(this.roles);
     },
   },
 };
