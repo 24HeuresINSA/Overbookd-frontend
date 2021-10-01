@@ -1,5 +1,5 @@
 const configsData = require("../config/configs.json");
-import { MutationTree } from "vuex";
+import { mutationTree } from "typed-vuex";
 
 export const state = () => ({
   data: {
@@ -9,8 +9,8 @@ export const state = () => ({
 
 export type ConfigState = ReturnType<typeof state>;
 
-export const mutations: MutationTree<ConfigState> = {
+export const mutations = mutationTree(state, {
   SET_CONFIG(state, data) {
     state.data = data;
   },
-};
+});
