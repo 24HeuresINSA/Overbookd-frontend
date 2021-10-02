@@ -11,12 +11,13 @@
   </v-container>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue, { PropType } from "vue";
+export default Vue.extend({
   name: "OverChips",
   props: {
     roles: {
-      type: Array,
+      type: Array as PropType<string[]>,
       required: true,
     },
   },
@@ -26,7 +27,7 @@ export default {
       return this.$accessor.config.getConfigTeams(this.roles);
     },
   },
-};
+});
 </script>
 
 <style scoped></style>

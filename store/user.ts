@@ -5,6 +5,7 @@ import { safeCall } from "~/utils/api/calls";
 const UserRepo = RepoFactory.get("user");
 
 export const state = () => ({
+  //TODO use class and change this
   me: {} as User,
 });
 

@@ -32,6 +32,20 @@ export const getters = getterTree(state, {
       }
       return undefined;
     },
+  /**
+   * GET teams from config
+   * @param state The config state
+   * @returns All teams stored in config
+   */
+  getAllConfigTeams: (state) => {
+    if (state.data && state.data.data) {
+      const teams = state.data.data.find((o: any) => o.key == "teams");
+      if (teams) {
+        return teams;
+      }
+    }
+    return undefined;
+  },
 });
 
 export type ConfigState = ReturnType<typeof state>;
