@@ -363,6 +363,7 @@ import Fuse from "fuse.js";
 import SnackNotificationContainer from "../components/molecules/snackNotificationContainer";
 
 const { RepoFactory } = require("../repositories/repoFactory");
+const { SnackNotif } = require("../utils/models/store");
 
 export default {
   name: "Humans",
@@ -589,6 +590,15 @@ export default {
     async transaction(isExpense) {
       this.newTransaction.amount = this.newTransaction.amount.replace(",", "."); // accept , in input
       const amountNumber = +this.newTransaction.amount;
+
+      if (amountNumber <= 0) {
+        await this.$store.dispatch("notif/pushNotification", {
+          type: "success",
+          message: "les virments negatif sont interdit 🤑",
+        });
+        return;
+      }
+
       let mTransaction = {
         type: isExpense ? "expense" : "deposit",
         from: isExpense ? this.selectedUser.keycloakID : null,
@@ -610,11 +620,10 @@ export default {
         if (res.status !== 200) {
           throw new Error();
         }
-        // let notif: SnackNotif = {
-        //   type: "success",
-        //   message: "Transfer sent !",
-        // };
-        // await this.$store.dispatch("notif/pushNotification", notif);
+        await this.$store.dispatch("notif/pushNotification", {
+          type: "success",
+          message: "Transfer sent !",
+        });
       } catch (error) {
         // let notif: SnackNotif = {
         //   type: "error",

@@ -51,7 +51,7 @@ export default Vue.extend({
   },
   computed: {
     displayedTransactionHistory(): any {
-      return this.mTransactions.slice(-3);
+      return this.mTransactions.slice(-3).reverse();
     },
     me() {
       return this.$accessor.user.me;
