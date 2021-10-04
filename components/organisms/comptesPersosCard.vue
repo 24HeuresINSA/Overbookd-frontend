@@ -8,7 +8,7 @@
     >
       <div>
         <v-card-title>Compte Perso 💰</v-card-title>
-        <v-card-subtitle>Solde : {{ me.balance }} €</v-card-subtitle>
+        <v-card-subtitle>Solde : {{ me.balance.toFixed(2) }} €</v-card-subtitle>
         <v-card-text>
           <v-data-table
             :headers="headers"

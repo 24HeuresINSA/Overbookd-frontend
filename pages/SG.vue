@@ -4,13 +4,22 @@
     <v-container style="display: flex; width: 100%; position: absolute">
       <v-card>
         <v-card-text style="display: flex; flex-direction: column">
-          <v-text-field label="Recherche"></v-text-field>
           <v-text-field
+            v-if="isExpenseMode"
             v-model="totalPrice"
             label="Prix total"
             type="number"
           ></v-text-field>
-          <label>Nombre de bâton total: {{ totalConsumptions }}</label>
+          <label
+            >{{
+              isExpenseMode ? "Nombre de bâton total" : "Nombre total d'argent"
+            }}: {{ totalConsumptions }}</label
+          >
+          <label v-if="isExpenseMode"
+            >Prix du bâton:
+            {{ (+totalPrice / +totalConsumptions).toFixed(2) }}
+            €</label
+          >
           <label>Mode</label>
           <template>
             <v-btn-toggle
@@ -24,17 +33,23 @@
               <v-btn :value="false" small> Dépot</v-btn>
             </v-btn-toggle>
           </template>
-          <v-btn text>Enregistrer</v-btn>
+          <v-btn text @click="saveTransactions">Enregistrer</v-btn>
           <v-btn text>Envoyer un mail au négatif</v-btn>
         </v-card-text>
       </v-card>
 
-      <v-data-table :headers="headers" :items="filteredUsers">
+      <v-data-table
+        :headers="headers"
+        :items="filteredUsers"
+        style="width: 100%"
+        disable-pagination
+        hide-default-footer
+      >
         <template #[`item.action`]="{ item }" style="display: flex">
           <v-text-field
             v-model="item.newConsumption"
             type="number"
-            label="Nombre de bâton"
+            :label="isExpenseMode ? 'Nombre de bâton' : 'thunas (en euro)'"
           ></v-text-field>
         </template>
 
@@ -52,6 +67,7 @@
         </template>
       </v-data-table>
     </v-container>
+    <SnackNotificationContainer />
   </v-container>
 </template>
 
@@ -62,8 +78,12 @@
  * then enter how much each user has a stick next to his name in the paper. after that the SG press a save button
  * and every user that consumed get charged accordingly
  */
+import transactionRepo from "../repositories/transactionRepo";
+import SnackNotificationContainer from "../components/molecules/snackNotificationContainer";
+
 export default {
   name: "SG",
+  components: { SnackNotificationContainer },
 
   data: () => {
     return {
@@ -72,7 +92,7 @@ export default {
       totalConsumption: undefined, // total coast of the barrel
       totalPrice: 0,
 
-      isExpenseMode: false,
+      isExpenseMode: true,
 
       headers: [
         { text: "prénom", value: "firstname" },
@@ -141,6 +161,44 @@ export default {
         transactionHistory: user.transactionHistory,
         balance: user.balance,
       });
+    },
+
+    async saveTransactions() {
+      let usersWithConsumptions = this.users.filter((u) => u.newConsumption);
+      let transactions = usersWithConsumptions.map((user) => {
+        if (this.isExpenseMode) {
+          return {
+            type: "expense",
+            from: user.keycloakID,
+            to: null,
+            createdAt: new Date(),
+            amount: +(
+              (+this.totalPrice / +this.totalConsumptions) *
+              user.newConsumption
+            ),
+            context: `Conso au local de ${user.newConsumption} bâton à ${(
+              +this.totalPrice / +this.totalConsumptions
+            ).toFixed(2)} €`,
+          };
+        } else {
+          user.newConsumption = user.newConsumption.replace(",", ".");
+          return {
+            type: "deposit",
+            from: null,
+            to: user.keycloakID,
+            createdAt: new Date(),
+            amount: +user.newConsumption,
+            context: `Recharge de compte perso`,
+          };
+        }
+      });
+      await transactionRepo.createTransactions(this, transactions);
+      await this.$store.dispatch("notif/pushNotification", {
+        type: "success",
+        message: "Operations confirmées 💰💰💰",
+      });
+
+      usersWithConsumptions.forEach((u) => (u.newConsumption = ""));
     },
   },
 };
