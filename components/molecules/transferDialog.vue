@@ -93,7 +93,16 @@ export default Vue.extend({
         if (this.transfer.user.keycloakID == this.me.keycloakID) {
           this.$accessor.notif.pushNotification({
             type: "error",
-            message: "Ca sert a rien de se transférer de l'argent soi-même...",
+            message:
+              "Trouve toi des amis plutot que de faire des virements a toi meme...",
+          });
+          return;
+        }
+
+        if (+this.transfer.amount <= 0) {
+          this.$accessor.notif.pushNotification({
+            type: "error",
+            message: "c'est plus assomaker...",
           });
           return;
         }
