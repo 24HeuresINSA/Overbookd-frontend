@@ -32,7 +32,6 @@
 <script lang="ts">
 import Vue from "vue";
 import TransferDialog from "~/components/molecules/transferDialog.vue";
-import { RepoFactory } from "~/repositories/repoFactory";
 import { Transaction } from "~/utils/models/repo";
 
 export default Vue.extend({
@@ -45,8 +44,6 @@ export default Vue.extend({
         { text: "context", value: "context" },
         { text: "montant", value: "amount", align: "end" },
       ],
-
-      mTransactions: [],
     };
   },
   computed: {
@@ -56,12 +53,13 @@ export default Vue.extend({
     me() {
       return this.$accessor.user.me;
     },
+    mTransactions() {
+      return this.$accessor.transaction.mTransactions;
+    },
   },
   async mounted() {
-    let res = await RepoFactory.transactionRepo.getUserTransactions(this);
-    if (res.status === 200) {
-      this.mTransactions = res.data;
-    }
+    // let res = await RepoFactory.transactionRepo.getUserTransactions(this);
+    await this.$accessor.transaction.fetchMTransactions();
   },
   methods: {
     openDialog(): any {

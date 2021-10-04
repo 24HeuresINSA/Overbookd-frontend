@@ -21,6 +21,7 @@ import { UserState } from "~/store/user";
 import { TMapState } from "~/utils/types/store";
 import OverForm from "~/components/overForm.vue";
 import { RepoFactory } from "~/repositories/repoFactory";
+import { Transfer } from "~/utils/models/repo";
 
 export default Vue.extend({
   name: "TransferDialog",
@@ -111,18 +112,15 @@ export default Vue.extend({
           const transactionRepo = RepoFactory.transactionRepo;
 
           try {
-            let res = await transactionRepo.createTransfer(this, {
+            let newTransfer: Transfer = {
               amount: +this.transfer.amount,
               context: this.transfer.reason,
               createdAt: new Date(),
               from: this.me.keycloakID,
               to: this.transfer.user.keycloakID,
               type: "transfer",
-            });
-
-            if (res.status == 200) {
-              // add notification
-            }
+            };
+            await this.$accessor.transaction.addTransaction(newTransfer);
           } catch (e) {
             console.error(e);
           }
