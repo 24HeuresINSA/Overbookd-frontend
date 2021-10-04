@@ -16,6 +16,7 @@
             :items="displayedTransactionHistory"
           >
             <template #[`item.amount`]="{ item }">
+              {{ isNegativeTransaction(item) ? "-" : "+" }}
               {{ (item.amount || 0).toFixed(2) }} €
             </template>
           </v-data-table>
@@ -32,6 +33,7 @@
 import Vue from "vue";
 import TransferDialog from "~/components/molecules/transferDialog.vue";
 import { RepoFactory } from "~/repositories/repoFactory";
+import { Transaction } from "~/utils/models/repo";
 
 export default Vue.extend({
   name: "ComptePersosCard",
@@ -64,6 +66,10 @@ export default Vue.extend({
   methods: {
     openDialog(): any {
       this.$store.dispatch("dialog/openDialog", "transfer");
+    },
+
+    isNegativeTransaction(transaction: Transaction) {
+      return transaction.from === this.me.keycloakID;
     },
   },
 });

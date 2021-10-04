@@ -552,7 +552,7 @@ export default {
       this.isUserDialogOpen = true;
     },
 
-    async saveNewCharisma(isNegative) {
+    async saveNewCharisma(isExpense) {
       if (!this.selectedUser.charisma) {
         this.selectedUser.charisma = 0;
       }
@@ -561,7 +561,7 @@ export default {
         this.selectedUser.charismaHistory = [];
       }
       this.newCharisma.amount =
-        (isNegative ? "-" : "+") + this.newCharisma.amount;
+        (isExpense ? "-" : "+") + this.newCharisma.amount;
       this.selectedUser.charismaHistory.unshift(this.newCharisma);
 
       this.selectedUser.charisma =
@@ -586,16 +586,13 @@ export default {
       this.isCharismaDialogOpen = false;
     },
 
-    async transaction(isNegative) {
+    async transaction(isExpense) {
       this.newTransaction.amount = this.newTransaction.amount.replace(",", "."); // accept , in input
-      const amountNumber = isNegative
-        ? -+this.newTransaction.amount
-        : +this.newTransaction.amount;
-
+      const amountNumber = +this.newTransaction.amount;
       let mTransaction = {
-        type: isNegative ? "expense" : "deposit",
-        from: this.selectedUser.keycloakID,
-        to: null,
+        type: isExpense ? "expense" : "deposit",
+        from: isExpense ? this.selectedUser.keycloakID : null,
+        to: isExpense ? null : this.selectedUser.keycloakID,
         context: this.newTransaction.reason,
         amount: amountNumber,
         createdAt: new Date(),
@@ -607,10 +604,9 @@ export default {
       }
       this.selectedUser.balance = +this.selectedUser.balance + amountNumber;
       try {
-        let res = await RepoFactory.get("transaction").createTransaction(
-          this,
-          mTransaction
-        );
+        let res = await RepoFactory.transactionRepo.createTransactions(this, [
+          mTransaction,
+        ]);
         if (res.status !== 200) {
           throw new Error();
         }
