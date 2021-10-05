@@ -58,6 +58,13 @@ export default {
   },
   computed: {},
   async mounted() {
+    if (!(await this.$accessor.user.hasRole("admin"))) {
+      await this.$router.push({
+        path: "/",
+      });
+      return;
+    }
+
     const res = await safeCall(
       this.$store,
       RepoFactory.transactionRepo.getTransactions(this)
