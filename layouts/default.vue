@@ -106,7 +106,7 @@ const AUTHORS = [
   "Christophe - piStoph 🍺",
   "Hugo - Cashless 💰",
   "Tom - Nimbus 🧹",
-  "Paul - Craker 💥",
+  "Paul - Nuts 💥",
   "Thomas - Ginny 💡",
 ];
 
@@ -216,6 +216,12 @@ export default {
           to: "/SG",
         },
         {
+          icon: "mdi-cash-multiple",
+          roles: "admin",
+          title: "Transactions 💰️",
+          to: "/transactions",
+        },
+        {
           icon: "mdi-fire",
           roles: "hard",
           title: "OverTinder 🍑",
@@ -282,13 +288,6 @@ export default {
     getRandomAuthor() {
       const items = this.AUTHORS;
       return items[Math.floor(Math.random() * items.length)];
-    },
-
-    addStep() {
-      this.newRequest.steps.push(
-        `${this.newRequest.steps.length + 1} - ${this.stepDetail}`
-      );
-      this.stepDetail = "";
     },
 
     hasRole(role) {
