@@ -40,7 +40,7 @@
 
       <v-data-table
         :headers="headers"
-        :items="filteredUsers"
+        :items="users"
         style="width: 100%"
         disable-pagination
         hide-default-footer
@@ -80,6 +80,9 @@
  */
 import transactionRepo from "../repositories/transactionRepo";
 import SnackNotificationContainer from "../components/molecules/snackNotificationContainer";
+import { RepoFactory } from "~/repositories/repoFactory";
+
+const { safeCall } = require("../utils/api/calls");
 
 export default {
   name: "SG",
@@ -88,7 +91,6 @@ export default {
   data: () => {
     return {
       users: [],
-      filteredUsers: [],
       totalConsumption: undefined, // total coast of the barrel
       totalPrice: 0,
 
@@ -108,7 +110,7 @@ export default {
   computed: {
     totalConsumptions() {
       let totalConsumptions = 0;
-      this.filteredUsers.forEach((user) => {
+      this.users.forEach((user) => {
         if (user.newConsumption) {
           totalConsumptions += +user.newConsumption;
         }
@@ -118,51 +120,16 @@ export default {
   },
 
   async mounted() {
-    this.users = await this.getAllUsers();
-    this.filteredUsers = this.users;
+    const res = await safeCall(
+      this.$store,
+      RepoFactory.userRepo.getAllUsers(this)
+    );
+    if (res) {
+      this.users = res.data;
+    }
   },
 
   methods: {
-    async getAllUsers() {
-      return (await this.$axios.get("/user")).data;
-    },
-
-    async updateUser(keycloakID, data) {
-      return this.$axios.put("/user/" + keycloakID, data);
-    },
-
-    addTransactionHistory(user, amount) {
-      // amount un float
-      if (!user.transactionHistory) {
-        user.transactionHistory = []; // init notification if doesn't exist
-      }
-      user.transactionHistory.unshift({
-        reason: "consomation au local",
-        amount: "-" + amount,
-      });
-    },
-
-    updateUserBalance(user, amount) {
-      if (!user.balance) {
-        user.balance = 0; // init notification if doesn't exist
-      }
-      user.balance = user.balance - +amount; // safe code
-    },
-    /**
-     *
-     * @param user user object
-     * @param amount float
-     */
-    addConsumption(user, amount) {
-      this.updateUserBalance(user, amount);
-      this.addTransactionHistory(user, amount);
-      // update user in database
-      this.updateUser(user.keycloakID, {
-        transactionHistory: user.transactionHistory,
-        balance: user.balance,
-      });
-    },
-
     async saveTransactions() {
       let usersWithConsumptions = this.users.filter((u) => u.newConsumption);
       let transactions = usersWithConsumptions.map((user) => {
