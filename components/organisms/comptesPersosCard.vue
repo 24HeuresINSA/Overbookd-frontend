@@ -15,6 +15,16 @@
             hide-default-footer
             :items="displayedTransactionHistory"
           >
+            <template #[`item.type`]="{ item }">
+              <v-icon>
+                {{
+                  isNegativeTransaction(item)
+                    ? "mdi-cash-minus"
+                    : "mdi-cash-plus"
+                }}
+              </v-icon>
+            </template>
+
             <template #[`item.amount`]="{ item }">
               {{ isNegativeTransaction(item) ? "-" : "+" }}
               {{ (item.amount || 0).toFixed(2) }} €
