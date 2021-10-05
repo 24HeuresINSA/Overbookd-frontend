@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    <h1>Transactions 💸</h1>
     <v-data-table :headers="headers" :items="transactions">
       <template #[`item.amount`]="{ item }">
         {{ (item.amount || 0).toFixed(2) }} €
