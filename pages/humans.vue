@@ -87,30 +87,30 @@
             <template #[`item.action`]="{ item }" style="display: flex">
               <v-btn
                 v-if="hasRole('hard')"
-                text
+                icon
                 small
                 @click="openInformationDialog(item)"
               >
-                <v-icon>mdi-information-outline</v-icon>
+                <v-icon small>mdi-information-outline</v-icon>
               </v-btn>
               <v-btn
                 v-if="hasRole('admin')"
-                text
+                icon
                 small
                 @click="openTransactionDialog(item)"
               >
-                <v-icon>mdi-cash</v-icon>
+                <v-icon small>mdi-cash</v-icon>
               </v-btn>
               <v-btn
                 v-if="hasRole(['admin', 'bureau'])"
-                text
+                icon
                 small
                 @click="openCharismaDialog(item)"
               >
-                <v-icon>mdi-emoticon-cool</v-icon>
+                <v-icon small>mdi-emoticon-cool</v-icon>
               </v-btn>
               <v-btn
-                text
+                icon
                 small
                 :href="
                   'https://www.facebook.com/search/top?q=' +
@@ -119,7 +119,7 @@
                   item.lastname
                 "
               >
-                <v-icon>mdi-facebook</v-icon>
+                <v-icon small>mdi-facebook</v-icon>
               </v-btn>
             </template>
 
