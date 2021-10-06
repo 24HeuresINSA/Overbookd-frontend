@@ -232,7 +232,7 @@ export default {
         search: undefined,
         hasDriverLicence: undefined,
         teams: [],
-        isValidated: true,
+        isValidated: undefined,
         hasPayedContribution: undefined,
       },
 
@@ -276,7 +276,7 @@ export default {
         }
 
         // filter by driver licence
-        if (this.filters.hasDriverLicence) {
+        if (this.filters.hasDriverLicence !== undefined) {
           mUsers = mUsers.filter(
             (user) => user.hasDriverLicence === this.filters.hasDriverLicence
           );
@@ -284,7 +284,6 @@ export default {
 
         // filter by not validated
         if (this.filters.isValidated !== undefined) {
-          console.log(this.filters.isValidated);
           if (this.filters.isValidated) {
             mUsers = mUsers.filter((user) => user.team.length !== 0);
           } else {
@@ -339,6 +338,7 @@ export default {
       this.users = (await this.$axios.get("/user")).data;
       this.users.filter((user) => user.isValid);
       this.filteredUsers = this.users;
+      this.filters.isValidated = true; // default set to true
 
       // add CP if admin
       if (this.hasRole("admin")) {
