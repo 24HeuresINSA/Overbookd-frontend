@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; position: absolute; top: 0; left: 0">
+  <div>
     <template style="width: 100%; display: grid">
       <v-row>
         <v-col md="2" style="min-width: 250px">
@@ -160,168 +160,6 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="isUserDialogOpen" max-width="600">
-      <v-card>
-        <v-img
-          v-if="selectedUser.pp"
-          :src="getPPUrl() + 'api/user/pp/' + selectedUser.pp"
-          max-height="300px"
-        ></v-img>
-        <v-card-title
-          >{{
-            selectedUser.nickname
-              ? selectedUser.nickname
-              : selectedUser.lastname
-          }}
-        </v-card-title>
-        <v-card-text>
-          <OverChips :roles="selectedUser.team"></OverChips>
-          <div v-if="hasRole(['admin'])">
-            <v-select
-              v-model="newRole"
-              label="ajouter un role"
-              :items="getConfig('teams').map((e) => e.name)"
-            ></v-select>
-            <v-btn text @click="addRole()">ajouter</v-btn>
-            <v-btn text @click="deleteAllTeams()"
-              >révoquer tous les rôles
-            </v-btn>
-          </div>
-
-          <v-simple-table>
-            <tbody>
-              <tr>
-                <td>Cotisation</td>
-                <td>
-                  <v-switch
-                    v-model="selectedUser.hasPayedContribution"
-                    :disabled="!hasRole(['admin', 'human'])"
-                  ></v-switch>
-                </td>
-              </tr>
-              <tr>
-                <td>Nom</td>
-                <td>
-                  <v-text-field
-                    v-model="selectedUser.lastname"
-                    :disabled="!hasRole(['admin', 'human'])"
-                  ></v-text-field>
-                </td>
-              </tr>
-
-              <tr>
-                <td>Prénom</td>
-                <td>
-                  <v-text-field
-                    v-model="selectedUser.firstname"
-                    :disabled="!hasRole(['admin', 'human'])"
-                  ></v-text-field>
-                </td>
-              </tr>
-
-              <tr>
-                <td>Surnom</td>
-                <td>
-                  <v-text-field
-                    v-model="selectedUser.nickname"
-                    :disabled="!hasRole(['admin', 'human'])"
-                  ></v-text-field>
-                </td>
-              </tr>
-
-              <tr>
-                <td>Date de naissance</td>
-                <td>{{ selectedUser.birthdate }}</td>
-              </tr>
-
-              <tr>
-                <td>📞</td>
-                <td style="display: flex; align-items: baseline">
-                  <p>+33&nbsp;</p>
-                  <v-text-field
-                    v-model="selectedUser.phone"
-                    :disabled="!hasRole(['admin', 'human'])"
-                    type="number"
-                  ></v-text-field>
-                </td>
-              </tr>
-
-              <tr>
-                <td>Permis</td>
-                <td>
-                  <v-switch
-                    v-model="selectedUser.hasDriverLicence"
-                    :disabled="!hasRole(['admin', 'human'])"
-                  ></v-switch>
-                </td>
-              </tr>
-
-              <tr>
-                <td>Charisme</td>
-                <td>{{ selectedUser.charisma }}</td>
-              </tr>
-
-              <tr>
-                <td>Nombre de dispo</td>
-                <td>
-                  {{
-                    selectedUser.availabilities
-                      ? selectedUser.availabilities.length
-                      : 0
-                  }}
-                </td>
-              </tr>
-
-              <tr>
-                <td>Email</td>
-                <td>{{ selectedUser.email }}</td>
-              </tr>
-
-              <tr>
-                <td>Balance compte perso</td>
-                <td>{{ selectedUser.balance }}</td>
-              </tr>
-
-              <tr>
-                <td>amis</td>
-                <td>
-                  {{
-                    selectedUser.friends
-                      ? selectedUser.friends.map((f) => f.username).join(", ")
-                      : ""
-                  }}
-                </td>
-              </tr>
-
-              <tr v-if="hasRole('informatique')">
-                <td>keycloakID</td>
-                <td>{{ selectedUser.keycloakID }}</td>
-              </tr>
-
-              <tr v-if="hasRole('informatique')">
-                <td>ID</td>
-                <td>{{ selectedUser._id }}</td>
-              </tr>
-
-              <tr>
-                <td>📚</td>
-                <td>{{ selectedUser.year }} {{ selectedUser.departement }}</td>
-              </tr>
-
-              <tr>
-                <td>Commentaire</td>
-                <td>{{ selectedUser.comment }}</td>
-              </tr>
-            </tbody>
-          </v-simple-table>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn text color="red" @click="deleteUser()">supprimer</v-btn>
-          <v-btn text @click="saveUser()">sauvgarder</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
     <v-dialog v-model="isCharismaDialogOpen" max-width="600">
       <v-card>
         <v-card-title>Charisme 😎</v-card-title>
@@ -353,6 +191,11 @@
     </v-snackbar>
 
     <SnackNotificationContainer></SnackNotificationContainer>
+    <UserInformation
+      :user="selectedUser"
+      :toggle="isUserDialogOpen"
+      @update-toggle="(t) => (isUserDialogOpen = t)"
+    ></UserInformation>
   </div>
 </template>
 
@@ -361,13 +204,14 @@ import { getConfig, getUser, hasRole } from "../common/role";
 import OverChips from "../components/atoms/overChips";
 import Fuse from "fuse.js";
 import SnackNotificationContainer from "../components/molecules/snackNotificationContainer";
+import UserInformation from "../components/organisms/userInformation";
 
 const { RepoFactory } = require("../repositories/repoFactory");
 const { SnackNotif } = require("../utils/models/store");
 
 export default {
   name: "Humans",
-  components: { SnackNotificationContainer, OverChips },
+  components: { UserInformation, SnackNotificationContainer, OverChips },
   data() {
     return {
       users: [],
@@ -396,9 +240,11 @@ export default {
       isUserDialogOpen: false,
       isSnackbarOpen: false,
       isCharismaDialogOpen: false,
+
       selectedUser: {
         nickname: undefined,
       },
+
       newTransaction: {
         reason: "recharge compte perso",
         amount: undefined,
