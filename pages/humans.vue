@@ -128,6 +128,10 @@
               {{ (item.balance || 0).toFixed(2) }} €
             </template>
 
+            <template #[`item.studies`]="{ item }">
+              {{ item.year }}{{ item.departement }}
+            </template>
+
             <template #[`item.charisma`]="{ item }">
               {{ item.charisma || 0 }}
             </template>
@@ -222,6 +226,7 @@ export default {
         { text: "nom", value: "lastname" },
         { text: "surnom", value: "nickname" },
         { text: "team", value: "team" },
+        { text: "étude", value: "studies" },
         { text: "charsime", value: "charisma", align: "end" },
         { text: "action", value: "action" },
       ],
@@ -269,7 +274,7 @@ export default {
         if (this.filters.search) {
           const options = {
             // Search in `author` and in `tags` array
-            keys: ["firstname", "lastname", "nickname"],
+            keys: ["firstname", "lastname", "nickname", "phone"],
           };
           const fuse = new Fuse(mUsers, options);
 
