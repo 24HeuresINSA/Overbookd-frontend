@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <h1>SG 🥵</h1>
-    <v-container style="display: flex; width: 100%; position: absolute">
+    <v-container style="display: flex; width: 100%">
       <v-card>
         <v-card-text style="display: flex; flex-direction: column">
           <v-text-field
@@ -44,6 +44,7 @@
         style="width: 100%"
         disable-pagination
         hide-default-footer
+        dense
       >
         <template #[`item.action`]="{ item }" style="display: flex">
           <v-text-field

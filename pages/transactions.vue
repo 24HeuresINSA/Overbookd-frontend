@@ -95,8 +95,6 @@ export default {
 
   methods: {
     getFullNameFromKeycloakID(keycloakID) {
-      console.log(this.users);
-      console.log(this.users[keycloakID]);
       return this.users[keycloakID];
     },
     async deleteTransaction(transactionID) {

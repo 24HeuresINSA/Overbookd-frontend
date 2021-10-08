@@ -9,15 +9,10 @@
       <v-img
         v-if="user.pp"
         :src="getPPUrl() + 'api/user/pp/' + user.pp"
-        max-width="300px"
-        max-height="500px"
+        max-height="250px"
       ></v-img>
       <v-card-title
-        >{{
-          user.nickname
-            ? user.nickname
-            : `${user.firstname} ${user.lastname.toUpperCase()} `
-        }}
+        >{{ user.nickname }} ({{ user.firstname }} {{ user.lastname }})
       </v-card-title>
       <v-card-subtitle>
         <OverChips :roles="user.team"></OverChips>
@@ -40,7 +35,6 @@ export default {
 
   async mounted() {
     this.users = (await this.$axios.get("/user")).data;
-    console.log(this.users);
   },
 
   methods: {
