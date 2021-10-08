@@ -1,17 +1,22 @@
 <template>
   <v-container>
     <h1>Transactions 💸</h1>
-    <v-data-table :headers="headers" :items="transactions">
+    <v-data-table
+      :headers="headers"
+      :items="transactions"
+      dense
+      :items-per-page="-1"
+    >
       <template #[`item.amount`]="{ item }">
         {{ (item.amount || 0).toFixed(2) }} €
       </template>
 
       <template #[`item.to`]="{ item }">
-        {{ users[item.to] }}
+        {{ getFullNameFromKeycloakID(item.to) }}
       </template>
 
       <template #[`item.from`]="{ item }">
-        {{ users[item.from] }}
+        {{ getFullNameFromKeycloakID(item.from) }}
       </template>
 
       <template #[`item.createdAt`]="{ item }">
@@ -58,6 +63,19 @@ export default {
     };
   },
   computed: {},
+
+  async beforeMount() {
+    const usersCall = await safeCall(
+      this.$store,
+      RepoFactory.userRepo.getAllUsernames(this)
+    );
+    if (usersCall) {
+      usersCall.data.forEach((username) => {
+        this.users[username.keycloakID] = username.username;
+      });
+    }
+  },
+
   async mounted() {
     if (!(await this.$accessor.user.hasRole("admin"))) {
       await this.$router.push({
@@ -73,19 +91,14 @@ export default {
     if (res) {
       this.transactions = res.data;
     }
-
-    const usersCall = await safeCall(
-      this.$store,
-      RepoFactory.userRepo.getAllUsernames(this)
-    );
-    if (usersCall) {
-      usersCall.data.forEach((username) => {
-        this.users[username.keycloakID] = username.username;
-      });
-    }
   },
 
   methods: {
+    getFullNameFromKeycloakID(keycloakID) {
+      console.log(this.users);
+      console.log(this.users[keycloakID]);
+      return this.users[keycloakID];
+    },
     async deleteTransaction(transactionID) {
       const deleteCall = await safeCall(
         this.$store,

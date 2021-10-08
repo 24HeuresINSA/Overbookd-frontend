@@ -83,6 +83,7 @@
             :items="filteredUsers"
             :items-per-page="30"
             class="elevation-1"
+            dense
           >
             <template #[`item.action`]="{ item }" style="display: flex">
               <v-btn
