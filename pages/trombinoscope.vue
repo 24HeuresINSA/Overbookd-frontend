@@ -1,5 +1,10 @@
 <template>
-  <v-container style="display: flex; flex-wrap: wrap">
+  <v-container
+    style="
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    "
+  >
     <v-card
       v-for="(user, i) in users"
       :key="i"
@@ -17,7 +22,7 @@
       <v-card-subtitle>
         <OverChips :roles="user.team"></OverChips>
       </v-card-subtitle>
-      <v-card-text>
+      <v-card-text style="overflow-y: hidden">
         {{ user.comment }}
       </v-card-text>
     </v-card>
