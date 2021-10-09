@@ -74,16 +74,8 @@ export default Vue.extend({
   async mounted() {
     // let res = await RepoFactory.transactionRepo.getUserTransactions(this);
     await this.$accessor.transaction.fetchMTransactions();
-    let option = undefined;
-    try {
-      const { value: areTransfersOpen } = await this.$accessor.config.getConfig(
-        "are_transfers_open"
-      );
-      option = areTransfersOpen;
-    } catch (e) {
-      option = false;
-    }
-    this.areTransfersOpen = option;
+    this.areTransfersOpen =
+      this.$accessor.config.getConfig("are_transfers_open");
   },
   methods: {
     openDialog(): any {
