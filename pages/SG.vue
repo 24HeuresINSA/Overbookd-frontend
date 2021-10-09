@@ -35,6 +35,8 @@
           </template>
           <v-btn text @click="saveTransactions">Enregistrer</v-btn>
           <v-btn text>Envoyer un mail au négatif</v-btn>
+          <br />
+          <h3>Solde de la caisse {{ totalCPBalance.toFixed(2) }} €</h3>
         </v-card-text>
       </v-card>
 
@@ -94,6 +96,7 @@ export default {
       users: [],
       totalConsumption: undefined, // total coast of the barrel
       totalPrice: 0,
+      totalCPBalance: 0,
 
       isExpenseMode: true,
 
@@ -128,6 +131,11 @@ export default {
     if (res) {
       this.users = res.data;
     }
+    this.users.forEach((user) => {
+      if (user.balance) {
+        this.totalCPBalance += +user.balance;
+      }
+    });
   },
 
   methods: {
