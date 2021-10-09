@@ -17,7 +17,10 @@
       </v-card-text>
     </v-card>
 
-    <OverTransactions :transactions="filteredTransactions"></OverTransactions>
+    <OverTransactions
+      :transactions="filteredTransactions"
+      :action="true"
+    ></OverTransactions>
   </v-container>
 </template>
 

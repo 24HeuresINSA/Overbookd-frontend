@@ -57,6 +57,10 @@ export default {
       type: Array,
       default: () => [],
     },
+    action: {
+      type: Boolean,
+      default: () => false,
+    },
   },
   data: () => {
     return {
@@ -74,12 +78,14 @@ export default {
           value: "amount",
           align: "end",
         },
-        { text: "action", value: "action" },
       ],
       users: {},
     };
   },
   async beforeMount() {
+    if (this.action) {
+      this.headers.push({ text: "action", value: "action" });
+    }
     const usersCall = await safeCall(
       this.$store,
       RepoFactory.userRepo.getAllUsernames(this)
