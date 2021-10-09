@@ -1,12 +1,45 @@
 <template>
   <v-container>
     <h1>Transactions 💸</h1>
+    <v-card style="margin-bottom: 5px">
+      <v-card-text
+        style="display: flex; flex-direction: row; align-items: center"
+      >
+        <v-autocomplete
+          v-model="selectedUserKeycloakID"
+          label="Nom"
+          :items="usernames"
+          item-text="username"
+          item-value="keycloakID"
+          style="width: 300px"
+        ></v-autocomplete>
+        <v-btn text @click="search(selectedUserKeycloakID)">Chercher</v-btn>
+      </v-card-text>
+    </v-card>
+
     <v-data-table
       :headers="headers"
-      :items="transactions"
+      :items="filteredTransactions"
       dense
       :items-per-page="-1"
+      sort-by="createdAt"
     >
+      <template #[`group.summary`]="{ group }">
+        {{ new Date(group).toLocaleString() }}
+      </template>
+
+      <template #[`item.type`]="{ item }">
+        <label
+          v-if="item.isValid === false"
+          style="text-decoration: line-through"
+        >
+          {{ item.type }}
+        </label>
+        <label v-else>
+          {{ item.type }}
+        </label>
+      </template>
+
       <template #[`item.amount`]="{ item }">
         {{ (item.amount || 0).toFixed(2) }} €
       </template>
@@ -41,7 +74,9 @@ export default {
   data: () => {
     return {
       transactions: [],
-
+      filteredTransactions: [],
+      usernames: [],
+      selectedUserKeycloakID: undefined,
       headers: [
         { text: "type", value: "type" },
         { text: "depuis", value: "from" },
@@ -70,6 +105,7 @@ export default {
       RepoFactory.userRepo.getAllUsernames(this)
     );
     if (usersCall) {
+      this.usernames = usersCall.data;
       usersCall.data.forEach((username) => {
         this.users[username.keycloakID] = username.username;
       });
@@ -90,6 +126,7 @@ export default {
     );
     if (res) {
       this.transactions = res.data;
+      this.filteredTransactions = this.transactions;
     }
   },
 
@@ -104,10 +141,16 @@ export default {
       );
       if (deleteCall) {
         // update on screen
-        this.transactions = this.transactions.filter(
+        let mTransactions = this.transactions.find(
           (t) => t._id !== transactionID
         );
+        mTransactions.isValid = false;
       }
+    },
+    search(keycloakID) {
+      this.filteredTransactions = this.transactions.filter((t) => {
+        return t.from === keycloakID || t.to === keycloakID;
+      });
     },
   },
 };
