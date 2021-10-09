@@ -34,8 +34,9 @@
       </div>
       <v-card-actions>
         <v-btn v-if="areTransfersOpen" text @click="openDialog()"
-          >Effectuer un virement</v-btn
-        >
+          >Effectuer un virement
+        </v-btn>
+        <v-btn text to="/mTransactions">Mes transactions </v-btn>
       </v-card-actions>
     </v-card>
   </div>
