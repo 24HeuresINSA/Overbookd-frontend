@@ -4,11 +4,11 @@
     <v-card
       height="100%"
       class="d-flex flex-column justify-space-between"
-      :color="me.balance < 0 ? 'red' : ''"
+      :color="mBalance < 0 ? 'red' : ''"
     >
       <div>
         <v-card-title>Compte Perso 💰</v-card-title>
-        <v-card-subtitle>Solde : {{ me.balance.toFixed(2) }} €</v-card-subtitle>
+        <v-card-subtitle>Solde : {{ mBalance.toFixed(2) }} €</v-card-subtitle>
         <v-card-text>
           <v-data-table
             :headers="headers"
@@ -63,6 +63,9 @@ export default Vue.extend({
   computed: {
     displayedTransactionHistory(): any {
       return this.mTransactions.slice(-3).reverse();
+    },
+    mBalance() {
+      return this.me.balance || 0;
     },
     me() {
       return this.$accessor.user.me;
