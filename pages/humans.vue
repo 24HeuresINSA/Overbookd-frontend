@@ -527,7 +527,7 @@ export default {
     async exportCSV() {
       // Parse data into a CSV string to be passed to the download function
       var csv =
-        "Prénom,Nom,Surnom,Poles,Email,Téléphone,Département,Année,ContribPayée\n";
+        "Prénom,Nom,Surnom,Charisme,Poles,Email,Date de naissance,Téléphone,Département,Année,Solde,ContribPayée,A Le Permis?,Date permis,Commentaire\n";
 
       const users = this.users;
       console.log(users);
@@ -540,11 +540,15 @@ export default {
           ";" +
           users[i].nickname +
           ";" +
+          users[i].charisma +
+          ";" +
           '"' +
           users[i].team +
           '"' +
           ";" +
           users[i].email +
+          ";" +
+          users[i].birthdate +
           ";" +
           "+33" +
           users[i].phone +
@@ -553,7 +557,15 @@ export default {
           ";" +
           users[i].year +
           ";" +
+          users[i].balance +
+          ";" +
           users[i].hasPayedContribution +
+          ";" +
+          users[i].hasDriverLicense +
+          ";" +
+          users[i].driverLicenseDate +
+          ";" +
+          users[i].comment +
           ";" +
           "\n";
       }
