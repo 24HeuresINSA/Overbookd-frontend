@@ -52,9 +52,14 @@
                 <v-btn text @click="exportCSV">exporter</v-btn>
               </template>
 
-              <v-combobox>
-                v-model="filters.teams" chips multiple clearable label="team"
-                :items="getConfig('teams').map((e) => e.name)" >
+              <v-combobox
+                v-model="filters.teams"
+                chips
+                multiple
+                clearable
+                label="team"
+                :items="getConfig('teams').map((e) => e.name)"
+              >
                 <template #selection="{ attrs, item, selected }">
                   <v-chip
                     v-bind="attrs"
