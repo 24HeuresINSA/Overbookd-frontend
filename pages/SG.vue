@@ -17,7 +17,7 @@
           >
           <label v-if="isExpenseMode"
             >Prix du bâton:
-            {{ (+totalPrice / +totalConsumptions).toFixed(2) }}
+            {{ stickPrice }}
             €</label
           >
           <label>Mode</label>
@@ -121,6 +121,9 @@ export default {
       });
       return totalConsumptions;
     },
+    stickPrice() {
+      return (+this.totalPrice / +this.totalConsumptions).toFixed(2);
+    },
   },
 
   async mounted() {
@@ -141,6 +144,44 @@ export default {
   methods: {
     async saveTransactions() {
       let usersWithConsumptions = this.users.filter((u) => u.newConsumption);
+
+      let isCorrect = true;
+
+      // verify new consumptions are positive digits
+      usersWithConsumptions.forEach((user) => {
+        try {
+          if (
+            user.newConsumption.includes(",") ||
+            user.newConsumption.includes(".")
+          ) {
+            isCorrect = false;
+          }
+          if (+user.newConsumption < 0) {
+            isCorrect = false;
+          }
+        } catch {
+          isCorrect = false;
+        }
+      });
+
+      // verify totalPrice
+      try {
+        if (this.totalPrice.includes(",") || this.totalPrice.includes(".")) {
+          isCorrect = false;
+        }
+        this.totalPrice = +this.totalPrice;
+      } catch {
+        isCorrect = false;
+      }
+
+      if (!isCorrect) {
+        await this.$store.dispatch("notif/pushNotification", {
+          type: "error",
+          message: "Il faut mettre des nombre",
+        });
+        return;
+      }
+
       let transactions = usersWithConsumptions.map((user) => {
         if (this.isExpenseMode) {
           return {
@@ -151,7 +192,7 @@ export default {
             amount: +(
               (+this.totalPrice / +this.totalConsumptions) *
               user.newConsumption
-            ),
+            ).toFixed(2),
             context: `Conso au local de ${user.newConsumption} bâton à ${(
               +this.totalPrice / +this.totalConsumptions
             ).toFixed(2)} €`,
@@ -163,7 +204,7 @@ export default {
             from: null,
             to: user.keycloakID,
             createdAt: new Date(),
-            amount: +user.newConsumption,
+            amount: (+user.newConsumption).toFixed(2),
             context: `Recharge de compte perso`,
           };
         }

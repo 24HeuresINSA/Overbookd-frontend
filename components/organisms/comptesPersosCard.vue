@@ -13,6 +13,7 @@
           <v-data-table
             :headers="headers"
             hide-default-footer
+            hide-default-header
             :items="displayedTransactionHistory"
           >
             <template #[`item.type`]="{ item }">
