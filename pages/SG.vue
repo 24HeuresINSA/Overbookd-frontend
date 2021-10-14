@@ -70,6 +70,18 @@
         </template>
       </v-data-table>
     </v-container>
+    <v-dialog v-model="isSwitchDialogOpen" width="600px">
+      <v-card>
+        <v-card-title>Attention</v-card-title>
+        <v-card-text
+          >Si tu change de mode les donnees non enregister seront
+          effeace</v-card-text
+        >
+        <v-card-actions>
+          <v-btn text @click="cleanInputs">changer de mode</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <SnackNotificationContainer />
   </v-container>
 </template>
@@ -99,6 +111,7 @@ export default {
       totalCPBalance: 0,
 
       isExpenseMode: true,
+      isSwitchDialogOpen: false,
 
       headers: [
         { text: "prénom", value: "firstname" },
@@ -123,6 +136,12 @@ export default {
     },
     stickPrice() {
       return (+this.totalPrice / +this.totalConsumptions).toFixed(2);
+    },
+  },
+
+  watch: {
+    isExpenseMode() {
+      this.isSwitchDialogOpen = true;
     },
   },
 
@@ -220,6 +239,12 @@ export default {
       });
 
       usersWithConsumptions.forEach((u) => (u.newConsumption = ""));
+    },
+
+    cleanInputs() {
+      let usersWithConsumptions = this.users.filter((u) => u.newConsumption);
+      usersWithConsumptions.forEach((u) => (u.newConsumption = ""));
+      this.isSwitchDialogOpen = false;
     },
   },
 };
