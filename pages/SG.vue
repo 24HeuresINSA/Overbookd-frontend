@@ -174,6 +174,10 @@ export default {
         isCorrect = false;
       }
 
+      if (this.totalPrice === 0) {
+        isCorrect = false;
+      }
+
       if (!isCorrect) {
         await this.$store.dispatch("notif/pushNotification", {
           type: "error",
