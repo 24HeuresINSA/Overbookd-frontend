@@ -25,11 +25,6 @@
                 }}
               </v-icon>
             </template>
-
-            <template #[`item.amount`]="{ item }">
-              {{ isNegativeTransaction(item) ? "-" : "+" }}
-              {{ (item.amount || 0).toFixed(2) }} €
-            </template>
           </v-data-table>
         </v-card-text>
       </div>
