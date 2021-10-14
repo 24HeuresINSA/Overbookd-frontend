@@ -74,9 +74,8 @@
       <v-card>
         <v-card-title>Attention</v-card-title>
         <v-card-text
-          >Si tu change de mode les donnees non enregister seront
-          effeace</v-card-text
-        >
+          >Si tu change de mode les donnees non enregister seront effeace
+        </v-card-text>
         <v-card-actions>
           <v-btn text @click="cleanInputs">changer de mode</v-btn>
         </v-card-actions>
@@ -168,34 +167,36 @@ export default {
 
       // verify new consumptions are positive digits
       usersWithConsumptions.forEach((user) => {
-        try {
-          if (
-            user.newConsumption.includes(",") ||
-            user.newConsumption.includes(".")
-          ) {
+        if (this.isExpenseMode) {
+          // mode depense (Baton)
+          try {
+            if (
+              user.newConsumption.includes(",") ||
+              user.newConsumption.includes(".")
+            ) {
+              isCorrect = false;
+            }
+            if (+user.newConsumption < 0) {
+              isCorrect = false;
+            }
+          } catch {
             isCorrect = false;
           }
-          if (+user.newConsumption < 0) {
+
+          // verify totalPrice
+          try {
+            this.totalPrice = +this.totalPrice;
+          } catch {
             isCorrect = false;
           }
-        } catch {
-          isCorrect = false;
+
+          if (this.totalPrice === 0) {
+            isCorrect = false;
+          }
+        } else {
+          // is depot mode
         }
       });
-
-      // verify totalPrice
-      try {
-        if (this.totalPrice.includes(",") || this.totalPrice.includes(".")) {
-          isCorrect = false;
-        }
-        this.totalPrice = +this.totalPrice;
-      } catch {
-        isCorrect = false;
-      }
-
-      if (this.totalPrice === 0) {
-        isCorrect = false;
-      }
 
       if (!isCorrect) {
         await this.$store.dispatch("notif/pushNotification", {
