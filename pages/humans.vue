@@ -95,6 +95,9 @@
               >
                 <v-icon small>mdi-information-outline</v-icon>
               </v-btn>
+              <v-btn icon small :href="'tel:+33' + item.phone">
+                <v-icon small>mdi-phone</v-icon>
+              </v-btn>
               <v-btn
                 v-if="hasRole('admin')"
                 icon
@@ -138,7 +141,9 @@
             </template>
 
             <template #[`item.team`]="{ item }">
-              <OverChips :roles="item.team"></OverChips>
+              <v-container style="max-width: 250px">
+                <OverChips :roles="item.team"></OverChips>
+              </v-container>
             </template>
           </v-data-table>
         </v-col>
@@ -226,7 +231,7 @@ export default {
         { text: "prénom", value: "firstname" },
         { text: "nom", value: "lastname" },
         { text: "surnom", value: "nickname" },
-        { text: "team", value: "team" },
+        { text: "team", value: "team", cellClass: "width: 50px", width: "1" },
         { text: "étude", value: "studies" },
         { text: "charsime", value: "charisma", align: "end" },
         { text: "action", value: "action" },
