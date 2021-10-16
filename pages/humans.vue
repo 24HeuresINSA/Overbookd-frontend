@@ -98,6 +98,9 @@
               <v-btn icon small :href="'tel:+33' + item.phone">
                 <v-icon small>mdi-phone</v-icon>
               </v-btn>
+              <v-btn icon small :href="'mailto:' + item.email">
+                <v-icon small>mdi-email</v-icon>
+              </v-btn>
               <v-btn
                 v-if="hasRole('admin')"
                 icon
@@ -141,7 +144,7 @@
             </template>
 
             <template #[`item.team`]="{ item }">
-              <v-container style="max-width: 250px">
+              <v-container style="max-width: 150px">
                 <OverChips :roles="item.team"></OverChips>
               </v-container>
             </template>
