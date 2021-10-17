@@ -74,9 +74,10 @@ export default {
 
   methods: {
     search(keycloakID) {
-      this.filteredTransactions = this.transactions.filter((t) => {
+      this.filteredTransactions = this.filteredTransactions.filter((t) => {
         return t.from === keycloakID || t.to === keycloakID;
       });
+      // this.$set(this, "filteredTransactions", filteredTransactions)
     },
   },
 };
