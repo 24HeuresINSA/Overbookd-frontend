@@ -52,6 +52,8 @@
         disable-pagination
         hide-default-footer
         dense
+        multi-sort
+        :sort-by="['firstname', 'lastname']"
       >
         <template #[`item.action`]="{ item }" style="display: flex">
           <v-text-field
