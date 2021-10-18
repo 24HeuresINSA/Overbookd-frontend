@@ -9,6 +9,11 @@
             v-model="totalPrice"
             label="Prix total"
             type="number"
+            :rules="[
+              (v) =>
+                new RegExp(regex.float).test(v) ||
+                `il faut mettre un nombre (avec . comme virgule)`,
+            ]"
           ></v-text-field>
           <label
             >{{
@@ -53,6 +58,7 @@
             v-model="item.newConsumption"
             type="number"
             :label="isExpenseMode ? 'Nombre de bâton' : 'thunas (en euro)'"
+            :rules="rules"
           ></v-text-field>
         </template>
 
@@ -106,11 +112,16 @@ export default {
     return {
       users: [],
       totalConsumption: undefined, // total coast of the barrel
-      totalPrice: 0,
+      totalPrice: undefined,
       totalCPBalance: 0,
 
       isExpenseMode: true,
       isSwitchDialogOpen: false,
+
+      regex: {
+        int: "^[0-9]\\d*$",
+        float: "^[0-9]\\d*(\\.\\d+)?$",
+      },
 
       headers: [
         { text: "prénom", value: "firstname" },
@@ -135,6 +146,11 @@ export default {
     },
     stickPrice() {
       return (+this.totalPrice / +this.totalConsumptions).toFixed(2);
+    },
+    rules() {
+      const regex = this.isExpenseMode ? this.regex.int : this.regex.float;
+      console.log(regex);
+      return [(v) => new RegExp(regex).test(v) || `il faut mettre un entier `];
     },
   },
 
@@ -165,8 +181,17 @@ export default {
 
       let isCorrect = true;
 
+      console.log(usersWithConsumptions);
+
       // verify new consumptions are positive digits
       usersWithConsumptions.forEach((user) => {
+        if (isNaN(user.newConsumption)) {
+          console.log("NaN: " + user.newConsumption);
+          isCorrect = false;
+        } else {
+          console.log("is Number: " + user.newConsumption);
+        }
+
         if (this.isExpenseMode) {
           // mode depense (Baton)
           try {
@@ -197,6 +222,8 @@ export default {
           // is depot mode
         }
       });
+
+      console.log(isCorrect);
 
       if (!isCorrect) {
         await this.$store.dispatch("notif/pushNotification", {
