@@ -294,9 +294,6 @@ export default {
     round(rawAmount) {
       const round = +(Math.round(+rawAmount * 100) / 100).toFixed(2) * 100;
       let res = parseInt(round / 5) * 5;
-      if (res % 5 === 0) {
-        return res * 0.01;
-      }
       return (res + 5) * 0.01;
     },
   },
