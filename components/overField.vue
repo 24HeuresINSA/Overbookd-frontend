@@ -20,6 +20,7 @@
         (mField.label ? mField.label : mField.key) +
         (mField.isRequired ? '*' : '')
       "
+      :disabled="disabled"
       @change="onChange"
     ></v-text-field>
     <v-textarea
@@ -27,8 +28,15 @@
       v-model="mField.value"
       :label="mField.label ? mField.label : mField.key"
       required
+      :disabled="disabled"
       @change="onChange"
     ></v-textarea>
+    <RichEditor
+      v-else-if="mField.type === 'rich-text'"
+      v-model="mField.value"
+      :disabled="disabled"
+      @change="onChange"
+    ></RichEditor>
     <v-switch
       v-else-if="mField.type === 'switch'"
       v-model="mField.value"
@@ -40,12 +48,14 @@
       v-model="mField.value"
       :label="mField.label ? mField.label : mField.key"
       :items="mField.options"
+      :disabled="disabled"
       @change="onChange"
     ></v-select>
     <v-datetime-picker
       v-if="mField.type === 'datetime'"
       v-model="mField.value"
       :label="mField.label ? mField.label : mField.key"
+      :disabled="disabled"
       @change="onChange"
     ></v-datetime-picker>
     <div v-if="mField.type === 'date'">
@@ -59,6 +69,7 @@
         v-model="mField.value"
         :label="mField.label ? mField.label : mField.key"
         :active-picker.sync="activePicker"
+        :disabled="disabled"
         @change="onChange"
       ></v-date-picker>
     </div>
@@ -67,6 +78,7 @@
       v-model="mField.value"
       :label="mField.label ? mField.label : mField.key"
       :items="users"
+      :disabled="disabled"
       @change="onChange"
     ></v-autocomplete>
 
@@ -76,6 +88,7 @@
       :label="mField.label ? mField.label : mField.key"
       format="24hr"
       :allowed-minutes="allowedMinutes"
+      :disabled="disabled"
       @change="onChange"
     ></v-time-picker>
     <p v-if="mField.description">{{ mField.description }}</p>
@@ -83,15 +96,18 @@
 </template>
 
 <script>
+import RichEditor from "~/components/organisms/richEditor";
 export default {
   name: "OverField",
-  props: ["field"],
+  components: { RichEditor },
+  props: ["field", "disabled"],
   data() {
     return {
       activePicker: null,
       menu: false,
       users: undefined,
       mField: this.field,
+      value: undefined,
     };
   },
 

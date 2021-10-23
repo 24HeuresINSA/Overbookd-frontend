@@ -12,139 +12,143 @@
         :key="i"
         :color="validator.status ? color[validator.status] : 'grey'"
       >
-        {{ validator.icon }}
+        {{ getValidatorIcon(validator) }}
       </v-icon>
     </div>
     <br />
 
-    <OverForm :fields="form" @form-change="onFormChange"> </OverForm>
-
-    <v-divider></v-divider>
-    <h2>Créneaux ⏱</h2>
-    <v-simple-table v-if="FA.schedules">
-      <template #default>
-        <thead>
-          <tr>
-            <th class="text-left">jour</th>
-            <th>debut</th>
-            <th class="text-left">fin</th>
-            <th class="text-left">action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="schedule in FA.schedules"
-            :key="schedule.day + schedule.start + schedule.end"
-          >
-            <td>{{ schedule.date }}</td>
-            <td>{{ schedule.start }}</td>
-            <td>{{ schedule.end }}</td>
-            <td><v-btn @click="deleteSchedule(schedule)">🗑</v-btn></td>
-          </tr>
-        </tbody>
-      </template>
-    </v-simple-table>
-    <v-container style="display: grid">
-      <v-row>
-        <v-col>
-          <h3>Date</h3>
-        </v-col>
-        <v-col>
-          <h3>Début</h3>
-        </v-col>
-        <v-col>
-          <h3>Fin</h3>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
-          <v-date-picker
-            v-model="schedule.date"
-            first-day-of-week="1"
-          ></v-date-picker>
-        </v-col>
-        <v-col>
-          <v-time-picker
-            v-model="schedule.start"
-            :allowed-minutes="allowedMinutes"
-            format="24hr"
-          ></v-time-picker>
-        </v-col>
-        <v-col>
-          <v-time-picker
-            v-model="schedule.end"
-            :allowed-minutes="allowedMinutes"
-            format="24hr"
-          ></v-time-picker>
-        </v-col>
-        <v-btn fab style="margin: 20px" @click="addSchedule">
-          <v-icon> mdi-plus-thick </v-icon>
-        </v-btn>
-      </v-row>
-    </v-container>
-
-    <v-divider></v-divider>
-    <h2>Matos 🚚</h2>
-    <v-data-table :headers="equipmentsHeader" :items="selectedEquipments">
-      <template #top>
-        <v-toolbar flat>
-          <v-toolbar-title>Equipments</v-toolbar-title>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            dark
-            class="mb-2"
-            @click="dialogModifySelectedItem = true"
-          >
-            Add new equipment
-          </v-btn>
-        </v-toolbar>
-      </template>
-    </v-data-table>
-
-    <v-divider></v-divider>
-    <h2>Comments</h2>
-    <v-simple-table v-if="FA.comments">
-      <template #default>
-        <thead>
-          <tr>
-            <th class="text-left">validateur</th>
-            <th>autheur</th>
-            <th class="text-left">commentaire</th>
-            <th class="text-left">Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="comment in FA.comments" :key="comment.time">
-            <td>
-              <v-icon :color="color[comment.action]">{{
-                getIcon(comment)
-              }}</v-icon>
-            </td>
-            <td>{{ comment.by }}</td>
-            <td>{{ comment.comment }}</td>
-            <td>{{ new Date(comment.time).toLocaleString() }}</td>
-          </tr>
-        </tbody>
-      </template>
-    </v-simple-table>
-    <h4 v-else>
-      pas de commentaire pour l'instant il faut se mettre au charbon
-    </h4>
-
+    <FormCard title="Général" form-key="fa_general_form"></FormCard>
     <br />
-    <v-divider></v-divider>
-    <h2>Fiche tâche 🤩</h2>
-    <v-data-table :headers="FTHeader" :items="FA.FTs">
-      <template #[`item.action`]="item">
-        <v-btn :href="'/ft/' + item.item._id">
-          <v-icon>mdi-link</v-icon>
-        </v-btn>
-      </template>
-    </v-data-table>
-    <v-text-field v-model="FTname" label="nom de la FT*"></v-text-field>
-    <v-btn @click="addFT">ajouter une FT</v-btn>
+    <FormCard title="Detail" form-key="fa_details_form"></FormCard>
+    <br />
+    <TimeframeTable></TimeframeTable>
+
+    <!--    <v-divider></v-divider>-->
+    <!--    <h2>Créneaux ⏱</h2>-->
+    <!--    <v-simple-table v-if="FA.schedules">-->
+    <!--      <template #default>-->
+    <!--        <thead>-->
+    <!--          <tr>-->
+    <!--            <th class="text-left">jour</th>-->
+    <!--            <th>debut</th>-->
+    <!--            <th class="text-left">fin</th>-->
+    <!--            <th class="text-left">action</th>-->
+    <!--          </tr>-->
+    <!--        </thead>-->
+    <!--        <tbody>-->
+    <!--          <tr-->
+    <!--            v-for="schedule in FA.schedules"-->
+    <!--            :key="schedule.day + schedule.start + schedule.end"-->
+    <!--          >-->
+    <!--            <td>{{ schedule.date }}</td>-->
+    <!--            <td>{{ schedule.start }}</td>-->
+    <!--            <td>{{ schedule.end }}</td>-->
+    <!--            <td><v-btn @click="deleteSchedule(schedule)">🗑</v-btn></td>-->
+    <!--          </tr>-->
+    <!--        </tbody>-->
+    <!--      </template>-->
+    <!--    </v-simple-table>-->
+    <!--    <v-container style="display: grid">-->
+    <!--      <v-row>-->
+    <!--        <v-col>-->
+    <!--          <h3>Date</h3>-->
+    <!--        </v-col>-->
+    <!--        <v-col>-->
+    <!--          <h3>Début</h3>-->
+    <!--        </v-col>-->
+    <!--        <v-col>-->
+    <!--          <h3>Fin</h3>-->
+    <!--        </v-col>-->
+    <!--      </v-row>-->
+    <!--      <v-row>-->
+    <!--        <v-col>-->
+    <!--          <v-date-picker-->
+    <!--            v-model="schedule.date"-->
+    <!--            first-day-of-week="1"-->
+    <!--          ></v-date-picker>-->
+    <!--        </v-col>-->
+    <!--        <v-col>-->
+    <!--          <v-time-picker-->
+    <!--            v-model="schedule.start"-->
+    <!--            :allowed-minutes="allowedMinutes"-->
+    <!--            format="24hr"-->
+    <!--          ></v-time-picker>-->
+    <!--        </v-col>-->
+    <!--        <v-col>-->
+    <!--          <v-time-picker-->
+    <!--            v-model="schedule.end"-->
+    <!--            :allowed-minutes="allowedMinutes"-->
+    <!--            format="24hr"-->
+    <!--          ></v-time-picker>-->
+    <!--        </v-col>-->
+    <!--        <v-btn fab style="margin: 20px" @click="addSchedule">-->
+    <!--          <v-icon> mdi-plus-thick </v-icon>-->
+    <!--        </v-btn>-->
+    <!--      </v-row>-->
+    <!--    </v-container>-->
+
+    <!--    <v-divider></v-divider>-->
+    <!--    <h2>Matos 🚚</h2>-->
+    <!--    <v-data-table :headers="equipmentsHeader" :items="selectedEquipments">-->
+    <!--      <template #top>-->
+    <!--        <v-toolbar flat>-->
+    <!--          <v-toolbar-title>Equipments</v-toolbar-title>-->
+    <!--          <v-divider class="mx-4" inset vertical></v-divider>-->
+    <!--          <v-spacer></v-spacer>-->
+    <!--          <v-btn-->
+    <!--            color="primary"-->
+    <!--            dark-->
+    <!--            class="mb-2"-->
+    <!--            @click="dialogModifySelectedItem = true"-->
+    <!--          >-->
+    <!--            Add new equipment-->
+    <!--          </v-btn>-->
+    <!--        </v-toolbar>-->
+    <!--      </template>-->
+    <!--    </v-data-table>-->
+
+    <!--    <v-divider></v-divider>-->
+    <!--    <h2>Comments</h2>-->
+    <!--    <v-simple-table v-if="FA.comments">-->
+    <!--      <template #default>-->
+    <!--        <thead>-->
+    <!--          <tr>-->
+    <!--            <th class="text-left">validateur</th>-->
+    <!--            <th>autheur</th>-->
+    <!--            <th class="text-left">commentaire</th>-->
+    <!--            <th class="text-left">Date</th>-->
+    <!--          </tr>-->
+    <!--        </thead>-->
+    <!--        <tbody>-->
+    <!--          <tr v-for="comment in FA.comments" :key="comment.time">-->
+    <!--            <td>-->
+    <!--              <v-icon :color="color[comment.action]">{{-->
+    <!--                getIcon(comment)-->
+    <!--              }}</v-icon>-->
+    <!--            </td>-->
+    <!--            <td>{{ comment.by }}</td>-->
+    <!--            <td>{{ comment.comment }}</td>-->
+    <!--            <td>{{ new Date(comment.time).toLocaleString() }}</td>-->
+    <!--          </tr>-->
+    <!--        </tbody>-->
+    <!--      </template>-->
+    <!--    </v-simple-table>-->
+    <!--    <h4 v-else>-->
+    <!--      pas de commentaire pour l'instant il faut se mettre au charbon-->
+    <!--    </h4>-->
+
+    <!--    <br />-->
+    <!--    <v-divider></v-divider>-->
+    <!--    <h2>Fiche tâche 🤩</h2>-->
+    <!--    <v-data-table :headers="FTHeader" :items="FA.FTs">-->
+    <!--      <template #[`item.action`]="item">-->
+    <!--        <v-btn :href="'/ft/' + item.item._id">-->
+    <!--          <v-icon>mdi-link</v-icon>-->
+    <!--        </v-btn>-->
+    <!--      </template>-->
+    <!--    </v-data-table>-->
+    <!--    <v-text-field v-model="FTname" label="nom de la FT*"></v-text-field>-->
+    <!--    <v-btn @click="addFT">ajouter une FT</v-btn>-->
 
     <div style="height: 100px"></div>
 
@@ -157,117 +161,112 @@
         z-index: 30;
       "
     >
-      <v-btn v-if="getValidator()" color="green" @click="validate()"
-        >validate
-      </v-btn>
-      <v-btn v-if="getValidator()" color="red" @click="dialogValidator = true"
-        >refuse
-      </v-btn>
       <v-btn color="secondary" @click="dialog = true"
         >soumettre à validation
       </v-btn>
       <v-btn color="warning" @click="saveFA">sauvgarder 💾</v-btn>
     </div>
 
-    <v-dialog v-model="dialog" width="500">
-      <v-card>
-        <v-img
-          height="620"
-          src="https://media.discordapp.net/attachments/726537148119122023/806793684598128640/WhatsApp_Image_2021-02-03_at_23.36.35.jpeg"
-        ></v-img>
+    <!--    <v-dialog v-model="dialog" width="500">-->
+    <!--      <v-card>-->
+    <!--        <v-img-->
+    <!--          height="620"-->
+    <!--          src="https://media.discordapp.net/attachments/726537148119122023/806793684598128640/WhatsApp_Image_2021-02-03_at_23.36.35.jpeg"-->
+    <!--        ></v-img>-->
 
-        <v-card-title class="text-h5 grey lighten-2">
-          ⚠️ Warning ⚠️
-        </v-card-title>
+    <!--        <v-card-title class="text-h5 grey lighten-2">-->
+    <!--          ⚠️ Warning ⚠️-->
+    <!--        </v-card-title>-->
 
-        <v-card-text>
-          {{ dialogText }}
-        </v-card-text>
+    <!--        <v-card-text>-->
+    <!--          {{ dialogText }}-->
+    <!--        </v-card-text>-->
 
-        <v-divider></v-divider>
+    <!--        <v-divider></v-divider>-->
 
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="submitForReview">
-            soumettre
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <!--        <v-card-actions>-->
+    <!--          <v-spacer></v-spacer>-->
+    <!--          <v-btn color="primary" text @click="submitForReview">-->
+    <!--            soumettre-->
+    <!--          </v-btn>-->
+    <!--        </v-card-actions>-->
+    <!--      </v-card>-->
+    <!--    </v-dialog>-->
 
-    <v-dialog v-model="dialogValidator" max-width="600px">
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">Refuse FA</span>
-        </v-card-title>
-        <v-card-text>
-          <h4>pourquoi c'est de la 💩</h4>
-          <p>sans trop de 🧂</p>
-          <v-text-field v-model="refuseComment" required></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="refuse"> Submit </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <!--    <v-dialog v-model="dialogValidator" max-width="600px">-->
+    <!--      <v-card>-->
+    <!--        <v-card-title>-->
+    <!--          <span class="text-h5">Refuse FA</span>-->
+    <!--        </v-card-title>-->
+    <!--        <v-card-text>-->
+    <!--          <h4>pourquoi c'est de la 💩</h4>-->
+    <!--          <p>sans trop de 🧂</p>-->
+    <!--          <v-text-field v-model="refuseComment" required></v-text-field>-->
+    <!--        </v-card-text>-->
+    <!--        <v-card-actions>-->
+    <!--          <v-spacer></v-spacer>-->
+    <!--          <v-btn color="primary" text @click="refuse"> Submit </v-btn>-->
+    <!--        </v-card-actions>-->
+    <!--      </v-card>-->
+    <!--    </v-dialog>-->
 
-    <v-dialog v-model="dialogModifySelectedItem">
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">Ajouter un nouveau item</span>
-        </v-card-title>
-        <v-card-text>
-          <v-data-table
-            :headers="equipmentsHeader"
-            :items="availableEquipments"
-          >
-            <template #[`item.amount`]="props">
-              {{
-                +(props.item.borrowed
-                  ? props.item.borrowed
-                      .map((i) => i.amount)
-                      .reduce((a, e) => +a + +e, 0)
-                  : 0) + +props.item.amount
-              }}
-            </template>
-            <template #[`item.selected`]="props">
-              <v-text-field
-                v-model="props.item.selected"
-                type="number"
-              ></v-text-field>
-            </template>
-          </v-data-table>
-          <v-text-field
-            v-model="requestedEquipment"
-            label="Demander un material non present sur la liste"
-          ></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="saveItems"> save </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <!--    <v-dialog v-model="dialogModifySelectedItem">-->
+    <!--      <v-card>-->
+    <!--        <v-card-title>-->
+    <!--          <span class="text-h5">Ajouter un nouveau item</span>-->
+    <!--        </v-card-title>-->
+    <!--        <v-card-text>-->
+    <!--          <v-data-table-->
+    <!--            :headers="equipmentsHeader"-->
+    <!--            :items="availableEquipments"-->
+    <!--          >-->
+    <!--            <template #[`item.amount`]="props">-->
+    <!--              {{-->
+    <!--                +(props.item.borrowed-->
+    <!--                  ? props.item.borrowed-->
+    <!--                      .map((i) => i.amount)-->
+    <!--                      .reduce((a, e) => +a + +e, 0)-->
+    <!--                  : 0) + +props.item.amount-->
+    <!--              }}-->
+    <!--            </template>-->
+    <!--            <template #[`item.selected`]="props">-->
+    <!--              <v-text-field-->
+    <!--                v-model="props.item.selected"-->
+    <!--                type="number"-->
+    <!--              ></v-text-field>-->
+    <!--            </template>-->
+    <!--          </v-data-table>-->
+    <!--          <v-text-field-->
+    <!--            v-model="requestedEquipment"-->
+    <!--            label="Demander un material non present sur la liste"-->
+    <!--          ></v-text-field>-->
+    <!--        </v-card-text>-->
+    <!--        <v-card-actions>-->
+    <!--          <v-spacer></v-spacer>-->
+    <!--          <v-btn color="primary" text @click="saveItems"> save </v-btn>-->
+    <!--        </v-card-actions>-->
+    <!--      </v-card>-->
+    <!--    </v-dialog>-->
 
-    <v-snackbar v-model="isSnackbar" :timeout="5000">
-      {{ snackbarMessage }}
+    <!--    <v-snackbar v-model="isSnackbar" :timeout="5000">-->
+    <!--      {{ snackbarMessage }}-->
 
-      <template #action="{ attrs }">
-        <v-btn color="blue" text v-bind="attrs" @click="isSnackbar = false">
-          Close
-        </v-btn>
-      </template>
-    </v-snackbar>
+    <!--      <template #action="{ attrs }">-->
+    <!--        <v-btn color="blue" text v-bind="attrs" @click="isSnackbar = false">-->
+    <!--          Close-->
+    <!--        </v-btn>-->
+    <!--      </template>-->
+    <!--    </v-snackbar>-->
   </div>
 </template>
 
 <script>
-import OverForm from "../../components/overForm";
+import FormCard from "../../components/organisms/form/FormCard";
+import TimeframeTable from "../../components/organisms/timeframeTable";
 
 export default {
   name: "Fa",
-  components: { OverForm },
+  components: { TimeframeTable, FormCard },
 
   data() {
     return {
@@ -281,8 +280,6 @@ export default {
       refuseComment: "",
       isSnackbar: false,
       snackbarMessage: "la FA a bien ete sauvgarder 😅",
-      dialogText: this.getConfig("fb_confirm_submit"),
-      validators: this.getConfig("fa_validators"),
       FTname: undefined,
       schedule: {
         date: undefined,
@@ -294,7 +291,6 @@ export default {
         validated: "green",
         refused: "red",
       },
-      form: this.getConfig("fa_form"), // FA form settings
       availableEquipments: [],
       selectedEquipments: [],
       equipmentsHeader: [
@@ -315,54 +311,26 @@ export default {
         { text: "nom", value: "name" },
         { text: "action", value: "action" },
       ],
+
+      validators: undefined,
+      teams: undefined,
     };
   },
   async mounted() {
-    console.log(this.isNewFA);
-    // getFormConfig
-    const teamField = this.form.find((field) => field.key === "team");
-    if (teamField) {
-      teamField.options = this.getConfig("teams").map((team) => team.name);
-    }
-    this.availableEquipments = await this.$axios.$get("/equipment");
-
-    if (!this.isNewFA) {
-      this.FA = (await this.fetchFAbyID(this.FAID)).data;
-      // update the form that is going to be displayed
-      Object.keys(this.FA).forEach((key) => {
-        let mField = this.form.find((field) => field.key === key);
-        if (mField) {
-          this.$set(mField, "value", this.FA[key]);
-          mField.value = this.FA[key];
-        }
-      });
-
-      if (this.FA.equipments) {
-        // update equipments
-        this.selectedEquipments = this.FA.equipments;
-      }
-
-      // update validator status
-      if (this.FA.refused) {
-        this.FA.refused.forEach((v) => {
-          let refuse = this.validators.find((e) => e.name === v);
-          console.log(refuse);
-          this.$set(refuse, "status", "refused");
-        });
-      }
-
-      if (this.FA.validated) {
-        this.FA.validated.forEach((v) => {
-          let refuse = this.validators.find((e) => e.name === v);
-          this.$set(refuse, "status", "validated");
-        });
-      }
-    }
+    this.validators = this.$accessor.config.getConfig("fa_validators");
+    this.teams = this.$accessor.config.getConfig("teams");
   },
 
   methods: {
     getUser() {
       return this.$store.state.user.data;
+    },
+    getValidatorIcon(validator) {
+      try {
+        return this.teams.find((team) => team.name === validator).icon;
+      } catch (e) {
+        console.log(`can't find icon of team ${validator}`);
+      }
     },
 
     hasRole(role) {
@@ -494,11 +462,6 @@ export default {
       const count = this.FA.count;
       this.FA = form;
       this.FA.count = count;
-    },
-
-    getConfig(key) {
-      return this.$store.state.config.data.data.find((e) => e.key === key)
-        .value;
     },
 
     async addFT() {

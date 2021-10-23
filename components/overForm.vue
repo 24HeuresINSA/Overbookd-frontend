@@ -4,6 +4,7 @@
       v-for="field in fields"
       :key="field.label"
       :field="field"
+      :disabled="disabled"
       @value="onValueChange"
     >
     </OverField>
@@ -16,7 +17,7 @@ import OverField from "./overField";
 export default {
   name: "OverForm",
   components: { OverField },
-  props: ["fields"],
+  props: ["fields", "disabled"],
 
   data() {
     return {
