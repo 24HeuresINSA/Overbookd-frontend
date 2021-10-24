@@ -12,6 +12,11 @@
       <template #[`item.end`]="{ item }">
         {{ new Date(item.end).toLocaleTimeString() }}
       </template>
+      <template #[`item.action`]="{ index }">
+        <v-btn icon>
+          <v-icon @click="deleteTimeframe(index)">mdi-trash-can</v-icon>
+        </v-btn>
+      </template>
     </v-data-table>
 
     <TimeframeSelector @add-timeframe="addTimeframe"> </TimeframeSelector>
@@ -49,6 +54,9 @@ export default {
   methods: {
     addTimeframe(timeframe) {
       this.$accessor.FA.addTimeframeToFA(timeframe);
+    },
+    deleteTimeframe(index) {
+      this.$accessor.FA.deleteTimeframe(index);
     },
   },
 };

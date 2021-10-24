@@ -25,6 +25,9 @@ export const mutations = mutationTree(state, {
     // @ts-ignore
     state.mFA.timeframes.push(timeframe);
   },
+  DELETE_TIMEFRAME: function (state, index) {
+    state.mFA.timeframes.splice(index, 1);
+  },
 });
 
 export const actions = actionTree(
@@ -35,6 +38,9 @@ export const actions = actionTree(
     },
     addTimeframeToFA: function ({ commit }, payload) {
       commit("ADD_TIMEFRAME", payload);
+    },
+    deleteTimeframe: function ({ commit }, payload) {
+      commit("DELETE_TIMEFRAME", payload);
     },
     setFA: function ({ commit }, payload) {
       console.log("FA set");
