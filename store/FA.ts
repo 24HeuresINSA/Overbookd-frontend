@@ -1,7 +1,9 @@
 import { actionTree, mutationTree } from "typed-vuex";
 
 export const state = () => ({
-  mFA: {},
+  mFA: {
+    timeframes: [],
+  },
 });
 
 export const mutations = mutationTree(state, {
@@ -15,7 +17,13 @@ export const mutations = mutationTree(state, {
     state.mFA = mFA;
   },
   RESET_FA: function (state) {
-    state.mFA = {};
+    state.mFA = {
+      timeframes: [],
+    };
+  },
+  ADD_TIMEFRAME: function (state, timeframe) {
+    // @ts-ignore
+    state.mFA.timeframes.push(timeframe);
   },
 });
 
@@ -24,6 +32,9 @@ export const actions = actionTree(
   {
     assignFA: function ({ commit }, payload) {
       commit("ASSIGN_FA", payload);
+    },
+    addTimeframeToFA: function ({ commit }, payload) {
+      commit("ADD_TIMEFRAME", payload);
     },
     setFA: function ({ commit }, payload) {
       console.log("FA set");

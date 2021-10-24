@@ -2,15 +2,15 @@
   <v-card>
     <v-card-title>Créneaux</v-card-title>
 
-    <v-data-table :headers="headers" :items="timeframes">
+    <v-data-table :headers="headers" :items="mFA.timeframes">
       <template #[`item.date`]="{ item }">
-        {{ item.start.toDateString() }}
+        {{ new Date(item.start).toDateString() }}
       </template>
       <template #[`item.start`]="{ item }">
-        {{ item.start.toLocaleTimeString() }}
+        {{ new Date(item.start).toLocaleTimeString() }}
       </template>
       <template #[`item.end`]="{ item }">
-        {{ item.end.toLocaleTimeString() }}
+        {{ new Date(item.end).toLocaleTimeString() }}
       </template>
     </v-data-table>
 
@@ -40,22 +40,15 @@ export default {
       },
       { text: "action", value: "action" },
     ],
-    timeframes: [],
   }),
-  watch: {
-    timeframes: {
-      deep: true,
-      handler: function () {
-        this.$emit("form-change", this.timeframes);
-      },
+  computed: {
+    mFA: function () {
+      return this.$store.state.FA.mFA;
     },
-  },
-  mounted() {
-    this.initTimeframes.forEach((tf) => this.timeframes.push(tf));
   },
   methods: {
     addTimeframe(timeframe) {
-      this.timeframes.push(timeframe);
+      this.$accessor.FA.addTimeframeToFA(timeframe);
     },
   },
 };
