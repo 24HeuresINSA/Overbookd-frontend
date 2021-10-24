@@ -128,7 +128,6 @@ export default {
     data: {
       deep: true,
       handler() {
-        console.log("[OF]: data", this.data);
         this.value = this.data;
       },
     },

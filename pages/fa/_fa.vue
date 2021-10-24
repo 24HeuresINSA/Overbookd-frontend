@@ -493,8 +493,6 @@ export default {
     },
 
     updateForm(section, form) {
-      console.log(this.FA[section]);
-      console.log(form);
       let newForm = {};
       newForm[section] = form;
       this.FAStore.assignFA(newForm);

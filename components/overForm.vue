@@ -26,15 +26,6 @@ export default {
     };
   },
 
-  watch: {
-    data: {
-      deep: true,
-      handler() {
-        console.log("old data: ", this.data);
-      },
-    },
-  },
-
   mounted() {},
 
   methods: {
