@@ -25,7 +25,7 @@ export default {
   name: "TimeframeTable",
   components: { TimeframeSelector },
   props: {
-    initTimeframe: {
+    initTimeframes: {
       type: Array,
       default: () => [],
     },
@@ -42,13 +42,20 @@ export default {
     ],
     timeframes: [],
   }),
+  watch: {
+    timeframes: {
+      deep: true,
+      handler: function () {
+        this.$emit("form-change", this.timeframes);
+      },
+    },
+  },
   mounted() {
-    this.initTimeframe.forEach((tf) => this.timeframes.push(tf));
+    this.initTimeframes.forEach((tf) => this.timeframes.push(tf));
   },
   methods: {
     addTimeframe(timeframe) {
       this.timeframes.push(timeframe);
-      console.log(this.timeframes);
     },
   },
 };

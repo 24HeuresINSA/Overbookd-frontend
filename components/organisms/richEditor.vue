@@ -37,7 +37,7 @@ export default {
   name: "RichEditor",
   // specify TiptapVuetify component in "components"
   components: { TiptapVuetify },
-  props: ["value", "disabled"],
+  props: ["data", "disabled"],
   data: () => ({
     // declare extensions you want to use
     extensions: [
@@ -72,9 +72,12 @@ export default {
     content() {
       this.$emit("change", this.content);
     },
+    data: function () {
+      this.content = this.data;
+    },
   },
   mounted() {
-    this.content = this.value;
+    this.content = this.data;
   },
 };
 </script>

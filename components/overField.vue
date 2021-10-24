@@ -35,6 +35,7 @@
       v-else-if="mField.type === 'rich-text'"
       v-model="value"
       :disabled="disabled"
+      :data="value"
       @change="onChange"
     ></RichEditor>
     <v-switch
@@ -149,11 +150,11 @@ export default {
   },
 
   methods: {
-    onChange() {
+    onChange(value) {
       if (typeof this.field.value === "string") {
-        this.value = this.value.trim();
+        value = value.trim();
       }
-      this.$emit("value", { key: this.field.key, value: this.value });
+      this.$emit("value", { key: this.field.key, value });
     },
 
     allowedMinutes: (m) => m % 15 === 0,

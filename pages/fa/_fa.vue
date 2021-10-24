@@ -31,7 +31,10 @@
       @form-change="updateForm('details', $event)"
     ></FormCard>
     <br />
-    <TimeframeTable></TimeframeTable>
+    <TimeframeTable
+      :init-timeframes="FA.timeframes"
+      @form-change="updateForm('timeframes', $event)"
+    ></TimeframeTable>
     <br />
     <FormCard
       title="Sécu"
