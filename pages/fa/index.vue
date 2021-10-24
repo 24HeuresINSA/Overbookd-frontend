@@ -2,9 +2,9 @@
   <div>
     <h1>Fiche Animation 🎉</h1>
 
-    <v-container style="display: grid">
+    <v-container style="display: grid; width: 100%; margin: auto">
       <v-row>
-        <v-col cols="2">
+        <v-col md="2">
           <v-container style="padding: 0">
             <v-card>
               <v-card-title>Filters</v-card-title>
@@ -49,7 +49,7 @@
           </v-container>
         </v-col>
 
-        <v-col cols="10">
+        <v-col md="10">
           <v-data-table
             :headers="headers"
             :items="selectedFAs"
@@ -62,12 +62,10 @@
                   <v-btn
                     class="mx-2"
                     icon
-                    dark
                     small
-                    color="primary"
                     @click="onItemSelected(row.item)"
                   >
-                    <v-icon dark>mdi-circle-edit-outline</v-icon>
+                    <v-icon small>mdi-circle-edit-outline</v-icon>
                   </v-btn>
                 </td>
               </tr>
@@ -111,9 +109,9 @@ export default {
       selectedTeam: undefined,
       headers: [
         { text: "status", value: "status" },
-        { text: "nom", value: "name" },
-        { text: "equipe", value: "team" },
-        { text: "Resp", value: "inCharge" },
+        { text: "nom", value: "general.name" },
+        { text: "equipe", value: "general.team" },
+        { text: "Resp", value: "general.inCharge.username" },
         { text: "action", value: "action" },
       ],
       color: {

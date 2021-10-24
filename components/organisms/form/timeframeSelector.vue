@@ -1,6 +1,17 @@
 <template>
-  <div v-if="!disabled" style="display: flex; flex-direction: row">
-    <v-date-picker v-model="mTimeframe.date"></v-date-picker>
+  <div
+    v-if="!disabled"
+    style="
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+    "
+  >
+    <v-date-picker
+      v-model="mTimeframe.date"
+      first-day-of-week="1"
+    ></v-date-picker>
     <div style="display: flex; flex-direction: column">
       <v-select
         v-model="mTimeframe.start"
@@ -20,8 +31,8 @@
       ></v-select>
     </div>
     <div style="display: flex; flex-direction: column">
-      <v-btn @click="addTimeframe">ajouter</v-btn>
-      <v-btn>ajouter toute la jounée</v-btn>
+      <v-btn text @click="addTimeframe">ajouter</v-btn>
+      <v-btn text>ajouter toute la jounée</v-btn>
     </div>
   </div>
 </template>

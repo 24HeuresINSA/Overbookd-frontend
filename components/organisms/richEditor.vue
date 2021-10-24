@@ -5,6 +5,7 @@
       v-model="content"
       :aria-disabled="disabled"
       :extensions="extensions"
+      :toolbar-attributes="{ color: 'black', dark: true }"
     />
 
     <template #placeholder> Loading... </template>

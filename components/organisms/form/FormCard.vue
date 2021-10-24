@@ -5,6 +5,7 @@
       <OverForm
         :fields="FORM"
         :disabled="isDisabled"
+        :data="data"
         @form-change="onFormChange"
       ></OverForm>
     </v-card-text>
@@ -18,6 +19,10 @@ export default {
   name: "FormCard",
   components: { OverForm },
   props: {
+    topic: {
+      type: String,
+      default: () => "",
+    },
     title: {
       type: String,
       default: () => {
@@ -42,8 +47,16 @@ export default {
       FORM: undefined,
     };
   },
+  computed: {
+    mFA: function () {
+      return this.$accessor.FA.mFA || {};
+    },
+    data: function () {
+      return this.$store.state.FA.mFA[this.topic];
+    },
+  },
   mounted() {
-    this.FORM = this.$accessor.config.getConfig(this.formKey);
+    this.FORM = Array.from(this.$accessor.config.getConfig(this.formKey));
   },
   methods: {
     onFormChange(form) {

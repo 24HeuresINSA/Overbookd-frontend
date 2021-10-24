@@ -2,7 +2,7 @@
   <div>
     <v-text-field
       v-if="mField.type === 'string' || mField.type === undefined"
-      v-model="mField.value"
+      v-model="value"
       :rules="
         field.regex
           ? [
@@ -25,7 +25,7 @@
     ></v-text-field>
     <v-textarea
       v-else-if="mField.type === 'textarea'"
-      v-model="mField.value"
+      v-model="value"
       :label="mField.label ? mField.label : mField.key"
       required
       :disabled="disabled"
@@ -33,27 +33,38 @@
     ></v-textarea>
     <RichEditor
       v-else-if="mField.type === 'rich-text'"
-      v-model="mField.value"
+      v-model="value"
       :disabled="disabled"
       @change="onChange"
     ></RichEditor>
     <v-switch
       v-else-if="mField.type === 'switch'"
-      v-model="mField.value"
+      v-model="value"
       :label="mField.label ? mField.label : mField.key"
       @change="onChange"
     ></v-switch>
     <v-select
       v-else-if="mField.type === 'select'"
-      v-model="mField.value"
+      v-model="value"
       :label="mField.label ? mField.label : mField.key"
       :items="mField.options"
       :disabled="disabled"
+      :multiple="mField.multiple"
+      dense
+      @change="onChange"
+    ></v-select>
+    <v-select
+      v-else-if="mField.type === 'teams'"
+      v-model="value"
+      :label="mField.label ? mField.label : mField.key"
+      :items="teams"
+      :disabled="disabled"
+      dense
       @change="onChange"
     ></v-select>
     <v-datetime-picker
       v-if="mField.type === 'datetime'"
-      v-model="mField.value"
+      v-model="value"
       :label="mField.label ? mField.label : mField.key"
       :disabled="disabled"
       @change="onChange"
@@ -66,7 +77,7 @@
         }}
       </p>
       <v-date-picker
-        v-model="mField.value"
+        v-model="value"
         :label="mField.label ? mField.label : mField.key"
         :active-picker.sync="activePicker"
         :disabled="disabled"
@@ -75,16 +86,17 @@
     </div>
     <v-autocomplete
       v-else-if="mField.type === 'user'"
-      v-model="mField.value"
+      v-model="value"
       :label="mField.label ? mField.label : mField.key"
       :items="users"
       :disabled="disabled"
+      dense
       @change="onChange"
     ></v-autocomplete>
 
     <v-time-picker
       v-if="mField.type === 'time'"
-      v-model="mField.value"
+      v-model="value"
       :label="mField.label ? mField.label : mField.key"
       format="24hr"
       :allowed-minutes="allowedMinutes"
@@ -100,7 +112,7 @@ import RichEditor from "~/components/organisms/richEditor";
 export default {
   name: "OverField",
   components: { RichEditor },
-  props: ["field", "disabled"],
+  props: ["field", "data", "disabled"],
   data() {
     return {
       activePicker: null,
@@ -108,7 +120,18 @@ export default {
       users: undefined,
       mField: this.field,
       value: undefined,
+      teams: [],
     };
+  },
+
+  watch: {
+    data: {
+      deep: true,
+      handler() {
+        console.log("[OF]: data", this.data);
+        this.value = this.data;
+      },
+    },
   },
 
   async mounted() {
@@ -121,14 +144,17 @@ export default {
         };
       });
     }
+    if (this.field.type === "teams") {
+      this.teams = this.$accessor.config.getConfig("teams").map((t) => t.name);
+    }
   },
 
   methods: {
     onChange() {
       if (typeof this.field.value === "string") {
-        this.mField.value = this.mField.value.trim();
+        this.value = this.value.trim();
       }
-      this.$emit("value", { key: this.field.key, value: this.field.value });
+      this.$emit("value", { key: this.field.key, value: this.value });
     },
 
     allowedMinutes: (m) => m % 15 === 0,

@@ -2,9 +2,10 @@
   <div>
     <OverField
       v-for="field in fields"
-      :key="field.label"
+      :key="field.key"
       :field="field"
       :disabled="disabled"
+      :data="getData(field.key)"
       @value="onValueChange"
     >
     </OverField>
@@ -17,7 +18,7 @@ import OverField from "./overField";
 export default {
   name: "OverForm",
   components: { OverField },
-  props: ["fields", "disabled"],
+  props: ["fields", "data", "disabled"],
 
   data() {
     return {
@@ -25,9 +26,24 @@ export default {
     };
   },
 
+  watch: {
+    data: {
+      deep: true,
+      handler() {
+        console.log("old data: ", this.data);
+      },
+    },
+  },
+
   mounted() {},
 
   methods: {
+    getData(key) {
+      if (this.data) {
+        return this.data[key];
+      }
+    },
+
     onValueChange({ key, value }) {
       this.compiledForm[key] = value;
       let isValid = true;
@@ -45,7 +61,6 @@ export default {
         } else {
           if (field.isRequired === true) {
             isValid = false;
-            // console.log('field ' + field.key + ' is required')
           }
         }
       });

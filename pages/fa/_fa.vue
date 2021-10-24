@@ -17,11 +17,28 @@
     </div>
     <br />
 
-    <FormCard title="Général" form-key="fa_general_form"></FormCard>
+    <FormCard
+      title="Général"
+      form-key="fa_general_form"
+      topic="general"
+      @form-change="updateForm('general', $event)"
+    ></FormCard>
     <br />
-    <FormCard title="Detail" form-key="fa_details_form"></FormCard>
+    <FormCard
+      title="Détail"
+      form-key="fa_details_form"
+      topic="details"
+      @form-change="updateForm('details', $event)"
+    ></FormCard>
     <br />
     <TimeframeTable></TimeframeTable>
+    <br />
+    <FormCard
+      title="Sécu"
+      topic="security"
+      form-key="fa_security_form"
+      @form-change="updateForm('security', $event)"
+    ></FormCard>
 
     <!--    <v-divider></v-divider>-->
     <!--    <h2>Créneaux ⏱</h2>-->
@@ -248,22 +265,22 @@
     <!--      </v-card>-->
     <!--    </v-dialog>-->
 
-    <!--    <v-snackbar v-model="isSnackbar" :timeout="5000">-->
-    <!--      {{ snackbarMessage }}-->
+    <v-snackbar v-model="isSnackbar" :timeout="5000">
+      {{ snackbarMessage }}
 
-    <!--      <template #action="{ attrs }">-->
-    <!--        <v-btn color="blue" text v-bind="attrs" @click="isSnackbar = false">-->
-    <!--          Close-->
-    <!--        </v-btn>-->
-    <!--      </template>-->
-    <!--    </v-snackbar>-->
+      <template #action="{ attrs }">
+        <v-btn color="blue" text v-bind="attrs" @click="isSnackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
 <script>
 import FormCard from "../../components/organisms/form/FormCard";
 import TimeframeTable from "../../components/organisms/timeframeTable";
-
+import { RepoFactory } from "../../repositories/repoFactory";
 export default {
   name: "Fa",
   components: { TimeframeTable, FormCard },
@@ -272,7 +289,17 @@ export default {
     return {
       FAID: this.$route.params.fa,
       isNewFA: this.$route.params.fa === "newFA",
-      FA: {},
+      FA: {
+        general: {},
+        details: {},
+        security: {},
+        timeframes: [],
+        material: {},
+        barriers: {},
+        electricity: {},
+      },
+      FARepo: RepoFactory.faRepo,
+      FAStore: undefined,
       dialog: false,
       dialogValidator: false,
       dialogModifySelectedItem: false,
@@ -316,14 +343,21 @@ export default {
       teams: undefined,
     };
   },
-  async mounted() {
+  async beforeMount() {
     this.validators = this.$accessor.config.getConfig("fa_validators");
+    this.FAStore = this.$accessor.FA;
     this.teams = this.$accessor.config.getConfig("teams");
+
+    // get FA if not new FA
+    if (!this.isNewFA) {
+      this.FA = (await this.FARepo.getFAByCount(this, this.FAID)).data;
+      this.FAStore.setFA(this.FA);
+    }
   },
 
   methods: {
     getUser() {
-      return this.$store.state.user.data;
+      return this.$accessor.user.me;
     },
     getValidatorIcon(validator) {
       try {
@@ -358,11 +392,11 @@ export default {
 
     async saveFA() {
       // save the FA in the DB
-      this.FA.equipments = this.selectedEquipments;
+      // this.FA.equipments = this.selectedEquipments;
       if (this.isNewFA) {
-        await this.$axios.post("/fa", this.FA);
+        await this.FARepo.createNewFA(this, this.FA);
       } else {
-        await this.$axios.put("/fa", this.FA);
+        await this.FARepo.updateFA(this, this.FA);
       }
       this.isSnackbar = true;
     },
@@ -458,11 +492,20 @@ export default {
       this.dialogModifySelectedItem = false;
     },
 
-    onFormChange(form) {
-      const count = this.FA.count;
-      this.FA = form;
-      this.FA.count = count;
+    updateForm(section, form) {
+      console.log(this.FA[section]);
+      console.log(form);
+      let newForm = {};
+      newForm[section] = form;
+      this.FAStore.assignFA(newForm);
     },
+
+    // onFormChange(form) {
+    //   console.log(form)
+    //   const count = this.FA.count;
+    //   this.FA = form;
+    //   this.FA.count = count;
+    // },
 
     async addFT() {
       if (!this.FA.FTs) {
