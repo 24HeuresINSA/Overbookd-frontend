@@ -1,10 +1,11 @@
 import { actionTree, getterTree, mutationTree } from "typed-vuex";
+import { FA } from "~/utils/models/FA";
 
 export const state = () => ({
   mFA: {
-    timeframes: [] as any,
     equipments: [] as any,
-  },
+    timeframes: [] as any,
+  } as FA,
 });
 
 export const getters = getterTree(state, {
@@ -15,19 +16,16 @@ export const getters = getterTree(state, {
 
 export const mutations = mutationTree(state, {
   ASSIGN_FA: function (state, data) {
-    Object.keys(data).forEach((key) => {
+    Object.keys(data).forEach((key: string) => {
       // @ts-ignore
-      Object.assign(state.mFA[key], data[key]);
+      if (state.mFA[key]) {
+        // @ts-ignore
+        Object.assign(state.mFA[key], data[key]);
+      }
     });
   },
   SET_FA: function (state, mFA) {
     state.mFA = mFA;
-  },
-  RESET_FA: function (state) {
-    state.mFA = {
-      timeframes: [],
-      equipments: [],
-    };
   },
   ADD_TIMEFRAME: function (state, timeframe) {
     state.mFA.timeframes.push(timeframe);
@@ -40,7 +38,16 @@ export const mutations = mutationTree(state, {
   },
   UPDATE_REQUIRED_EQUIPMENT: function (state, { _id, count }) {
     const equipment = state.mFA.equipments.find((e: any) => e._id === _id);
-    equipment.required = count;
+    if (equipment) {
+      equipment.required = count;
+    }
+  },
+  DELETE_EQUIPMENT: function (state, _id) {
+    // @ts-ignore
+    state.mFA.equipments = state.mFA.equipments.filter(
+      (e: any) => e._id !== _id
+    );
+    console.log(state.mFA);
   },
 });
 
@@ -64,6 +71,9 @@ export const actions = actionTree(
     },
     updateEquipmentRequiredCount: function ({ commit }, payload) {
       commit("UPDATE_REQUIRED_EQUIPMENT", payload);
+    },
+    deleteEquipment: function ({ commit }, payload) {
+      commit("DELETE_EQUIPMENT", payload);
     },
     setFA: function ({ commit }, payload) {
       console.log("FA set");

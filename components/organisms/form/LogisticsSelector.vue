@@ -1,8 +1,8 @@
 <template>
-  <v-data-table :headers="headers" :items="inventory">
+  <v-data-table :headers="headers" :items="inventory" dense>
     <template #[`item.action`]="{ item }">
       <v-btn icon @click="addItemToFA(item)">
-        <v-icon> mdi-plus </v-icon>
+        <v-icon> mdi-plus</v-icon>
       </v-btn>
     </template>
   </v-data-table>

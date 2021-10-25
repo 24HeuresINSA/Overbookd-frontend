@@ -1,5 +1,5 @@
 <template>
-  <v-data-table :headers="headers" :items="equipments">
+  <v-data-table :headers="headers" :items="equipments" dense>
     <template #[`item.action`]="{ item, index }">
       <div style="display: flex; align-items: center">
         <v-text-field
@@ -9,7 +9,7 @@
           :value="item.required"
           @change="updateItems(item, $event)"
         ></v-text-field>
-        <v-btn icon>
+        <v-btn icon @click="deleteEquipment(item._id)">
           <v-icon>mdi-trash-can</v-icon>
         </v-btn>
       </div>
@@ -48,6 +48,9 @@ export default {
       console.log(item);
       console.log(e);
       this.store.updateEquipmentRequiredCount({ _id: item._id, count: +e });
+    },
+    deleteEquipment(id) {
+      this.store.deleteEquipment(id);
     },
   },
 };

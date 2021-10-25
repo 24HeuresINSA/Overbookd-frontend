@@ -297,13 +297,6 @@ export default {
     return {
       FAID: this.$route.params.fa,
       isNewFA: this.$route.params.fa === "newFA",
-      FA: {
-        general: {},
-        details: {},
-        security: {},
-        timeframes: [],
-        equipments: [],
-      },
       FARepo: RepoFactory.faRepo,
       FAStore: undefined,
       dialog: false,
@@ -349,6 +342,12 @@ export default {
       teams: undefined,
     };
   },
+
+  computed: {
+    FA: function () {
+      return this.$store.state.FA.mFA;
+    },
+  },
   async beforeMount() {
     this.validators = this.$accessor.config.getConfig("fa_validators");
     this.FAStore = this.$accessor.FA;
@@ -356,8 +355,8 @@ export default {
 
     // get FA if not new FA
     if (!this.isNewFA) {
-      this.FA = (await this.FARepo.getFAByCount(this, this.FAID)).data;
-      this.FAStore.setFA(this.FA);
+      let FA = (await this.FARepo.getFAByCount(this, this.FAID)).data;
+      this.FAStore.setFA(FA);
     }
   },
 

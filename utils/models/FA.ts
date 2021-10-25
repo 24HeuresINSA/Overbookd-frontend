@@ -1,12 +1,9 @@
-export interface IFA {
+export interface FA {
   count: number;
   general?: {
     name: string;
     type: string;
   };
-}
-
-export class FA implements IFA {
-  count = 0;
-  general: undefined;
+  equipments: { _id: string; name: string; required: number }[];
+  timeframes: { start: Date; end: Date }[];
 }
