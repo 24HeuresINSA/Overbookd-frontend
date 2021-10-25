@@ -5,6 +5,7 @@ export const state = () => ({
   mFA: {
     equipments: [] as any,
     timeframes: [] as any,
+    validated: [] as any,
   } as FA,
 });
 
@@ -48,6 +49,16 @@ export const mutations = mutationTree(state, {
       (e: any) => e._id !== _id
     );
   },
+  VALIDATE_FA: function (state, validator) {
+    if (state.mFA.validated === undefined) {
+      // init if not existing
+      state.mFA.validated = [];
+    }
+    if (!state.mFA.validated.find((v) => v === validator)) {
+      // avoid duplicates
+      state.mFA.validated.push(validator);
+    }
+  },
 });
 
 export const actions = actionTree(
@@ -75,8 +86,10 @@ export const actions = actionTree(
       commit("DELETE_EQUIPMENT", payload);
     },
     setFA: function ({ commit }, payload) {
-      console.log("FA set");
       commit("SET_FA", payload);
+    },
+    validate: function ({ commit }, payload) {
+      commit("VALIDATE_FA", payload);
     },
     resetFA: function ({ commit }, payload) {
       commit("SET_FA", payload);

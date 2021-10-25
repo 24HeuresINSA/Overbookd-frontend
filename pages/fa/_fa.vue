@@ -10,7 +10,7 @@
       <v-icon
         v-for="(validator, i) of validators"
         :key="i"
-        :color="validator.status ? color[validator.status] : 'grey'"
+        :color="getIconColor(validator)"
       >
         {{ getValidatorIcon(validator) }}
       </v-icon>
@@ -193,6 +193,7 @@
         z-index: 30;
       "
     >
+      <v-btn @click="validate">validé</v-btn>
       <v-btn color="secondary" @click="dialog = true"
         >soumettre à validation
       </v-btn>
@@ -355,6 +356,9 @@ export default {
     FA: function () {
       return this.$store.state.FA.mFA;
     },
+    me: function () {
+      return this.$store.state.user.me;
+    },
   },
   async beforeMount() {
     this.validators = this.$accessor.config.getConfig("fa_validators");
@@ -381,11 +385,23 @@ export default {
     },
 
     hasRole(role) {
-      const teams = this.getUser()?.team;
-      if (teams === undefined) {
-        return false;
+      return this.me.team.includes(role);
+    },
+
+    getIconColor(validator) {
+      if (this.FA.validated) {
+        if (this.FA.validated.find((v) => v === validator)) {
+          return this.color.validated;
+        }
       }
-      return teams.includes(role);
+      if (this.FA.refused) {
+        if (this.FA.refused.find((v) => v === validator)) {
+          return this.color.refused;
+        }
+      }
+      if (this.FA.status === "submitted") {
+        return this.color.submitted;
+      }
     },
 
     async fetchFAbyID(id) {
@@ -427,8 +443,8 @@ export default {
     getValidator() {
       let mValidator = null;
       this.validators.forEach((validator) => {
-        if (this.hasRole(validator.name)) {
-          mValidator = validator.name;
+        if (this.hasRole(validator)) {
+          mValidator = validator;
         }
       });
       return mValidator;
@@ -443,22 +459,24 @@ export default {
 
     validate() {
       const validator = this.getValidator();
-      if (this.FA.validated === undefined) {
-        this.FA.validated = [];
-      }
-      if (this.FA.refused) {
-        this.FA.refused = this.FA.refused.filter((e) => e !== validator);
-      }
-      this.addComment("validated");
-
-      this.FA.validated.push(validator);
-
-      if (this.FA.validated.length === this.validators.length) {
-        this.FA.status = "validated";
-        this.addComment("accepted");
-      }
-      this.dialog = false;
-      this.saveFA();
+      this.FAStore.validate(validator);
+      console.log(this.FA.validated);
+      // if (this.FA.validated === undefined) {
+      //   this.FA.validated = [];
+      // }
+      // if (this.FA.refused) {
+      //   this.FA.refused = this.FA.refused.filter((e) => e !== validator);
+      // }
+      // this.addComment("validated");
+      //
+      // this.FA.validated.push(validator);
+      //
+      // if (this.FA.validated.length === this.validators.length) {
+      //   this.FA.status = "validated";
+      //   this.addComment("accepted");
+      // }
+      // this.dialog = false;
+      // this.saveFA();
     },
 
     refuse() {
