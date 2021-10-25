@@ -40,7 +40,7 @@ export default {
       return this.$store.state.FA.mFA;
     },
     equipments: function () {
-      return this.mFA.equipments;
+      return this.mFA.equipments.filter((e) => e.type === this.type);
     },
   },
   methods: {

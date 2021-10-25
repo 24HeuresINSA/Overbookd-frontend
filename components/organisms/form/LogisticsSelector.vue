@@ -40,6 +40,7 @@ export default {
       this.store.addEquipmentToFA({
         _id: item._id,
         name: item.name,
+        type: this.type,
       });
     },
   },

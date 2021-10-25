@@ -47,7 +47,6 @@ export const mutations = mutationTree(state, {
     state.mFA.equipments = state.mFA.equipments.filter(
       (e: any) => e._id !== _id
     );
-    console.log(state.mFA);
   },
 });
 

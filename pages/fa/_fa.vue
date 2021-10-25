@@ -46,6 +46,14 @@
     <br />
     <h2>Logistique 🚚</h2>
     <LogisticsCard title="Matos" type="gros" :store="FAStore"></LogisticsCard>
+    <br />
+    <LogisticsCard
+      title="Barrieres"
+      type="barrieres"
+      :store="FAStore"
+    ></LogisticsCard>
+    <br />
+    <LogisticsCard title="Elec" type="elec" :store="FAStore"></LogisticsCard>
 
     <!--    <v-divider></v-divider>-->
     <!--    <h2>Créneaux ⏱</h2>-->
