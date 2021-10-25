@@ -43,6 +43,10 @@
       @form-change="updateForm('security', $event)"
     ></FormCard>
 
+    <br />
+    <h2>Logistique 🚚</h2>
+    <LogisticsCard title="Matos" type="gros" :store="FAStore"></LogisticsCard>
+
     <!--    <v-divider></v-divider>-->
     <!--    <h2>Créneaux ⏱</h2>-->
     <!--    <v-simple-table v-if="FA.schedules">-->
@@ -284,9 +288,10 @@
 import FormCard from "../../components/organisms/form/FormCard";
 import TimeframeTable from "../../components/organisms/timeframeTable";
 import { RepoFactory } from "../../repositories/repoFactory";
+import LogisticsCard from "../../components/organisms/form/LogisticsCard";
 export default {
   name: "Fa",
-  components: { TimeframeTable, FormCard },
+  components: { LogisticsCard, TimeframeTable, FormCard },
 
   data() {
     return {
@@ -297,9 +302,7 @@ export default {
         details: {},
         security: {},
         timeframes: [],
-        material: {},
-        barriers: {},
-        electricity: {},
+        equipments: [],
       },
       FARepo: RepoFactory.faRepo,
       FAStore: undefined,

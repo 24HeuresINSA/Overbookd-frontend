@@ -1,8 +1,15 @@
-import { actionTree, mutationTree } from "typed-vuex";
+import { actionTree, getterTree, mutationTree } from "typed-vuex";
 
 export const state = () => ({
   mFA: {
-    timeframes: [],
+    timeframes: [] as any,
+    equipments: [] as any,
+  },
+});
+
+export const getters = getterTree(state, {
+  getEquipments: function (state) {
+    return state.mFA.equipments;
   },
 });
 
@@ -19,11 +26,14 @@ export const mutations = mutationTree(state, {
   RESET_FA: function (state) {
     state.mFA = {
       timeframes: [],
+      equipments: [],
     };
   },
   ADD_TIMEFRAME: function (state, timeframe) {
-    // @ts-ignore
     state.mFA.timeframes.push(timeframe);
+  },
+  ADD_EQUIPMENT: function (state, equipment) {
+    state.mFA.equipments.push(equipment);
   },
   DELETE_TIMEFRAME: function (state, index) {
     state.mFA.timeframes.splice(index, 1);
@@ -38,6 +48,11 @@ export const actions = actionTree(
     },
     addTimeframeToFA: function ({ commit }, payload) {
       commit("ADD_TIMEFRAME", payload);
+    },
+    addEquipmentToFA: function ({ commit, state }, payload) {
+      if (!state.mFA.equipments.find((e: any) => payload._id === e._id)) {
+        commit("ADD_EQUIPMENT", payload);
+      }
     },
     deleteTimeframe: function ({ commit }, payload) {
       commit("DELETE_TIMEFRAME", payload);
