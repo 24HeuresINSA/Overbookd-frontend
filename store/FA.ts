@@ -38,6 +38,10 @@ export const mutations = mutationTree(state, {
   DELETE_TIMEFRAME: function (state, index) {
     state.mFA.timeframes.splice(index, 1);
   },
+  UPDATE_REQUIRED_EQUIPMENT: function (state, { _id, count }) {
+    const equipment = state.mFA.equipments.find((e: any) => e._id === _id);
+    equipment.required = count;
+  },
 });
 
 export const actions = actionTree(
@@ -51,11 +55,15 @@ export const actions = actionTree(
     },
     addEquipmentToFA: function ({ commit, state }, payload) {
       if (!state.mFA.equipments.find((e: any) => payload._id === e._id)) {
+        payload.required = 1;
         commit("ADD_EQUIPMENT", payload);
       }
     },
     deleteTimeframe: function ({ commit }, payload) {
       commit("DELETE_TIMEFRAME", payload);
+    },
+    updateEquipmentRequiredCount: function ({ commit }, payload) {
+      commit("UPDATE_REQUIRED_EQUIPMENT", payload);
     },
     setFA: function ({ commit }, payload) {
       console.log("FA set");
