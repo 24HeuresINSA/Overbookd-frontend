@@ -55,8 +55,10 @@ export default {
       start: undefined,
       end: undefined,
     },
+    eventDate: undefined,
   }),
   mounted() {
+    this.mTimeframe.date = this.$accessor.config.getConfig("event_date"); // center on event date
     for (let hour = 0; hour < 24; hour++) {
       for (let minute = 0; minute < 60; minute += 15) {
         this.possibleTimeframes.push({
