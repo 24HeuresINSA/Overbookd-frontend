@@ -328,35 +328,36 @@ export default {
       }
 
       let transactions = usersWithConsumptions.map((user) => {
-        if (this.isExpenseMode) {
-          let amount;
-          if (this.mode === "cask") {
-            amount = this.round(this.stickPrice * user.newConsumption);
-          } else {
-            amount = this.round(+this.settledStickPrice * +user.newConsumption);
-          }
-          return {
-            type: "expense",
-            from: user.keycloakID,
-            to: null,
-            createdAt: new Date(),
-            amount,
-            context:
-              this.mode === "cask"
-                ? `Conso au local de ${user.newConsumption} bâton à ${(+this
-                    .stickPrice).toFixed(2)} €`
-                : `Conso placard:  ${user.newConsumption} bâton`,
-          };
-        } else {
-          user.newConsumption = user.newConsumption.replace(",", ".");
-          return {
-            type: "deposit",
-            from: null,
-            to: user.keycloakID,
-            createdAt: new Date(),
-            amount: (+user.newConsumption).toFixed(2),
-            context: `Recharge de compte perso le ${new Date().toDateString()}`,
-          };
+        switch (this.mode) {
+          case "cask":
+            return {
+              type: "expense",
+              from: user.keycloakID,
+              to: null,
+              createdAt: new Date(),
+              amount: this.stickPrice * user.newConsumption,
+              context: `Conso au local de ${
+                user.newConsumption
+              } bâton à ${(+this.stickPrice).toFixed(2)} €`,
+            };
+          case "closet":
+            return {
+              type: "expense",
+              from: user.keycloakID,
+              to: null,
+              createdAt: new Date(),
+              amount: +this.settledStickPrice * +user.newConsumption,
+              context: `Conso placard:  ${user.newConsumption} bâton`,
+            };
+          case "deposit":
+            return {
+              type: "deposit",
+              from: null,
+              to: user.keycloakID,
+              createdAt: new Date(),
+              amount: (+user.newConsumption).toFixed(2),
+              context: `Recharge de compte perso le ${new Date().toDateString()}`,
+            };
         }
       });
       await transactionRepo.createTransactions(this, transactions);
