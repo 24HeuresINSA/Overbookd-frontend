@@ -1,5 +1,6 @@
 export interface FA {
   count: number;
+  status: string;
   general?: {
     name: string;
     type: string;
@@ -7,5 +8,6 @@ export interface FA {
   equipments: { _id: string; name: string; required: number }[];
   timeframes: { start: Date; end: Date }[];
   validated: String[];
-  comments: [];
+  refused: String[];
+  comments: { time: Date; text: string; validator: string }[];
 }

@@ -7,9 +7,10 @@
           type="number"
           label="# requit"
           :value="item.required"
+          :disabled="disabled"
           @change="updateItems(item, $event)"
         ></v-text-field>
-        <v-btn icon @click="deleteEquipment(item._id)">
+        <v-btn v-if="!disabled" icon @click="deleteEquipment(item._id)">
           <v-icon>mdi-trash-can</v-icon>
         </v-btn>
       </div>
@@ -27,6 +28,10 @@ export default {
     store: {
       type: Object,
       default: () => {},
+    },
+    disabled: {
+      type: Boolean,
+      default: () => false,
     },
   },
   data: () => ({

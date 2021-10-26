@@ -33,6 +33,7 @@
     <br />
     <TimeframeTable
       :init-timeframes="FA.timeframes"
+      :disabled="!isValidated('human')"
       @form-change="updateForm('timeframes', $event)"
     ></TimeframeTable>
     <br />
@@ -45,15 +46,26 @@
 
     <br />
     <h2>Logistique 🚚</h2>
-    <LogisticsCard title="Matos" type="gros" :store="FAStore"></LogisticsCard>
+    <LogisticsCard
+      title="Matos"
+      type="gros"
+      :store="FAStore"
+      :disabled="isValidated('log')"
+    ></LogisticsCard>
     <br />
     <LogisticsCard
       title="Barrieres"
       type="barrieres"
       :store="FAStore"
+      :disabled="isValidated('barrieres')"
     ></LogisticsCard>
     <br />
-    <LogisticsCard title="Elec" type="elec" :store="FAStore"></LogisticsCard>
+    <LogisticsCard
+      title="Elec"
+      type="elec"
+      :store="FAStore"
+      :disabled="isValidated('elec')"
+    ></LogisticsCard>
 
     <!--    <v-divider></v-divider>-->
     <!--    <h2>Créneaux ⏱</h2>-->
@@ -193,7 +205,8 @@
         z-index: 30;
       "
     >
-      <v-btn @click="validate">validé</v-btn>
+      <v-btn color="red" @click="refuseDialog = true">refusé</v-btn>
+      <v-btn color="green" @click="validate">validé</v-btn>
       <v-btn color="secondary" @click="dialog = true"
         >soumettre à validation
       </v-btn>
@@ -226,22 +239,20 @@
     <!--      </v-card>-->
     <!--    </v-dialog>-->
 
-    <!--    <v-dialog v-model="dialogValidator" max-width="600px">-->
-    <!--      <v-card>-->
-    <!--        <v-card-title>-->
-    <!--          <span class="text-h5">Refuse FA</span>-->
-    <!--        </v-card-title>-->
-    <!--        <v-card-text>-->
-    <!--          <h4>pourquoi c'est de la 💩</h4>-->
-    <!--          <p>sans trop de 🧂</p>-->
-    <!--          <v-text-field v-model="refuseComment" required></v-text-field>-->
-    <!--        </v-card-text>-->
-    <!--        <v-card-actions>-->
-    <!--          <v-spacer></v-spacer>-->
-    <!--          <v-btn color="primary" text @click="refuse"> Submit </v-btn>-->
-    <!--        </v-card-actions>-->
-    <!--      </v-card>-->
-    <!--    </v-dialog>-->
+    <v-dialog v-model="refuseDialog" max-width="600px">
+      <v-card>
+        <v-card-title> Refuser </v-card-title>
+        <v-card-text>
+          <h4>pourquoi c'est de la 💩</h4>
+          <p>sans trop de 🧂</p>
+          <v-textarea v-model="refuseComment" required></v-textarea>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="refuse"> enregistrer</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <!--    <v-dialog v-model="dialogModifySelectedItem">-->
     <!--      <v-card>-->
@@ -309,7 +320,7 @@ export default {
       FARepo: RepoFactory.faRepo,
       FAStore: undefined,
       dialog: false,
-      dialogValidator: false,
+      refuseDialog: false,
       dialogModifySelectedItem: false,
       requestedEquipment: undefined,
       refuseComment: "",
@@ -382,6 +393,10 @@ export default {
       } catch (e) {
         console.log(`can't find icon of team ${validator}`);
       }
+    },
+
+    isValidated(validator) {
+      return this.FA.validated.find((v) => v === validator) !== undefined;
     },
 
     hasRole(role) {
@@ -460,35 +475,17 @@ export default {
     validate() {
       const validator = this.getValidator();
       this.FAStore.validate(validator);
-      console.log(this.FA.validated);
-      // if (this.FA.validated === undefined) {
-      //   this.FA.validated = [];
-      // }
-      // if (this.FA.refused) {
-      //   this.FA.refused = this.FA.refused.filter((e) => e !== validator);
-      // }
-      // this.addComment("validated");
-      //
-      // this.FA.validated.push(validator);
-      //
-      // if (this.FA.validated.length === this.validators.length) {
-      //   this.FA.status = "validated";
-      //   this.addComment("accepted");
-      // }
-      // this.dialog = false;
-      // this.saveFA();
+      this.saveFA();
     },
 
     refuse() {
       // refuse FA
       const validator = this.getValidator();
-      if (this.FA.refused === undefined) {
-        this.FA.refused = [];
-      }
-      this.addComment("refused", this.refuseComment);
-      this.FA.refused.push(validator);
-      this.FA.status = "refused";
-      this.dialogValidator = false;
+      this.FAStore.refuse({
+        validator,
+        comment: this.refuseComment,
+      });
+      this.refuseDialog = false;
       this.saveFA();
     },
 

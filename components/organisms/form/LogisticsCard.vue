@@ -1,8 +1,16 @@
 <template>
   <v-card>
     <v-card-title>{{ title }}</v-card-title>
-    <LogisticsTable :type="type" :store="store"></LogisticsTable>
-    <LogisticsSelector :type="type" :store="store"></LogisticsSelector>
+    <LogisticsTable
+      :type="type"
+      :store="store"
+      :disabled="disabled"
+    ></LogisticsTable>
+    <LogisticsSelector
+      v-if="!disabled"
+      :type="type"
+      :store="store"
+    ></LogisticsSelector>
   </v-card>
 </template>
 
@@ -25,6 +33,10 @@ export default {
     store: {
       type: Object,
       default: () => null,
+    },
+    disabled: {
+      type: Boolean,
+      default: () => false,
     },
   },
 };

@@ -3,9 +3,11 @@ import { FA } from "~/utils/models/FA";
 
 export const state = () => ({
   mFA: {
+    status: "draft",
     equipments: [] as any,
     timeframes: [] as any,
     validated: [] as any,
+    refused: [] as any,
   } as FA,
 });
 
@@ -57,7 +59,26 @@ export const mutations = mutationTree(state, {
     if (!state.mFA.validated.find((v) => v === validator)) {
       // avoid duplicates
       state.mFA.validated.push(validator);
+      if (state.mFA.refused) {
+        // remove validated validator from refused
+        state.mFA.refused = state.mFA.refused.filter((v) => v !== validator);
+      }
     }
+  },
+  REFUSE_FA: function (state, { validator, comment }) {
+    state.mFA.status = "refused";
+    if (!state.mFA.refused) {
+      state.mFA.refused = [];
+    }
+    state.mFA.refused.push(validator);
+    if (!state.mFA.comments) {
+      state.mFA.comments = [];
+    }
+    state.mFA.comments.push({
+      time: new Date(),
+      text: comment,
+      validator,
+    });
   },
 });
 
@@ -90,6 +111,9 @@ export const actions = actionTree(
     },
     validate: function ({ commit }, payload) {
       commit("VALIDATE_FA", payload);
+    },
+    refuse: function ({ commit }, payload) {
+      commit("REFUSE_FA", payload);
     },
     resetFA: function ({ commit }, payload) {
       commit("SET_FA", payload);
