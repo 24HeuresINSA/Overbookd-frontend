@@ -80,6 +80,17 @@ export const mutations = mutationTree(state, {
       validator,
     });
   },
+  SET_STATUS_FA: function (state, { by, status }) {
+    state.mFA.status = status;
+    if (!state.mFA.comments) {
+      state.mFA.comments = [];
+    }
+    state.mFA.comments.push({
+      time: new Date(),
+      text: `changement de status a ${status} par ${by}`,
+      validator: "",
+    });
+  },
 });
 
 export const actions = actionTree(
@@ -111,6 +122,9 @@ export const actions = actionTree(
     },
     validate: function ({ commit }, payload) {
       commit("VALIDATE_FA", payload);
+    },
+    setStatus: function ({ commit }, payload) {
+      commit("SET_STATUS_FA", payload);
     },
     refuse: function ({ commit }, payload) {
       commit("REFUSE_FA", payload);

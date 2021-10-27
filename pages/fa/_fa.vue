@@ -68,90 +68,6 @@
     ></LogisticsCard>
 
     <!--    <v-divider></v-divider>-->
-    <!--    <h2>Créneaux ⏱</h2>-->
-    <!--    <v-simple-table v-if="FA.schedules">-->
-    <!--      <template #default>-->
-    <!--        <thead>-->
-    <!--          <tr>-->
-    <!--            <th class="text-left">jour</th>-->
-    <!--            <th>debut</th>-->
-    <!--            <th class="text-left">fin</th>-->
-    <!--            <th class="text-left">action</th>-->
-    <!--          </tr>-->
-    <!--        </thead>-->
-    <!--        <tbody>-->
-    <!--          <tr-->
-    <!--            v-for="schedule in FA.schedules"-->
-    <!--            :key="schedule.day + schedule.start + schedule.end"-->
-    <!--          >-->
-    <!--            <td>{{ schedule.date }}</td>-->
-    <!--            <td>{{ schedule.start }}</td>-->
-    <!--            <td>{{ schedule.end }}</td>-->
-    <!--            <td><v-btn @click="deleteSchedule(schedule)">🗑</v-btn></td>-->
-    <!--          </tr>-->
-    <!--        </tbody>-->
-    <!--      </template>-->
-    <!--    </v-simple-table>-->
-    <!--    <v-container style="display: grid">-->
-    <!--      <v-row>-->
-    <!--        <v-col>-->
-    <!--          <h3>Date</h3>-->
-    <!--        </v-col>-->
-    <!--        <v-col>-->
-    <!--          <h3>Début</h3>-->
-    <!--        </v-col>-->
-    <!--        <v-col>-->
-    <!--          <h3>Fin</h3>-->
-    <!--        </v-col>-->
-    <!--      </v-row>-->
-    <!--      <v-row>-->
-    <!--        <v-col>-->
-    <!--          <v-date-picker-->
-    <!--            v-model="schedule.date"-->
-    <!--            first-day-of-week="1"-->
-    <!--          ></v-date-picker>-->
-    <!--        </v-col>-->
-    <!--        <v-col>-->
-    <!--          <v-time-picker-->
-    <!--            v-model="schedule.start"-->
-    <!--            :allowed-minutes="allowedMinutes"-->
-    <!--            format="24hr"-->
-    <!--          ></v-time-picker>-->
-    <!--        </v-col>-->
-    <!--        <v-col>-->
-    <!--          <v-time-picker-->
-    <!--            v-model="schedule.end"-->
-    <!--            :allowed-minutes="allowedMinutes"-->
-    <!--            format="24hr"-->
-    <!--          ></v-time-picker>-->
-    <!--        </v-col>-->
-    <!--        <v-btn fab style="margin: 20px" @click="addSchedule">-->
-    <!--          <v-icon> mdi-plus-thick </v-icon>-->
-    <!--        </v-btn>-->
-    <!--      </v-row>-->
-    <!--    </v-container>-->
-
-    <!--    <v-divider></v-divider>-->
-    <!--    <h2>Matos 🚚</h2>-->
-    <!--    <v-data-table :headers="equipmentsHeader" :items="selectedEquipments">-->
-    <!--      <template #top>-->
-    <!--        <v-toolbar flat>-->
-    <!--          <v-toolbar-title>Equipments</v-toolbar-title>-->
-    <!--          <v-divider class="mx-4" inset vertical></v-divider>-->
-    <!--          <v-spacer></v-spacer>-->
-    <!--          <v-btn-->
-    <!--            color="primary"-->
-    <!--            dark-->
-    <!--            class="mb-2"-->
-    <!--            @click="dialogModifySelectedItem = true"-->
-    <!--          >-->
-    <!--            Add new equipment-->
-    <!--          </v-btn>-->
-    <!--        </v-toolbar>-->
-    <!--      </template>-->
-    <!--    </v-data-table>-->
-
-    <!--    <v-divider></v-divider>-->
     <!--    <h2>Comments</h2>-->
     <!--    <v-simple-table v-if="FA.comments">-->
     <!--      <template #default>-->
@@ -205,39 +121,36 @@
         z-index: 30;
       "
     >
+      <v-btn color="green" @click="refuseDialog = true">prêt a affecter</v-btn>
       <v-btn color="red" @click="refuseDialog = true">refusé</v-btn>
       <v-btn color="green" @click="validate">validé</v-btn>
-      <v-btn color="secondary" @click="dialog = true"
+      <v-btn color="secondary" @click="validationDialog = true"
         >soumettre à validation
       </v-btn>
-      <v-btn color="warning" @click="saveFA">sauvgarder 💾</v-btn>
+      <v-btn color="warning" @click="saveFA">sauvgarder</v-btn>
     </div>
 
-    <!--    <v-dialog v-model="dialog" width="500">-->
-    <!--      <v-card>-->
-    <!--        <v-img-->
-    <!--          height="620"-->
-    <!--          src="https://media.discordapp.net/attachments/726537148119122023/806793684598128640/WhatsApp_Image_2021-02-03_at_23.36.35.jpeg"-->
-    <!--        ></v-img>-->
+    <v-dialog v-model="validationDialog" width="500">
+      <v-card>
+        <v-img
+          height="620"
+          src="https://media.discordapp.net/attachments/726537148119122023/806793684598128640/WhatsApp_Image_2021-02-03_at_23.36.35.jpeg"
+        ></v-img>
 
-    <!--        <v-card-title class="text-h5 grey lighten-2">-->
-    <!--          ⚠️ Warning ⚠️-->
-    <!--        </v-card-title>-->
+        <v-card-title> ⚠️ Warning ⚠️ </v-card-title>
 
-    <!--        <v-card-text>-->
-    <!--          {{ dialogText }}-->
-    <!--        </v-card-text>-->
+        <v-card-text> T'es sur de ta merde la ? </v-card-text>
 
-    <!--        <v-divider></v-divider>-->
+        <v-divider></v-divider>
 
-    <!--        <v-card-actions>-->
-    <!--          <v-spacer></v-spacer>-->
-    <!--          <v-btn color="primary" text @click="submitForReview">-->
-    <!--            soumettre-->
-    <!--          </v-btn>-->
-    <!--        </v-card-actions>-->
-    <!--      </v-card>-->
-    <!--    </v-dialog>-->
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="submitForReview">
+            soumettre
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <v-dialog v-model="refuseDialog" max-width="600px">
       <v-card>
@@ -317,16 +230,18 @@ export default {
     return {
       FAID: this.$route.params.fa,
       isNewFA: this.$route.params.fa === "newFA",
+
+      FTname: undefined,
+
       FARepo: RepoFactory.faRepo,
       FAStore: undefined,
-      dialog: false,
+
+      validationDialog: false,
       refuseDialog: false,
-      dialogModifySelectedItem: false,
-      requestedEquipment: undefined,
+
       refuseComment: "",
       isSnackbar: false,
       snackbarMessage: "la FA a bien ete sauvgarder 😅",
-      FTname: undefined,
       schedule: {
         date: undefined,
         start: undefined,
@@ -337,22 +252,7 @@ export default {
         validated: "green",
         refused: "red",
       },
-      availableEquipments: [],
-      selectedEquipments: [],
-      equipmentsHeader: [
-        {
-          text: "name",
-          value: "name",
-        },
-        {
-          text: "disponible",
-          value: "amount",
-        },
-        {
-          text: "sélectionner",
-          value: "selected",
-        },
-      ],
+
       FTHeader: [
         { text: "nom", value: "name" },
         { text: "action", value: "action" },
@@ -419,21 +319,6 @@ export default {
       }
     },
 
-    async fetchFAbyID(id) {
-      return this.$axios.get("fa/" + id);
-    },
-
-    getIcon(comment) {
-      let mValidator = this.validators.find(
-        (v) => v.name === comment.validator
-      );
-      if (mValidator) {
-        return mValidator.icon;
-      }
-    },
-
-    allowedMinutes: (m) => m % 15 === 0,
-
     async saveFA() {
       // save the FA in the DB
       // this.FA.equipments = this.selectedEquipments;
@@ -443,16 +328,6 @@ export default {
         await this.FARepo.updateFA(this, this.FA);
       }
       this.isSnackbar = true;
-    },
-
-    deleteSchedule(schedule) {
-      this.FA.schedules = this.FA.schedules.filter((s) => {
-        return (
-          s.date !== schedule.date &&
-          s.end !== schedule.end &&
-          s.start !== schedule.start
-        );
-      });
     },
 
     getValidator() {
@@ -467,8 +342,11 @@ export default {
 
     submitForReview() {
       // change status to submitted for review and save in DB
-      this.FA.status = "submitted";
-      this.dialog = false;
+      this.FAStore.setStatus({
+        status: "submitted",
+        by: this.me.lastname,
+      });
+      this.validationDialog = false;
       this.saveFA();
     },
 
