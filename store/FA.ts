@@ -1,5 +1,8 @@
 import { actionTree, getterTree, mutationTree } from "typed-vuex";
 import { FA } from "~/utils/models/FA";
+import { FT } from "~/utils/models/FT";
+import { safeCall } from "~/utils/api/calls";
+import { RepoFactory } from "~/repositories/repoFactory";
 
 export const state = () => ({
   mFA: {
@@ -8,6 +11,7 @@ export const state = () => ({
     timeframes: [] as any,
     validated: [] as any,
     refused: [] as any,
+    FTs: [] as FT[],
   } as FA,
 });
 
@@ -38,6 +42,7 @@ export const mutations = mutationTree(state, {
       validated: [],
       refused: [],
       comments: [],
+      FTs: [],
     };
   },
   ADD_TIMEFRAME: function (state, timeframe) {
@@ -127,6 +132,12 @@ export const mutations = mutationTree(state, {
       topic: status,
     });
   },
+  ADD_FT: function (state, FT: FT) {
+    if (state.mFA.FTs === undefined) {
+      state.mFA.FTs = [];
+    }
+    state.mFA.FTs.push(FT);
+  },
 });
 
 export const actions = actionTree(
@@ -167,6 +178,31 @@ export const actions = actionTree(
     },
     resetFA: function ({ commit }, payload) {
       commit("RESET_FA", payload);
+    },
+    addNewFT: async function ({ commit }, name) {
+      const repo = RepoFactory;
+      const FT = {
+        FA: state().mFA.count,
+        general: {
+          name: name,
+        },
+        status: "draft",
+        validated: [] as String[],
+        refused: [] as String[],
+        equipments: [] as any[],
+        timeframes: [] as any[],
+      } as FT;
+      const resFT = await safeCall(this, repo.ftRepo.createFT(this, FT));
+      if (resFT) {
+        // @ts-ignore
+        const resFA = await safeCall(
+          this,
+          repo.faRepo.updateFA(this, this.$accessor.FA.mFA)
+        );
+        if (resFA) {
+          commit("ADD_FT", FT);
+        }
+      }
     },
   }
 );

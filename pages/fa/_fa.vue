@@ -74,6 +74,9 @@
     <br />
     <CommentCard :comments="FA.comments"></CommentCard>
 
+    <br />
+    <FTCard></FTCard>
+
     <div style="height: 100px"></div>
 
     <div
@@ -147,9 +150,11 @@ import TimeframeTable from "../../components/organisms/timeframeTable";
 import { RepoFactory } from "../../repositories/repoFactory";
 import LogisticsCard from "../../components/organisms/form/LogisticsCard";
 import CommentCard from "../../components/organisms/form/CommentCard";
+import FTCard from "../../components/organisms/form/FTCard";
+
 export default {
   name: "Fa",
-  components: { CommentCard, LogisticsCard, TimeframeTable, FormCard },
+  components: { FTCard, CommentCard, LogisticsCard, TimeframeTable, FormCard },
 
   data() {
     return {
@@ -294,37 +299,6 @@ export default {
       });
       this.refuseDialog = false;
       this.saveFA();
-    },
-
-    addComment(action, comment) {
-      if (!this.FA.comments) {
-        this.FA.comments = [];
-      }
-      this.FA.comments.unshift({
-        time: new Date(),
-        action,
-        comment,
-        by: this.getUser().nickname
-          ? this.getUser().nickname
-          : this.getUser().lastname,
-        validator: this.getValidator(),
-      });
-    },
-
-    addSchedule() {
-      if (!this.FA.schedules) {
-        this.$set(this.FA, "schedules", []);
-      }
-      this.$set(this.FA.schedules, this.FA.schedules.length, {
-        ...this.schedule,
-      });
-    },
-
-    saveItems() {
-      this.selectedEquipments = this.availableEquipments.filter(
-        (equipment) => equipment.selected
-      );
-      this.dialogModifySelectedItem = false;
     },
 
     updateForm(section, form) {

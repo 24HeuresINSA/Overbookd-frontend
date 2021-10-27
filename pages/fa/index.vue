@@ -134,7 +134,7 @@ export default {
       mFAs = this.filterBySelectedTeam(mFAs, this.selectedTeam);
       const options = {
         // Search in `author` and in `tags` array
-        keys: ["name", "description"],
+        keys: ["general.name", "details.description"],
       };
       const fuse = new Fuse(mFAs, options);
       if (this.search === undefined || this.search === "") {
@@ -158,8 +158,8 @@ export default {
         return FAs;
       }
       return FAs.filter((FA) => {
-        if (FA.team) {
-          return FA.team === team;
+        if (FA.general && FA.general.team) {
+          return FA.general.team === team;
         } else {
           return false;
         }
@@ -170,7 +170,7 @@ export default {
       if (status === 0) {
         return FAs;
       }
-      const s = ["", "draft", "submitted", "refused", "accepted"];
+      const s = ["", "draft", "submitted", "refused", "validated"];
       FAs = FAs.map((FA) => {
         if (FA) {
           if (FA.status === undefined) {
