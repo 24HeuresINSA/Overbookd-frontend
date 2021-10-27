@@ -67,6 +67,9 @@
       :disabled="isValidated('elec')"
     ></LogisticsCard>
 
+    <br />
+    <CommentCard :comments="FA.comments"></CommentCard>
+
     <!--    <v-divider></v-divider>-->
     <!--    <h2>Comments</h2>-->
     <!--    <v-simple-table v-if="FA.comments">-->
@@ -222,9 +225,10 @@ import FormCard from "../../components/organisms/form/FormCard";
 import TimeframeTable from "../../components/organisms/timeframeTable";
 import { RepoFactory } from "../../repositories/repoFactory";
 import LogisticsCard from "../../components/organisms/form/LogisticsCard";
+import CommentCard from "../../components/organisms/form/CommentCard";
 export default {
   name: "Fa",
-  components: { LogisticsCard, TimeframeTable, FormCard },
+  components: { CommentCard, LogisticsCard, TimeframeTable, FormCard },
 
   data() {
     return {

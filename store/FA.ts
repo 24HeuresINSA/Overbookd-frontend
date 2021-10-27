@@ -63,6 +63,25 @@ export const mutations = mutationTree(state, {
         // remove validated validator from refused
         state.mFA.refused = state.mFA.refused.filter((v) => v !== validator);
       }
+      console.log(this);
+      // @ts-ignore
+      if (
+        state.mFA.validated.length ===
+        this.$accessor.config.getConfig("fa_validators").length
+      ) {
+        state.mFA.status = "validated";
+      }
+
+      // add comment
+      if (!state.mFA.comments) {
+        state.mFA.comments = [];
+      }
+      state.mFA.comments.push({
+        time: new Date(),
+        text: `valide par ${validator}`,
+        validator,
+        topic: "valide",
+      });
     }
   },
   REFUSE_FA: function (state, { validator, comment }) {
@@ -74,9 +93,17 @@ export const mutations = mutationTree(state, {
     if (!state.mFA.comments) {
       state.mFA.comments = [];
     }
+
+    // remove from validated
+    if (state.mFA.validated) {
+      state.mFA.validated = state.mFA.validated.filter((v) => v !== validator);
+    }
+
+    // ad comment
     state.mFA.comments.push({
       time: new Date(),
       text: comment,
+      topic: "refuse",
       validator,
     });
   },
@@ -89,6 +116,7 @@ export const mutations = mutationTree(state, {
       time: new Date(),
       text: `changement de status a ${status} par ${by}`,
       validator: "",
+      topic: status,
     });
   },
 });

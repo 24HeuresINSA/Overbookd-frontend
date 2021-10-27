@@ -9,5 +9,5 @@ export interface FA {
   timeframes: { start: Date; end: Date }[];
   validated: String[];
   refused: String[];
-  comments: { time: Date; text: string; validator: string }[];
+  comments: { time: Date; text: string; validator: string; topic?: string }[];
 }
