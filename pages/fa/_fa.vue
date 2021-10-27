@@ -74,49 +74,6 @@
     <br />
     <CommentCard :comments="FA.comments"></CommentCard>
 
-    <!--    <v-divider></v-divider>-->
-    <!--    <h2>Comments</h2>-->
-    <!--    <v-simple-table v-if="FA.comments">-->
-    <!--      <template #default>-->
-    <!--        <thead>-->
-    <!--          <tr>-->
-    <!--            <th class="text-left">validateur</th>-->
-    <!--            <th>autheur</th>-->
-    <!--            <th class="text-left">commentaire</th>-->
-    <!--            <th class="text-left">Date</th>-->
-    <!--          </tr>-->
-    <!--        </thead>-->
-    <!--        <tbody>-->
-    <!--          <tr v-for="comment in FA.comments" :key="comment.time">-->
-    <!--            <td>-->
-    <!--              <v-icon :color="color[comment.action]">{{-->
-    <!--                getIcon(comment)-->
-    <!--              }}</v-icon>-->
-    <!--            </td>-->
-    <!--            <td>{{ comment.by }}</td>-->
-    <!--            <td>{{ comment.comment }}</td>-->
-    <!--            <td>{{ new Date(comment.time).toLocaleString() }}</td>-->
-    <!--          </tr>-->
-    <!--        </tbody>-->
-    <!--      </template>-->
-    <!--    </v-simple-table>-->
-    <!--    <h4 v-else>-->
-    <!--      pas de commentaire pour l'instant il faut se mettre au charbon-->
-    <!--    </h4>-->
-
-    <!--    <br />-->
-    <!--    <v-divider></v-divider>-->
-    <!--    <h2>Fiche tâche 🤩</h2>-->
-    <!--    <v-data-table :headers="FTHeader" :items="FA.FTs">-->
-    <!--      <template #[`item.action`]="item">-->
-    <!--        <v-btn :href="'/ft/' + item.item._id">-->
-    <!--          <v-icon>mdi-link</v-icon>-->
-    <!--        </v-btn>-->
-    <!--      </template>-->
-    <!--    </v-data-table>-->
-    <!--    <v-text-field v-model="FTname" label="nom de la FT*"></v-text-field>-->
-    <!--    <v-btn @click="addFT">ajouter une FT</v-btn>-->
-
     <div style="height: 100px"></div>
 
     <div
@@ -173,45 +130,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <!--    <v-dialog v-model="dialogModifySelectedItem">-->
-    <!--      <v-card>-->
-    <!--        <v-card-title>-->
-    <!--          <span class="text-h5">Ajouter un nouveau item</span>-->
-    <!--        </v-card-title>-->
-    <!--        <v-card-text>-->
-    <!--          <v-data-table-->
-    <!--            :headers="equipmentsHeader"-->
-    <!--            :items="availableEquipments"-->
-    <!--          >-->
-    <!--            <template #[`item.amount`]="props">-->
-    <!--              {{-->
-    <!--                +(props.item.borrowed-->
-    <!--                  ? props.item.borrowed-->
-    <!--                      .map((i) => i.amount)-->
-    <!--                      .reduce((a, e) => +a + +e, 0)-->
-    <!--                  : 0) + +props.item.amount-->
-    <!--              }}-->
-    <!--            </template>-->
-    <!--            <template #[`item.selected`]="props">-->
-    <!--              <v-text-field-->
-    <!--                v-model="props.item.selected"-->
-    <!--                type="number"-->
-    <!--              ></v-text-field>-->
-    <!--            </template>-->
-    <!--          </v-data-table>-->
-    <!--          <v-text-field-->
-    <!--            v-model="requestedEquipment"-->
-    <!--            label="Demander un material non present sur la liste"-->
-    <!--          ></v-text-field>-->
-    <!--        </v-card-text>-->
-    <!--        <v-card-actions>-->
-    <!--          <v-spacer></v-spacer>-->
-    <!--          <v-btn color="primary" text @click="saveItems"> save </v-btn>-->
-    <!--        </v-card-actions>-->
-    <!--      </v-card>-->
-    <!--    </v-dialog>-->
-
     <v-snackbar v-model="isSnackbar" :timeout="5000">
       {{ snackbarMessage }}
 
@@ -279,7 +197,8 @@ export default {
       return this.$store.state.user.me;
     },
   },
-  async beforeMount() {
+
+  async mounted() {
     this.validators = this.$accessor.config.getConfig("fa_validators");
     this.FAStore = this.$accessor.FA;
     this.teams = this.$accessor.config.getConfig("teams");
@@ -288,6 +207,8 @@ export default {
     if (!this.isNewFA) {
       let FA = (await this.FARepo.getFAByCount(this, this.FAID)).data;
       this.FAStore.setFA(FA);
+    } else {
+      this.FAStore.resetFA();
     }
   },
 
@@ -331,6 +252,7 @@ export default {
       // save the FA in the DB
       // this.FA.equipments = this.selectedEquipments;
       if (this.isNewFA) {
+        console.log(this.FA);
         await this.FARepo.createNewFA(this, this.FA);
       } else {
         await this.FARepo.updateFA(this, this.FA);

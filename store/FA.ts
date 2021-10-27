@@ -18,17 +18,27 @@ export const getters = getterTree(state, {
 });
 
 export const mutations = mutationTree(state, {
-  ASSIGN_FA: function (state, data) {
-    Object.keys(data).forEach((key: string) => {
+  ASSIGN_FA: function ({ mFA }, data) {
+    const key = Object.keys(data)[0] as keyof FA;
+    if (!mFA[key]) {
       // @ts-ignore
-      if (state.mFA[key]) {
-        // @ts-ignore
-        Object.assign(state.mFA[key], data[key]);
-      }
-    });
+      mFA[key] = data[key];
+    } else {
+      Object.assign(mFA[key], data[key]);
+    }
   },
   SET_FA: function (state, mFA) {
     state.mFA = mFA;
+  },
+  RESET_FA: function (state) {
+    state.mFA = {
+      status: "draft",
+      equipments: [],
+      timeframes: [],
+      validated: [],
+      refused: [],
+      comments: [],
+    };
   },
   ADD_TIMEFRAME: function (state, timeframe) {
     state.mFA.timeframes.push(timeframe);
@@ -63,12 +73,10 @@ export const mutations = mutationTree(state, {
         // remove validated validator from refused
         state.mFA.refused = state.mFA.refused.filter((v) => v !== validator);
       }
-      console.log(this);
       // @ts-ignore
-      if (
-        state.mFA.validated.length ===
-        this.$accessor.config.getConfig("fa_validators").length
-      ) {
+      const FA_VALIDATORS =
+        this.$accessor.config.getConfig("fa_validators").length;
+      if (state.mFA.validated.length === FA_VALIDATORS) {
         state.mFA.status = "validated";
       }
 
@@ -158,7 +166,7 @@ export const actions = actionTree(
       commit("REFUSE_FA", payload);
     },
     resetFA: function ({ commit }, payload) {
-      commit("SET_FA", payload);
+      commit("RESET_FA", payload);
     },
   }
 );

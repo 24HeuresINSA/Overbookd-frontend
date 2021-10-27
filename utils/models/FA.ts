@@ -1,5 +1,5 @@
 export interface FA {
-  count: number;
+  count?: number;
   status: string;
   general?: {
     name: string;
