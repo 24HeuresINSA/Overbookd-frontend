@@ -73,8 +73,8 @@ export const mutations = mutationTree(state, {
         // remove validated validator from refused
         state.mFA.refused = state.mFA.refused.filter((v) => v !== validator);
       }
-      // @ts-ignore
       const FA_VALIDATORS =
+        // @ts-ignore
         this.$accessor.config.getConfig("fa_validators").length;
       if (state.mFA.validated.length === FA_VALIDATORS) {
         state.mFA.status = "validated";
