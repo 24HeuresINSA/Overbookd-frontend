@@ -85,7 +85,6 @@
         z-index: 30;
       "
     >
-      <v-btn color="green" @click="refuseDialog = true">prêt a affecter</v-btn>
       <v-btn color="red" @click="refuseDialog = true">refusé</v-btn>
       <v-btn color="green" @click="validate">validé</v-btn>
       <v-btn color="secondary" @click="validationDialog = true"
