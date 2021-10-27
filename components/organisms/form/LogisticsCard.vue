@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card :style="disabled ? `border-left: 5px solid green` : ``">
     <v-card-title>{{ title }}</v-card-title>
     <LogisticsTable
       :type="type"

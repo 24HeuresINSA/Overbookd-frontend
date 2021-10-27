@@ -21,6 +21,7 @@
       title="Général"
       form-key="fa_general_form"
       topic="general"
+      :is-disabled="isValidated('humain')"
       @form-change="updateForm('general', $event)"
     ></FormCard>
     <br />
@@ -28,6 +29,7 @@
       title="Détail"
       form-key="fa_details_form"
       topic="details"
+      :is-disabled="isValidated('humain')"
       @form-change="updateForm('details', $event)"
     ></FormCard>
     <br />
