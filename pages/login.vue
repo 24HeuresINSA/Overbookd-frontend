@@ -68,6 +68,8 @@
 </template>
 
 <script>
+import qs from "qs";
+
 const REDIRECT_URL = "/";
 const BACKGROUNDS_URL = [
   "https://www.24heures.org/img/background/24h_insa_2019_FEDER_2.jpg",
@@ -137,7 +139,37 @@ export default {
   methods: {
     login: async function () {
       try {
-        await this.$auth.loginWith("keycloak", this.credentials); // try to log user in
+        await this.$auth.loginWith("local", this.credentials); // try to log user in
+      } catch (e) {
+        const data = qs.stringify({
+          // keycloak accepts www-urlencoded-form and not JSON
+          username: this.credentials.username,
+          password: this.credentials.password,
+          client_id: "project_a_web",
+          grant_type: "password",
+        });
+        const response = await this.$axios.post(
+          process.env.BASE_URL_KEYCLOAK +
+            "auth/realms/project_a/protocol/openid-connect/token/",
+          data
+        );
+        if (
+          response.status === 200 &&
+          response.data.access_token !== undefined
+        ) {
+          // right credentials, start migration process
+          const reset = await this.$axios.$post("/migrate", {
+            password: this.credentials.password,
+          });
+
+          if (reset.status === 200) {
+            console.log("user migrated");
+            await this.$auth.loginWith("local", this.credentials); // try to log user in
+          }
+        }
+      }
+
+      try {
         await this.$router.push({
           path: REDIRECT_URL,
         }); // redirect to homepage

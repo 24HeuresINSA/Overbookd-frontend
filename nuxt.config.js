@@ -55,6 +55,19 @@ export default {
 
   auth: {
     strategies: {
+      local: {
+        token: {
+          property: "token",
+          global: true,
+          // required: true,
+          // type: 'Bearer'
+        },
+        endpoints: {
+          login: { url: "/api/login", method: "post" },
+          logout: { url: "/api/logout", method: "post" },
+          user: { url: "/api/user", method: "get" },
+        },
+      },
       keycloak: {
         scheme: "~/schemes/keycloak",
         endpoints: {
