@@ -42,6 +42,7 @@
       v-else-if="mField.type === 'switch'"
       v-model="value"
       :label="mField.label ? mField.label : mField.key"
+      :disabled="disabled"
       @change="onChange"
     ></v-switch>
     <v-select

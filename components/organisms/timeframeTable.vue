@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card :style="isDisabled ? `border-left: 5px solid green` : ``">
     <v-card-title>Créneaux</v-card-title>
 
     <v-data-table :headers="headers" :items="mFA.timeframes">
@@ -13,13 +13,16 @@
         {{ new Date(item.end).toLocaleTimeString() }}
       </template>
       <template #[`item.action`]="{ index }">
-        <v-btn icon>
+        <v-btn v-if="!isDisabled" icon>
           <v-icon @click="deleteTimeframe(index)">mdi-trash-can</v-icon>
         </v-btn>
       </template>
     </v-data-table>
 
-    <TimeframeSelector @add-timeframe="addTimeframe"> </TimeframeSelector>
+    <TimeframeSelector
+      v-if="!isDisabled"
+      @add-timeframe="addTimeframe"
+    ></TimeframeSelector>
   </v-card>
 </template>
 
@@ -33,6 +36,10 @@ export default {
     initTimeframes: {
       type: Array,
       default: () => [],
+    },
+    isDisabled: {
+      type: Boolean,
+      default: () => false,
     },
   },
   data: () => ({

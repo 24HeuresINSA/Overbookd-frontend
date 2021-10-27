@@ -34,6 +34,7 @@
     <TimeframeTable
       :init-timeframes="FA.timeframes"
       :disabled="!isValidated('human')"
+      :is-disabled="isValidated('humain')"
       @form-change="updateForm('timeframes', $event)"
     ></TimeframeTable>
     <br />
@@ -41,6 +42,7 @@
       title="Sécu"
       topic="security"
       form-key="fa_security_form"
+      :is-disabled="isValidated('secu')"
       @form-change="updateForm('security', $event)"
     ></FormCard>
 
