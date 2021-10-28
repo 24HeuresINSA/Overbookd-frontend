@@ -30,7 +30,10 @@
     ></FormCard>
 
     <br />
-    <LogisticsCard title="Matos" type="petit" :store="store"> </LogisticsCard>
+    <CompleteTimeframeCard :store="store"></CompleteTimeframeCard>
+
+    <br />
+    <LogisticsCard title="Matos" type="petit" :store="store"></LogisticsCard>
 
     <v-dialog v-model="isEquipmentDialogOpen">
       <v-card>
@@ -137,10 +140,11 @@
 import { RepoFactory } from "~/repositories/repoFactory";
 import FormCard from "../../components/organisms/form/FormCard";
 import LogisticsCard from "../../components/organisms/form/LogisticsCard";
+import CompleteTimeframeCard from "../../components/organisms/form/CompleteTimeframeCard";
 
 export default {
   name: "Ft",
-  components: { LogisticsCard, FormCard },
+  components: { CompleteTimeframeCard, LogisticsCard, FormCard },
   data() {
     return {
       FTID: +this.$route.params.ft, // count

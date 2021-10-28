@@ -30,6 +30,15 @@ export const mutations = mutationTree(state, {
       Object.assign(mFT[key], data[key]);
     }
   },
+  ADD_TIMEFRAME_FT: function ({ mFT }, timeframe) {
+    if (mFT.timeframes === undefined) {
+      mFT.timeframes = [];
+    }
+    mFT.timeframes.push(timeframe);
+  },
+  UPDATE_TIMEFRAME: function ({ mFT }, { index, timeframe }) {
+    mFT.timeframes[index] = timeframe;
+  },
 });
 
 export const actions = actionTree(
@@ -48,6 +57,12 @@ export const actions = actionTree(
     },
     assignFT: function ({ commit }, payload) {
       commit("ASSIGN_FT", payload);
+    },
+    addTimeframe: function ({ commit }, timeframe) {
+      commit("ADD_TIMEFRAME_FT", timeframe);
+    },
+    updateTimeframe: function ({ commit }, payload) {
+      commit("UPDATE_TIMEFRAME", payload);
     },
   }
 );
