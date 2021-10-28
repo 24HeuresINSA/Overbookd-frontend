@@ -3,12 +3,19 @@
     <v-container
       style="
         display: flex;
-        align-content: center;
+        align-content: baseline;
         justify-content: space-between;
       "
     >
       <h1>Fiche Tache 🤩</h1>
       <h2>{{ FT ? FT.status : "draft" }}</h2>
+      <v-icon
+        v-for="(validator, i) of validators"
+        :key="i"
+        :color="getIconColor(validator)"
+      >
+        {{ getValidatorIcon(validator) }}
+      </v-icon>
     </v-container>
 
     <br />
@@ -143,6 +150,12 @@ export default {
 
       selectedEquipment: [],
       availableEquipment: [],
+      validators: undefined,
+      color: {
+        submitted: "grey",
+        validated: "green",
+        refused: "red",
+      },
     };
   },
 
@@ -156,40 +169,28 @@ export default {
   },
 
   async mounted() {
+    this.validators = this.$accessor.config.getConfig("ft_validators");
+
     // get FT and store it in store
     this.store = this.$accessor.FT;
     await this.store.getAndSetFT(this.FTID);
-    console.log(this.getValidator());
   },
 
   methods: {
-    saveRequiredHuman() {
-      this.$set(
-        this.FT.schedules[this.selectedTimeframeIndex],
-        "needs",
-        this.requiredHumans
-      );
-      this.isAssignmentDialogOpen = false;
-      console.log(this.FT.schedules);
-    },
-
-    addHuman() {
-      this.requiredHumans.push(this.assignedHuman);
-    },
-
-    addRole() {
-      this.requiredHumans.push({
-        role: this.assignedRole,
-        amount: this.assignedAmount,
-      });
-    },
-
-    openAssignmentDialog(timeframeIndex) {
-      this.selectedTimeframeIndex = timeframeIndex;
-      this.requiredHumans = this.FT.schedules[timeframeIndex].needs
-        ? this.FT.schedules[timeframeIndex].needs
-        : [];
-      this.isAssignmentDialogOpen = true;
+    getIconColor(validator) {
+      if (this.FT.validated) {
+        if (this.FT.validated.find((v) => v === validator)) {
+          return this.color.validated;
+        }
+      }
+      if (this.FT.refused) {
+        if (this.FT.refused.find((v) => v === validator)) {
+          return this.color.refused;
+        }
+      }
+      if (this.FT.status === "submitted") {
+        return this.color.submitted;
+      }
     },
 
     getConfig(key) {
@@ -218,6 +219,15 @@ export default {
       let newForm = {};
       newForm[section] = form;
       this.store.assignFT(newForm);
+    },
+
+    getValidatorIcon(validator) {
+      try {
+        return this.getConfig("teams").find((team) => team.name === validator)
+          .icon;
+      } catch (e) {
+        console.log(`can't find icon of team ${validator}`);
+      }
     },
 
     validateFT() {
