@@ -24,6 +24,7 @@
       topic="general"
       form-key="ft_general_form"
       :form="FT"
+      :is-disabled="isValidated('humain')"
       @form-change="updateForm('general', $event)"
     ></FormCard>
 
@@ -33,14 +34,23 @@
       topic="details"
       form-key="ft_details_form"
       :form="FT"
+      :is-disabled="isValidated('humain')"
       @form-change="updateForm('details', $event)"
     ></FormCard>
 
     <br />
-    <CompleteTimeframeCard :store="store"></CompleteTimeframeCard>
+    <CompleteTimeframeCard
+      :store="store"
+      :is-disabled="isValidated('humain')"
+    ></CompleteTimeframeCard>
 
     <br />
-    <LogisticsCard title="Matos" type="petit" :store="store"></LogisticsCard>
+    <LogisticsCard
+      title="Matos"
+      type="petit"
+      :store="store"
+      :disabled="isValidated('log')"
+    ></LogisticsCard>
 
     <br />
     <CommentCard :comments="FT.comments"></CommentCard>
@@ -195,6 +205,10 @@ export default {
 
     getConfig(key) {
       return this.$accessor.config.getConfig(key);
+    },
+
+    isValidated(validator) {
+      return this.FT.validated.find((v) => v === validator) !== undefined;
     },
 
     hasRole(role) {
