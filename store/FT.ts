@@ -39,6 +39,23 @@ export const mutations = mutationTree(state, {
   UPDATE_TIMEFRAME: function ({ mFT }, { index, timeframe }) {
     mFT.timeframes[index] = timeframe;
   },
+  UPDATE_STATUS: function ({ mFT }, status) {
+    mFT.status = status;
+  },
+  VALIDATE: function ({ mFT }, validator) {
+    if (mFT.validated === undefined) {
+      mFT.validated = [];
+    }
+    if (!mFT.validated.find((v) => v == validator)) {
+      // avoid duplicate
+      mFT.validated.push(validator);
+
+      // remove from refuse
+      if (mFT.refused) {
+        mFT.refused = mFT.refused.filter((v) => v !== validator);
+      }
+    }
+  },
 });
 
 export const actions = actionTree(
@@ -63,6 +80,21 @@ export const actions = actionTree(
     },
     updateTimeframe: function ({ commit }, payload) {
       commit("UPDATE_TIMEFRAME", payload);
+    },
+    submitForReview: async function ({ dispatch, commit }) {
+      commit("UPDATE_STATUS", "submitted");
+      await dispatch("saveFT");
+    },
+    validate: async function ({ dispatch, commit, state }, validator) {
+      const FT_VALIDATORS =
+        // @ts-ignore
+        this.$accessor.config.getConfig("ft_validators").length;
+      commit("VALIDATE", validator);
+      if (state.mFT.validated.length === FT_VALIDATORS) {
+        // validated by all validators
+        commit("UPDATE_STATUS", "validated");
+      }
+      await dispatch("saveFT");
     },
   }
 );

@@ -8,7 +8,7 @@
       "
     >
       <h1>Fiche Tache 🤩</h1>
-      <h2>Status</h2>
+      <h2>{{ FT ? FT.status : "draft" }}</h2>
     </v-container>
 
     <br />
@@ -34,62 +34,6 @@
 
     <br />
     <LogisticsCard title="Matos" type="petit" :store="store"></LogisticsCard>
-
-    <v-dialog v-model="isEquipmentDialogOpen">
-      <v-card>
-        <v-card-title>ajouter du matos</v-card-title>
-        <v-card-text>
-          <v-data-table :headers="equipmentsHeader" :items="availableEquipment">
-            <template #[`item.selectedAmount`]="item">
-              <v-text-field
-                v-model="item.item.selectedAmount"
-                type="number"
-              ></v-text-field>
-            </template>
-          </v-data-table>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn @click="saveEquipments">save</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <v-dialog v-model="isAssignmentDialogOpen" max-width="600px">
-      <v-card>
-        <v-card-title>Humains</v-card-title>
-        <v-card-text>
-          <template v-if="requiredHumans">
-            <v-list-item v-for="(need, index) in requiredHumans" :key="index">
-              <v-list-item-content>
-                <v-list-item-title>{{ need }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </template>
-
-          <h4>Affecter une personne</h4>
-          <v-autocomplete
-            v-model="assignedHuman"
-            :items="usernames"
-          ></v-autocomplete>
-          <v-btn @click="addHuman()">ajouter</v-btn>
-          <h4>Affecter un role</h4>
-          <v-autocomplete
-            v-model="assignedRole"
-            label="role"
-            :items="getConfig('teams').map((e) => e.name)"
-          ></v-autocomplete>
-          <v-text-field
-            v-model="assignedAmount"
-            label="Nombre"
-            type="number"
-          ></v-text-field>
-          <v-btn @click="addRole()">ajouter</v-btn>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn text @click="saveRequiredHuman()">💾</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
 
     <v-dialog v-model="isRefusedDialogOpen">
       <v-card>
@@ -120,17 +64,27 @@
 
     <div style="height: 50px; width: 100%"></div>
 
-    <div style="display: flex; justify-content: space-evenly">
+    <div
+      style="
+        display: flex;
+        justify-content: space-evenly;
+        position: sticky;
+        bottom: 20px;
+        z-index: 30;
+      "
+    >
       <v-btn v-if="getValidator()" color="green" @click="validateFT"
-        >validate
+        >validé
       </v-btn>
       <v-btn
         v-if="getValidator()"
         color="red"
         @click="isRefusedDialogOpen = true"
-        >refuse
+        >refusé
       </v-btn>
-      <v-btn color="secondary" @click="isSubmitDialogOpen = true">submit</v-btn>
+      <v-btn color="secondary" @click="isSubmitDialogOpen = true"
+        >Soumettre a validation</v-btn
+      >
       <v-btn color="warning" @click="saveFT">sauvgarder</v-btn>
     </div>
   </div>
@@ -192,12 +146,16 @@ export default {
     FT: function () {
       return this.$accessor.FT.mFT;
     },
+    me: function () {
+      return this.$accessor.user.me;
+    },
   },
 
   async mounted() {
     // get FT and store it in store
     this.store = this.$accessor.FT;
     await this.store.getAndSetFT(this.FTID);
+    console.log(this.getValidator());
   },
 
   methods: {
@@ -234,62 +192,18 @@ export default {
       return this.$accessor.config.getConfig(key);
     },
 
-    getUser() {
-      return this.$store.state.user.me;
-    },
-
     hasRole(role) {
-      const teams = this.getUser()?.team;
-      if (teams === undefined) {
-        return false;
-      }
-      return teams.includes(role);
+      return this.me.team.includes(role);
     },
 
     getValidator() {
       let mValidator = null;
       this.FT_VALIDATORS.forEach((validator) => {
-        if (this.hasRole(validator.name)) {
-          mValidator = validator.name;
+        if (this.hasRole(validator)) {
+          mValidator = validator;
         }
       });
       return mValidator;
-    },
-
-    deleteSchedule(schedule) {
-      this.FT.schedules = this.FT.schedules.filter((s) => {
-        return (
-          s.date !== schedule.date &&
-          s.end !== schedule.end &&
-          s.start !== schedule.start
-        );
-      });
-    },
-
-    addSchedule() {
-      if (!this.FT.schedules) {
-        this.$set(this.FT, "schedules", []);
-      }
-      this.schedule.start = new Date(
-        this.schedule.date + " " + this.schedule.start
-      );
-      this.schedule.end = new Date(
-        this.schedule.date + " " + this.schedule.end
-      );
-      this.$set(this.FT.schedules, this.FT.schedules.length, {
-        ...this.schedule,
-      });
-    },
-
-    saveEquipments() {
-      this.selectedEquipment = [];
-      this.availableEquipment.forEach((e) => {
-        if (e.selectedAmount !== undefined) {
-          this.selectedEquipment.push(e);
-        }
-      });
-      this.FT.equipments = this.selectedEquipment;
-      this.isEquipmentDialogOpen = false;
     },
 
     async saveFT() {
@@ -304,28 +218,18 @@ export default {
 
     validateFT() {
       const validator = this.getValidator();
-      if (this.FT.validated === undefined) {
-        this.FT.validated = [];
-      }
-      if (this.FT.refused) {
-        this.FT.refused = this.FA.refused.filter((e) => e !== validator);
-      }
-      this.FT.validated.push(validator);
 
-      if (this.FT.validated.length === this.FT_VALIDATORS.length) {
-        this.FT.status = "validated";
-      }
+      this.store.validate(validator);
+
       this.snackbarMessage = this.feedbacks.validate;
       this.isSnackbarOpen = true;
-      this.saveFT();
     },
 
     submitForReview() {
-      this.FT.status = "submitted";
+      this.store.submitForReview();
       this.snackbarMessage = this.feedbacks.submitted;
       this.isSnackbarOpen = true;
       this.isSubmitDialogOpen = false;
-      this.saveFT();
     },
 
     refuse() {
