@@ -5,7 +5,7 @@
       <v-card>
         <v-card-text style="display: flex; flex-direction: column">
           <label>Mode</label>
-          <template>
+          <v-container>
             <v-btn-toggle
               v-model="mode"
               tile
@@ -16,7 +16,7 @@
               <v-btn value="closet" small> Placard</v-btn>
               <v-btn value="deposit" small> Dépot</v-btn>
             </v-btn-toggle>
-          </template>
+          </v-container>
           <v-list v-if="!areInputsValid.res">
             <v-list-item
               v-for="(reason, key) in areInputsValid.reason"
