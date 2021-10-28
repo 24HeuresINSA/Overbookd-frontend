@@ -35,7 +35,10 @@
     <br />
     <LogisticsCard title="Matos" type="petit" :store="store"></LogisticsCard>
 
-    <v-dialog v-model="isRefusedDialogOpen">
+    <br />
+    <CommentCard :comments="FT.comments"></CommentCard>
+
+    <v-dialog v-model="isRefusedDialogOpen" max-width="300">
       <v-card>
         <v-card-title>Refuser la FT</v-card-title>
         <v-card-text>
@@ -95,10 +98,11 @@ import { RepoFactory } from "~/repositories/repoFactory";
 import FormCard from "../../components/organisms/form/FormCard";
 import LogisticsCard from "../../components/organisms/form/LogisticsCard";
 import CompleteTimeframeCard from "../../components/organisms/form/CompleteTimeframeCard";
+import CommentCard from "../../components/organisms/form/CommentCard";
 
 export default {
   name: "Ft",
-  components: { CompleteTimeframeCard, LogisticsCard, FormCard },
+  components: { CommentCard, CompleteTimeframeCard, LogisticsCard, FormCard },
   data() {
     return {
       FTID: +this.$route.params.ft, // count
@@ -233,16 +237,13 @@ export default {
     },
 
     refuse() {
-      this.FT.status = "refused";
       const validator = this.getValidator();
-      if (this.FT.refused === undefined) {
-        this.FT.refused = [];
-      }
-      this.FT.refused.push(validator);
-      this.snackbarMessage = this.feedbacks.refused;
-      this.isSnackbarOpen = true;
+
+      this.store.refuse({
+        validator,
+        comment: this.refusedComment,
+      });
       this.isRefusedDialogOpen = false;
-      this.saveFT();
     },
   },
 };

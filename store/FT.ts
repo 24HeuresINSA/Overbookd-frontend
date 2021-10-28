@@ -13,6 +13,7 @@ export const state = () => ({
     timeframes: [] as any,
     validated: [] as any,
     refused: [] as any,
+    comments: [] as any,
   } as FT,
 });
 
@@ -56,6 +57,26 @@ export const mutations = mutationTree(state, {
       }
     }
   },
+  REFUSE: function ({ mFT }, validator) {
+    if (mFT.refused === undefined) {
+      mFT.refused = [];
+    }
+    if (!mFT.refused.find((v) => v == validator)) {
+      // avoid duplicate
+      mFT.refused.push(validator);
+
+      // remove from refuse
+      if (mFT.validated) {
+        mFT.validated = mFT.validated.filter((v) => v !== validator);
+      }
+    }
+  },
+  ADD_COMMENT: function ({ mFT }, comment) {
+    if (mFT.comments === undefined) {
+      mFT.comments = [];
+    }
+    mFT.comments.unshift(comment);
+  },
 });
 
 export const actions = actionTree(
@@ -90,11 +111,33 @@ export const actions = actionTree(
         // @ts-ignore
         this.$accessor.config.getConfig("ft_validators").length;
       commit("VALIDATE", validator);
+      await dispatch("addComment", {
+        topic: "validated",
+        time: new Date(),
+        validator,
+      });
       if (state.mFT.validated.length === FT_VALIDATORS) {
         // validated by all validators
         commit("UPDATE_STATUS", "validated");
       }
       await dispatch("saveFT");
+    },
+    refuse: async function (
+      { dispatch, commit, state },
+      { validator, comment }
+    ) {
+      commit("REFUSE", validator);
+      await dispatch("addComment", {
+        topic: "refused",
+        text: comment,
+        time: new Date(),
+        validator,
+      });
+      commit("UPDATE_STATUS", "refused");
+      await dispatch("saveFT");
+    },
+    addComment: async function ({ dispatch, commit, state }, comment) {
+      commit("ADD_COMMENT", comment);
     },
   }
 );
