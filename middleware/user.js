@@ -8,6 +8,11 @@ export default async function (context) {
   }
 }
 
+/**
+ * @deprecated
+ * @param context
+ * @returns {*}
+ */
 export function getKeycloakID(context) {
   if (context.$auth.loggedIn) {
     const token =

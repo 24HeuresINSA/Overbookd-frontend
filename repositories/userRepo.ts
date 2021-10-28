@@ -52,7 +52,7 @@ export default {
   // },
   sendFriendRequestByKeycloakID(context: Context, data: FriendRequestData) {
     return context.$axios.put(
-      `${resource}/notification/keycloakID/${data.to}`,
+      `${resource}/notification/keycloakID/${data.to}`, // TODO ask tom about new name
       data.data
     );
   },

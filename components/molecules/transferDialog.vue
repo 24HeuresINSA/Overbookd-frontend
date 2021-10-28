@@ -49,7 +49,7 @@ export default Vue.extend({
         amount: "0",
         beneficiary: {
           username: undefined,
-          keycloakID: "",
+          _id: "",
         },
         isValid: false,
         user: {} as any,
@@ -90,7 +90,7 @@ export default Vue.extend({
       this.transfer.amount = this.transfer.amount.replace(",", ".");
       if (this.transfer.isValid) {
         // transaction to self...
-        if (this.transfer.user.keycloakID == this.me.keycloakID) {
+        if (this.transfer.user._id == this.me._id) {
           this.$accessor.notif.pushNotification({
             type: "error",
             message:
@@ -107,14 +107,14 @@ export default Vue.extend({
           return;
         }
 
-        if (this.transfer.user.keycloakID) {
+        if (this.transfer.user._id) {
           try {
             let newTransfer: Transfer = {
               amount: +this.transfer.amount,
               context: this.transfer.reason,
               createdAt: new Date(),
-              from: this.me.keycloakID,
-              to: this.transfer.user.keycloakID,
+              from: this.me._id,
+              to: this.transfer.user._id,
               type: "transfer",
             };
             await this.$accessor.transaction.addTransaction(newTransfer);
