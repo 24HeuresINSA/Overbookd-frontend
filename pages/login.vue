@@ -141,7 +141,14 @@ export default {
     login: async function () {
       try {
         await this.$auth.loginWith("local", { data: this.credentials }); // try to log user in
+        console.log("connected to API");
+        await this.$router.push({
+          path: "/",
+        }); // redirect to homepage
+        const audio = new Audio("audio/jaune.m4a");
+        await audio.play();
       } catch (e) {
+        console.error(e);
         console.log("starting migration process...");
         const data = qs.stringify({
           // keycloak accepts www-urlencoded-form and not JSON
@@ -169,26 +176,10 @@ export default {
             console.log("user migrated");
             await this.$auth.loginWith("local", this.credentials); // try to log user in
           }
-        }
-      }
-
-      try {
-        await this.$router.push({
-          path: REDIRECT_URL,
-        }); // redirect to homepage
-        const audio = new Audio("audio/jaune.m4a");
-        await audio.play();
-      } catch (e) {
-        console.error(e);
-        if (e.response.status === 401) {
-          // wrong password or username
-          this.feedbackMessage = "Password or username are incorrect 😞";
         } else {
-          this.feedbackMessage =
-            "an error has occurred, please contact the ComSI team 😴";
+          this.feedbackMessage = "Password or username are incorrect 😞";
+          this.snackbar = true;
         }
-        this.snackbar = true;
-        console.log("an error has occurred");
       }
     },
 

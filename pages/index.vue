@@ -49,7 +49,7 @@ import SnackNotificationContainer from "@/components/molecules/snackNotification
 import ComptesPersosCard from "@/components/organisms/comptesPersosCard.vue";
 import FriendsCard from "@/components/molecules/friendsCard.vue";
 import ClickerCard from "@/components/molecules/clickerCard.vue";
-import { getKeycloakID } from "~/middleware/user";
+import { getUserID } from "~/middleware/user";
 import { mapState } from "vuex";
 import { dispatch } from "~/utils/store";
 import { safeCall } from "~/utils/api/calls";
@@ -84,7 +84,7 @@ export default {
     },
   },
   async mounted() {
-    dispatch(this, "user", "fetchUser", getKeycloakID(this));
+    dispatch(this, "user", "fetchUser", getUserID(this));
 
     const res = await safeCall(
       this.$store,
