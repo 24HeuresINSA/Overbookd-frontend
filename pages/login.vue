@@ -69,6 +69,7 @@
 
 <script>
 import qs from "qs";
+import jwt_decode from "jwt-decode";
 
 const REDIRECT_URL = "/";
 const BACKGROUNDS_URL = [
@@ -139,8 +140,9 @@ export default {
   methods: {
     login: async function () {
       try {
-        await this.$auth.loginWith("local", this.credentials); // try to log user in
+        await this.$auth.loginWith("local", { data: this.credentials }); // try to log user in
       } catch (e) {
+        console.log("starting migration process...");
         const data = qs.stringify({
           // keycloak accepts www-urlencoded-form and not JSON
           username: this.credentials.username,
@@ -148,6 +150,7 @@ export default {
           client_id: "project_a_web",
           grant_type: "password",
         });
+        console.log("connection to keycloak...");
         const response = await this.$axios.post(
           process.env.BASE_URL_KEYCLOAK +
             "auth/realms/project_a/protocol/openid-connect/token/",
@@ -157,10 +160,10 @@ export default {
           response.status === 200 &&
           response.data.access_token !== undefined
         ) {
+          const keycloakID = jwt_decode(response.data.access_token).sub;
+          console.log("connected to keycloak with success 🥳");
           // right credentials, start migration process
-          const reset = await this.$axios.$post("/migrate", {
-            password: this.credentials.password,
-          });
+          const reset = await this.$axios.$post("/migrate", this.credentials);
 
           if (reset.status === 200) {
             console.log("user migrated");

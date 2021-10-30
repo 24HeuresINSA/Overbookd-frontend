@@ -1,5 +1,4 @@
 import colors from "vuetify/es5/util/colors";
-import { KEYCLOAK } from "./config/url.json";
 
 export default {
   env: {
@@ -63,51 +62,9 @@ export default {
           // type: 'Bearer'
         },
         endpoints: {
-          login: { url: "/api/login", method: "post" },
-          logout: { url: "/api/logout", method: "post" },
-          user: { url: "/api/user", method: "get" },
-        },
-      },
-      keycloak: {
-        scheme: "~/schemes/keycloak",
-        endpoints: {
-          authorization: process.env.BASE_URL_KEYCLOAK + KEYCLOAK.AUTH,
-          token: process.env.BASE_URL_KEYCLOAK + KEYCLOAK.TOKEN,
-          userInfo: process.env.BASE_URL_KEYCLOAK + KEYCLOAK.USER_INFO,
-          user: false,
-          refresh: {
-            url: process.env.BASE_URL_KEYCLOAK + KEYCLOAK.AUTH,
-            method: "post",
-          },
-          logout:
-            process.env.BASE_URL_KEYCLOAK +
-            KEYCLOAK.LOGOUT +
-            "?redirect_uri=" +
-            encodeURIComponent(KEYCLOAK.REDIRECT_URI),
-        },
-        token: {
-          property: "access_token",
-          type: "Bearer",
-          name: "Authorization",
-          maxAge: 1800,
-        },
-        refreshToken: {
-          property: "refresh_token",
-          maxAge: 60 * 60 * 24 * 30,
-          grantType: "refresh_token",
-          clientId: "project_a_web",
-        },
-        grantType: "password",
-        accessType: "public",
-        redirectUri: encodeURIComponent("http://localhost:3000/"),
-        // logoutRedirectUri: undefined,
-        clientId: "project_a_web",
-        scope: ["roles", "profile", "email", "web-origins"],
-        redirect: {
-          logout: "/",
-          callback: "/",
-          home: "/dashboard",
-          login: "/login",
+          login: { url: "/login", method: "post" },
+          logout: { url: "/logout", method: "post" },
+          user: { url: "/user", method: "get" },
         },
       },
     },
