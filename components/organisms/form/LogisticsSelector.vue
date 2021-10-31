@@ -14,9 +14,9 @@ import { RepoFactory } from "../../../repositories/repoFactory";
 export default {
   name: "LogisticsSelector",
   props: {
-    type: {
-      type: String,
-      default: () => "",
+    types: {
+      type: Array,
+      default: () => [],
     },
     store: {
       type: Object,
@@ -25,22 +25,32 @@ export default {
   },
   data: () => ({
     repo: RepoFactory.equipmentRepo,
-    inventory: [],
     headers: [
       { text: "nom", value: "name" },
       { text: "action", value: "action" },
     ],
+    fullInventory: [],
+    inventory: [],
   }),
+  watch: {
+    types() {
+      if (this.types) {
+        this.inventory = this.fullInventory.filter((e) =>
+          this.types.includes(e.type)
+        );
+      }
+      return [];
+    },
+  },
   async mounted() {
-    const FullInventory = (await this.repo.getAllEquipments(this)).data;
-    this.inventory = FullInventory.filter((e) => e.type === this.type);
+    this.fullInventory = (await this.repo.getAllEquipments(this)).data;
   },
   methods: {
     addItemToFA(item) {
       this.store.addEquipmentToFA({
         _id: item._id,
         name: item.name,
-        type: this.type,
+        type: item.type,
       });
     },
   },

@@ -2,13 +2,13 @@
   <v-card :style="disabled ? `border-left: 5px solid green` : ``">
     <v-card-title>{{ title }}</v-card-title>
     <LogisticsTable
-      :type="type"
+      :types="types"
       :store="store"
       :disabled="disabled"
     ></LogisticsTable>
     <LogisticsSelector
       v-if="!disabled"
-      :type="type"
+      :types="types"
       :store="store"
     ></LogisticsSelector>
   </v-card>
@@ -26,9 +26,9 @@ export default {
       type: String,
       default: () => "",
     },
-    type: {
-      type: String,
-      default: () => "",
+    types: {
+      type: Array,
+      default: () => [],
     },
     store: {
       type: Object,
