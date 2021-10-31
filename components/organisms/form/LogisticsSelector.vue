@@ -1,11 +1,12 @@
 <template>
-  <v-data-table :headers="headers" :items="inventory" dense>
-    <template #[`item.action`]="{ item }">
-      <v-btn icon @click="addItemToFA(item)">
-        <v-icon> mdi-plus</v-icon>
+  <v-treeview :items="items" dense>
+    <template #label="{ item }">
+      <v-btn v-if="!item.children" icon @click="addItemToFA(item)">
+        <v-icon> mdi-plus </v-icon>
       </v-btn>
+      <label>{{ item.name }}</label>
     </template>
-  </v-data-table>
+  </v-treeview>
 </template>
 
 <script>
@@ -31,6 +32,7 @@ export default {
     ],
     fullInventory: [],
     inventory: [],
+    items: [],
   }),
   watch: {
     types() {
@@ -38,6 +40,15 @@ export default {
         this.inventory = this.fullInventory.filter((e) =>
           this.types.includes(e.type)
         );
+
+        let items = [];
+        this.types.forEach((type) => {
+          items.push({
+            name: type,
+            children: this.inventory.filter((e) => e.type === type),
+          });
+        });
+        this.items = items;
       }
       return [];
     },

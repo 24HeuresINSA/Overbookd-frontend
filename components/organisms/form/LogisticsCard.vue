@@ -1,16 +1,19 @@
 <template>
   <v-card :style="disabled ? `border-left: 5px solid green` : ``">
     <v-card-title>{{ title }}</v-card-title>
-    <LogisticsTable
-      :types="types"
-      :store="store"
-      :disabled="disabled"
-    ></LogisticsTable>
-    <LogisticsSelector
-      v-if="!disabled"
-      :types="types"
-      :store="store"
-    ></LogisticsSelector>
+    <v-card-text style="display: flex">
+      <LogisticsTable
+        style="flex-grow: 3"
+        :types="types"
+        :store="store"
+        :disabled="disabled"
+      ></LogisticsTable>
+      <LogisticsSelector
+        v-if="!disabled"
+        :types="types"
+        :store="store"
+      ></LogisticsSelector>
+    </v-card-text>
   </v-card>
 </template>
 
