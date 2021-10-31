@@ -90,8 +90,11 @@ export default {
   methods: {
     async getNotValidatedCount() {
       //TODO: change to repo
-      let { data: users } = await this.$axios.get("/user");
-      return users.filter((user) => user.team.length === 0).length;
+      if (this.hasRole("admin")) {
+        let { data: users } = await this.$axios.get("/user");
+        return users.filter((user) => user.team.length === 0).length;
+      }
+      return 0;
     },
 
     hasRole(team) {
