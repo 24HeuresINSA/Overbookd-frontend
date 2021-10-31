@@ -39,6 +39,7 @@ export interface Transfer {
   amount: number;
   context: string;
   createdAt: Date;
+  isValid: boolean;
 }
 
 export type Transaction = Expense | Deposit | Transfer;

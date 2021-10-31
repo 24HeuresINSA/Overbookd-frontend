@@ -8,7 +8,7 @@
       :style="isJauneActive ? jauneStyle : ''"
     >
       <v-list>
-        <v-list-item>
+        <v-list-item to="/">
           <v-img :src="'img/logo/' + logo" alt="overbookd" class="logo"></v-img>
         </v-list-item>
         <template v-for="(item, i) in items">
