@@ -272,7 +272,7 @@ export default {
     },
 
     hasRole(role) {
-      if (this.me) {
+      if (this.me.team) {
         return this.me.team.includes(role);
       }
       return false;

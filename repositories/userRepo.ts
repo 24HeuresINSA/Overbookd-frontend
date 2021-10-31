@@ -15,6 +15,9 @@ export default {
   getUser(context: Context, userId: string) {
     return context.$axios.get(`${resource}/${userId}`);
   },
+  getMyUser(context: Context) {
+    return context.$axios.get(`${resource}/me`);
+  },
   getAllUsers(context: Context) {
     return context.$axios.get(`${resource}`);
   },

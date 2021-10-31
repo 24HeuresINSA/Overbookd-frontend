@@ -6,7 +6,6 @@ import { safeCall } from "~/utils/api/calls";
 const UserRepo = RepoFactory.userRepo;
 
 export const state = () => ({
-  //TODO use class and change this
   me: {} as User,
   usernames: [] as Partial<User>[],
 });
@@ -29,7 +28,7 @@ export const actions = actionTree(
   { state },
   {
     async fetchUser({ commit }, userID: string) {
-      const res = await safeCall(this, UserRepo.getUser(this, userID));
+      const res = await safeCall(this, UserRepo.getMyUser(this));
       if (res) {
         commit("SET_USER", res.data);
       }
