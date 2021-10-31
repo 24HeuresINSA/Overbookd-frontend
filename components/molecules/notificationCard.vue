@@ -118,7 +118,7 @@ export default Vue.extend({
     deleteNotification(index: number): void {
       const notifications = this.me.notifications.filter((_, i) => i != index);
       this.$accessor.user.updateUser({
-        userId: this.me._id,
+        userID: this.me._id,
         userData: { notifications },
       });
     },

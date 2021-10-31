@@ -59,6 +59,7 @@ export interface User {
   nickname?: string;
   firstname: string;
   lastname: string;
+  username?: [];
   isValid: boolean;
   birthdate: string;
   email: string;

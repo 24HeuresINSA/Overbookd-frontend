@@ -182,8 +182,6 @@ export default {
           console.log("connected to keycloak with success 🥳");
           // right credentials, start migration process
           const reset = await this.$axios.$post("/migrate", this.credentials);
-          console.log(reset);
-
           if (reset.token) {
             console.log("user migrated");
             // await this.$auth.loginWith("local", this.credentials); // try to log user in
