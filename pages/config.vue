@@ -11,6 +11,7 @@
     <v-switch
       v-model="config.isSignupOpen"
       label="Ouverture des inscription"
+      @change="setRegistration(config.isSignupOpen)"
     ></v-switch>
     <v-text-field
       v-model="config.fb_signup_closed"
@@ -73,6 +74,16 @@ export default {
         path: "/",
       });
     }
+  },
+
+  methods: {
+    async setRegistration(val) {
+      const data = {
+        key: "isSignupOpen",
+        value: val,
+      };
+      await this.$axios.put("/config", data);
+    },
   },
 };
 </script>
