@@ -114,14 +114,6 @@ export default {
   },
 
   methods: {
-    async setRegistration(val) {
-      const data = {
-        key: "isSignupOpen",
-        value: val,
-      };
-      await this.$axios.put("/config", data);
-    },
-
     async submitConfigChanges() {
       this.load = true;
       const data = [];
