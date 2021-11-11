@@ -16,70 +16,106 @@
       </v-icon>
     </div>
     <br />
+    <v-container style="display: grid; width: 100%">
+      <v-row>
+        <v-col md="6">
+          <FormCard
+            style="height: 100%; width: 100%"
+            title="Général"
+            form-key="fa_general_form"
+            topic="general"
+            :is-disabled="isValidated('humain')"
+            :form="FA"
+            @form-change="updateForm('general', $event)"
+          ></FormCard>
+        </v-col>
+        <v-col md="6">
+          <FormCard
+            title="Presta"
+            form-key="fa_external_form"
+            topic="general"
+            :is-disabled="isValidated('humain')"
+            :form="FA"
+            @form-change="updateForm('general', $event)"
+          ></FormCard>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <FormCard
+            title="Détail"
+            form-key="fa_details_form"
+            topic="details"
+            :is-disabled="isValidated('humain')"
+            :form="FA"
+            @form-change="updateForm('details', $event)"
+          ></FormCard>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col>
+          <TimeframeTable
+            :init-timeframes="FA.timeframes"
+            :disabled="!isValidated('human')"
+            :is-disabled="isValidated('humain')"
+            :form="FA"
+            :store="FAStore"
+          ></TimeframeTable>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col md="6">
+          <FormCard
+            title="Sécu"
+            topic="security"
+            form-key="fa_security_form"
+            :is-disabled="isValidated('secu')"
+            :form="FA"
+            @form-change="updateForm('security', $event)"
+          ></FormCard>
+        </v-col>
+        <v-col md="6">
+          <FormCard
+            title="Signa"
+            topic="signalisation"
+            form-key="fa_signalisation_form"
+            :is-disabled="isValidated('signa')"
+            :form="FA"
+            @form-change="updateForm('signalisation', $event)"
+          ></FormCard>
+        </v-col>
+      </v-row>
+      <v-col>
+        <h2>Logistique 🚚</h2>
+        <LogisticsCard
+          title="Matos"
+          :types="['gros']"
+          :store="FAStore"
+          :disabled="isValidated('log')"
+        ></LogisticsCard>
+      </v-col>
+      <v-row />
+      <br />
+      <LogisticsCard
+        title="Barrieres"
+        :types="['barrieres']"
+        :store="FAStore"
+        :disabled="isValidated('barrieres')"
+      ></LogisticsCard>
+      <br />
+      <LogisticsCard
+        title="Elec"
+        :types="['elec']"
+        :store="FAStore"
+        :disabled="isValidated('elec')"
+      ></LogisticsCard>
 
-    <FormCard
-      title="Général"
-      form-key="fa_general_form"
-      topic="general"
-      :is-disabled="isValidated('humain')"
-      :form="FA"
-      @form-change="updateForm('general', $event)"
-    ></FormCard>
-    <br />
-    <FormCard
-      title="Détail"
-      form-key="fa_details_form"
-      topic="details"
-      :is-disabled="isValidated('humain')"
-      :form="FA"
-      @form-change="updateForm('details', $event)"
-    ></FormCard>
-    <br />
-    <TimeframeTable
-      :init-timeframes="FA.timeframes"
-      :disabled="!isValidated('human')"
-      :is-disabled="isValidated('humain')"
-      :form="FA"
-      :store="FAStore"
-    ></TimeframeTable>
-    <br />
-    <FormCard
-      title="Sécu"
-      topic="security"
-      form-key="fa_security_form"
-      :is-disabled="isValidated('secu')"
-      :form="FA"
-      @form-change="updateForm('security', $event)"
-    ></FormCard>
+      <br />
+      <CommentCard :comments="FA.comments"></CommentCard>
 
-    <br />
-    <h2>Logistique 🚚</h2>
-    <LogisticsCard
-      title="Matos"
-      :types="['gros']"
-      :store="FAStore"
-      :disabled="isValidated('log')"
-    ></LogisticsCard>
-    <br />
-    <LogisticsCard
-      title="Barrieres"
-      :types="['barrieres']"
-      :store="FAStore"
-      :disabled="isValidated('barrieres')"
-    ></LogisticsCard>
-    <br />
-    <LogisticsCard
-      title="Elec"
-      :types="['elec']"
-      :store="FAStore"
-      :disabled="isValidated('elec')"
-    ></LogisticsCard>
-
-    <br />
-    <CommentCard :comments="FA.comments"></CommentCard>
-
-    <br />
-    <FTCard></FTCard>
+      <br />
+      <FTCard></FTCard>
+    </v-container>
 
     <div style="height: 100px"></div>
 
