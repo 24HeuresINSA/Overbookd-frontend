@@ -107,3 +107,14 @@ export interface FriendRequestData {
   to: string; // _id
   data: FriendRequest;
 }
+
+export interface timeslot {
+  _id?: string;
+  groupTitle: string;
+  groupDescription?: string;
+  timeFrame: {
+    start: Date;
+    end: Date;
+  };
+  charisma: number;
+}

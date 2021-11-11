@@ -1,7 +1,7 @@
 import { NuxtAxiosInstance } from "@nuxtjs/axios";
 import { availability } from "~/utils/models/repo";
 
-const resource = "/availabilities";
+const resource = "/timeslot";
 
 type Context = { $axios: NuxtAxiosInstance };
 

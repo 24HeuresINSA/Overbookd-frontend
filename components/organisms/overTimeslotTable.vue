@@ -2,10 +2,6 @@
   <v-data-table> </v-data-table>
 </template>
 
-<script>
-export default {
-  name: "OverAvailabilities",
-};
-</script>
+<script></script>
 
 <style scoped></style>

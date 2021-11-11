@@ -12,7 +12,7 @@
     </v-progress-linear>
 
     <OverAvailabilities></OverAvailabilities>
-
+    <!--
     <template v-for="(availability, index) in availabilities">
       <br />
       <h3>{{ availability.name }}</h3>
@@ -61,7 +61,7 @@
         </v-container>
       </div>
     </template>
-
+    -->
     <v-btn fab style="bottom: 40px; position: fixed; right: 100px" @click="save"
       ><v-icon>mdi-content-save</v-icon></v-btn
     >
@@ -92,18 +92,18 @@
         <v-card-title>Ajouter des dispo 📆</v-card-title>
         <v-card-text>
           <v-text-field
-            v-model="newAvailability.name"
+            v-model="newTimeslot.groupTitle"
             label="Titre"
           ></v-text-field>
           <v-text-field
-            v-model="newAvailability.description"
+            v-model="newTimeslot.groupDescription"
             label="Desciption"
           ></v-text-field>
-          <v-select
+          <!--<v-select
             v-model="newAvailability.role"
             label="qui peut voir ces dispo?"
             :items="getConfig('teams').map((e) => e.name)"
-          ></v-select>
+          ></v-select> -->
         </v-card-text>
         <v-card-actions>
           <v-btn text @click="addAvailability()"
@@ -129,8 +129,8 @@
       <v-card>
         <v-card-title>Ajouter une creneau</v-card-title>
         <v-card-text>
-          <v-time-picker v-model="newTimeframe.start"></v-time-picker>
-          <v-time-picker v-model="newTimeframe.end"></v-time-picker>
+          <v-time-picker v-model="newTimeslot.timeframe.start"></v-time-picker>
+          <v-time-picker v-model="newTimeslot.timeframe.end"></v-time-picker>
           <v-text-field
             v-model="newTimeframe.charisma"
             label="charisme"
@@ -172,21 +172,20 @@ export default {
       selectedAvailability: false,
       selectedDate: undefined,
       isTimeframeDialog: false,
-      newAvailability: {
-        name: undefined,
-        description: undefined,
-        role: undefined,
-      },
-      newTimeframe: {
-        start: undefined,
-        end: undefined,
+      newTimeslot: {
+        groupTitle: undefined,
+        groupDescription: undefined,
+        timeFrame: {
+          start: undefined,
+          end: undefined,
+        },
         charisma: undefined,
       },
     };
   },
 
   async mounted() {
-    this.availabilities = (await this.$axios.get("/availabilities")).data;
+    this.availabilities = (await this.$axios.get("/timeslot")).data;
     const mAvailabilities = this.getUser().availabilities;
     if (mAvailabilities) {
       // fill in availabilities\
@@ -203,7 +202,7 @@ export default {
 
   methods: {
     async addAvailability() {
-      await this.$axios.post("/availabilities", this.newAvailability);
+      await this.$axios.post("/timeslot", this.newAvailability);
       this.isDialogOpen = false;
       this.isSnackbarOpen = true;
     },
@@ -226,7 +225,7 @@ export default {
         day.frames = [];
       }
       day.frames.push(this.newTimeframe);
-      await this.$axios.put("/availabilities", mAvailability);
+      await this.$axios.put("/timeslot", mAvailability);
     },
 
     async addDay() {
