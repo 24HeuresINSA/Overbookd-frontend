@@ -6,20 +6,24 @@ const resource = "/timeslot";
 type Context = { $axios: NuxtAxiosInstance };
 
 export default {
-  getAllTimeslots(context: Context) {
+  getAll(context: Context) {
     return context.$axios.get(`${resource}`);
   },
-  getTimeslotById(context: Context, id: string) {
+  getById(context: Context, id: string) {
     return context.$axios.get(`${resource}/${id}`);
   },
 
   // POST
-  createTimeslot(context: Context, availabilities: timeslot[]) {
-    return context.$axios.post(`${resource}`, availabilities);
+  createMany(context: Context, timeslot: timeslot[]) {
+    return context.$axios.post(`${resource}/many`, timeslot);
+  },
+
+  create(context: Context, timeslot: timeslot) {
+    return context.$axios.post(`${resource}`, timeslot);
   },
 
   // DELETE
-  deleteTimeslot(context: Context, id: string) {
+  delete(context: Context, id: string) {
     return context.$axios.delete(`${resource}/${id}`);
   },
 };

@@ -10,8 +10,7 @@
         <strong>{{ Math.ceil(value) }}%</strong>
       </template>
     </v-progress-linear>
-
-    <OverAvailabilities></OverAvailabilities>
+    <overTimeslotTable :timeslots="timeslots"></overTimeslotTable>
     <!--
     <template v-for="(availability, index) in availabilities">
       <br />
@@ -61,7 +60,6 @@
         </v-container>
       </div>
     </template>
-    -->
     <v-btn fab style="bottom: 40px; position: fixed; right: 100px" @click="save"
       ><v-icon>mdi-content-save</v-icon></v-btn
     >
@@ -99,11 +97,11 @@
             v-model="newTimeslot.groupDescription"
             label="Desciption"
           ></v-text-field>
-          <!--<v-select
+          <v-select
             v-model="newAvailability.role"
             label="qui peut voir ces dispo?"
             :items="getConfig('teams').map((e) => e.name)"
-          ></v-select> -->
+          ></v-select> 
         </v-card-text>
         <v-card-actions>
           <v-btn text @click="addAvailability()"
@@ -144,16 +142,18 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </div>
+  </div>     
+  --></div>
 </template>
 
 <script>
 import { getConfig, getUser, hasRole } from "../common/role";
-import OverAvailabilities from "../components/organisms/overAvailabilities";
+import overTimeslotTable from "../components/organisms/overTimeslotTable";
+import { timeslotRepo } from "../repositories/repoFactory";
 
 export default {
   name: "Availabilities",
-  components: { OverAvailabilities },
+  components: { overTimeslotTable },
   data() {
     return {
       detailMessage: this.getConfig("availabilities_description"),
@@ -184,20 +184,14 @@ export default {
     };
   },
 
+  computed: {
+    timeslots: function () {
+      return this.$accessor.timeslot.timeslots;
+    },
+  },
+
   async mounted() {
-    this.availabilities = (await this.$axios.get("/timeslot")).data;
-    const mAvailabilities = this.getUser().availabilities;
-    if (mAvailabilities) {
-      // fill in availabilities\
-      this.availabilities.forEach((availability) => {
-        let mAvailability = mAvailabilities.find(
-          (e) => e._id === availability._id
-        );
-        if (mAvailability) {
-          this.$set(availability, "days", mAvailability.days);
-        }
-      });
-    }
+    this.$store.dispatch("timeslot/fetchTimeslots");
   },
 
   methods: {
