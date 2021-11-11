@@ -83,8 +83,14 @@
       </v-row>
     </v-container>
 
-    <v-btn color="secondary" elevation="2" fab to="/fa/newFA" class="fab-right">
-      <v-icon> mdi-plus-thick </v-icon>
+    <v-btn
+      color="secondary"
+      elevation="2"
+      fab
+      class="fab-right"
+      @click="createNewFA"
+    >
+      <v-icon> mdi-plus-thick</v-icon>
     </v-btn>
   </div>
 </template>
@@ -92,6 +98,8 @@
 <script>
 import { getConfig } from "../../common/role";
 import Fuse from "fuse.js";
+import { safeCall } from "../../utils/api/calls";
+import { RepoFactory } from "../../repositories/repoFactory";
 
 export default {
   name: "Fa",
@@ -109,6 +117,7 @@ export default {
       selectedTeam: undefined,
       headers: [
         { text: "status", value: "status" },
+        { text: "#", value: "count" },
         { text: "nom", value: "general.name" },
         { text: "equipe", value: "general.team" },
         { text: "Resp", value: "general.inCharge.username" },
@@ -150,7 +159,7 @@ export default {
 
   methods: {
     getConfig(key) {
-      return getConfig(this, key);
+      return this.$accessor.config.getConfig(key);
     },
 
     filterBySelectedTeam(FAs, team) {
@@ -184,6 +193,18 @@ export default {
 
     onItemSelected(item) {
       this.$router.push({ path: "fa/" + item.count });
+    },
+
+    async createNewFA() {
+      const res = await safeCall(
+        this.$store,
+        RepoFactory.faRepo.createNewFA(this, {}),
+        "FA created 🥳"
+      );
+      console.log(res);
+      if (res) {
+        await this.$router.push({ path: "fa/" + res.count });
+      }
     },
 
     nextPage() {

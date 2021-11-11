@@ -128,8 +128,10 @@
         z-index: 30;
       "
     >
-      <v-btn color="red" @click="refuseDialog = true">refusé</v-btn>
-      <v-btn color="green" @click="validate">validé</v-btn>
+      <v-btn v-if="validator" color="red" @click="refuseDialog = true"
+        >refusé</v-btn
+      >
+      <v-btn v-if="validator" color="green" @click="validate">validé</v-btn>
       <v-btn color="secondary" @click="validationDialog = true"
         >soumettre à validation
       </v-btn>
@@ -243,12 +245,15 @@ export default {
     },
     validator: function () {
       let mValidator = null;
-      this.FT_VALIDATORS.forEach((validator) => {
-        if (this.me.team && this.me.team.includes(validator)) {
-          mValidator = validator;
-        }
-      });
-      return mValidator;
+      if (this.validators) {
+        this.validators.forEach((validator) => {
+          if (this.me.team && this.me.team.includes(validator)) {
+            mValidator = validator;
+          }
+        });
+        return mValidator;
+      }
+      return null;
     },
   },
 
