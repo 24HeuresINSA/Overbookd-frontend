@@ -138,6 +138,11 @@ export default {
   async mounted() {
     if (this.field.type === "user") {
       let users = this.$accessor.user.usernames;
+      if (users.length === 0) {
+        // fetch usernames
+        await this.$accessor.user.getUsername();
+        users = this.$accessor.user.usernames;
+      }
       this.users = users.map((user) => {
         return {
           text: user.username,
