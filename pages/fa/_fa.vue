@@ -3,7 +3,7 @@
     <div
       style="display: flex; justify-content: space-between; align-items: center"
     >
-      <h1>Fiche Anime 🤯</h1>
+      <h1>Fiche Activitée 🤯</h1>
       <h2 v-if="isNewFA">Create new FA</h2>
       <h2 v-if="FA.count">FA: {{ FA.count }}</h2>
       <h3>{{ FA.status ? FA.status : "draft" }}</h3>

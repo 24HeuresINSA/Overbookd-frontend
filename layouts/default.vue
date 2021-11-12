@@ -136,7 +136,7 @@ export default {
         },
         {
           icon: "mdi-chart-bubble",
-          title: "Fiches Animation 🥳",
+          title: "Fiches Activitée 🥳",
           roles: this.getConfig("ft_required_role"),
           to: "/fa",
         },
