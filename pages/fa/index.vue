@@ -67,6 +67,9 @@
                   >
                     <v-icon small>mdi-circle-edit-outline</v-icon>
                   </v-btn>
+                  <v-btn class="mx-2" icon small @click="deleteFA(row.item)">
+                    <v-icon small>mdi-delete</v-icon>
+                  </v-btn>
                 </td>
               </tr>
             </template>
@@ -96,7 +99,6 @@
 </template>
 
 <script>
-import { getConfig } from "../../common/role";
 import Fuse from "fuse.js";
 import { safeCall } from "../../utils/api/calls";
 import { RepoFactory } from "../../repositories/repoFactory";
@@ -154,7 +156,9 @@ export default {
   },
   async mounted() {
     // get FAs
-    this.FAs = (await this.$axios.get("/FA")).data;
+    this.FAs = (await this.$axios.get("/FA")).data.filter(
+      (e) => e.isValid !== false
+    );
   },
 
   methods: {
@@ -201,10 +205,17 @@ export default {
         RepoFactory.faRepo.createNewFA(this, {}),
         "FA created 🥳"
       );
-      console.log(res);
       if (res) {
         await this.$router.push({ path: "fa/" + res.count });
       }
+    },
+    async deleteFA(FA) {
+      await safeCall(
+        this.$store,
+        RepoFactory.faRepo.deleteFA(this, FA),
+        "FA deleted 🥳"
+      );
+      this.FAs = this.FAs.filter((e) => e.count !== FA.count);
     },
 
     nextPage() {
