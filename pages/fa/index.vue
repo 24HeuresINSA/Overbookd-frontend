@@ -78,8 +78,9 @@
               <v-avatar
                 v-if="row.item"
                 :color="color[row.item.status]"
-                size="20"
-              ></v-avatar>
+                size="25"
+                >{{ row.item.count }}
+              </v-avatar>
             </template>
           </v-data-table>
         </v-col>
@@ -119,7 +120,6 @@ export default {
       selectedTeam: undefined,
       headers: [
         { text: "status", value: "status" },
-        { text: "#", value: "count" },
         { text: "nom", value: "general.name" },
         { text: "equipe", value: "general.team" },
         { text: "Resp", value: "general.inCharge.username" },
