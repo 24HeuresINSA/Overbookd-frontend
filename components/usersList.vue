@@ -11,7 +11,7 @@
               {{ user.charisma }}
             </v-list-item-title>
             <v-list-item-subtitle>
-              <over-chips :roles="user.team"></over-chips>
+              <OverChips :roles="user.team"></OverChips>
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
@@ -30,10 +30,11 @@
 
 <script>
 import { getConfig } from "../common/role";
+import OverChips from "~/components/atoms/overChips";
 
 export default {
   name: "UsersList",
-
+  comments: { OverChips },
   props: ["users"],
 
   data() {
