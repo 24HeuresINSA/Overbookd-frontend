@@ -1,35 +1,46 @@
 <template>
-  <v-calendar
-    ref="calendar"
-    style="flex-grow: 2; height: auto; overflow-y: auto"
-    :value="centerDay"
-    :events="calendarFormattedEvents"
-    color="primary"
-    type="week"
-    :weekdays="[1, 2, 3, 4, 5, 6, 0]"
-    @mousedown:event="startDrag"
-    @mousedown:time="startTime"
-    @mousemove:time="mouseMove"
-    @mouseup:time="endDrag"
-    @mouseleave.native="cancelDrag"
-  >
-    <template #interval="{ date, time }">
-      <div
-        v-if="isUserAvailableInTimeframe(new Date(date + ' ' + time))"
-        style="
-          background-color: rgba(95, 219, 72, 0.45);
-          height: 100%;
-          width: 100%;
-        "
-      ></div>
-    </template>
-  </v-calendar>
+  <div style="flex-grow: 2; height: auto">
+    <v-sheet tile height="54" class="d-flex">
+      <v-btn icon class="ma-2" @click="$refs.cal.prev()">
+        <v-icon>mdi-chevron-left</v-icon>
+      </v-btn>
+      <v-spacer></v-spacer>
+      <v-btn icon class="ma-2" @click="$refs.cal.next()">
+        <v-icon>mdi-chevron-right</v-icon>
+      </v-btn>
+    </v-sheet>
+
+    <v-calendar
+      ref="cal"
+      v-model="centralDay"
+      :events="calendarFormattedEvents"
+      color="primary"
+      type="week"
+      :weekdays="[1, 2, 3, 4, 5, 6, 0]"
+      @mousedown:event="startDrag"
+      @mousedown:time="startTime"
+      @mousemove:time="mouseMove"
+      @mouseup:time="endDrag"
+      @mouseleave.native="cancelDrag"
+    >
+      <template #interval="{ date, time }">
+        <div
+          v-if="isUserAvailableInTimeframe(new Date(date + ' ' + time))"
+          style="
+            background-color: rgba(95, 219, 72, 0.45);
+            height: 100%;
+            width: 100%;
+          "
+        ></div>
+      </template>
+    </v-calendar>
+  </div>
 </template>
 
 <script>
 export default {
   name: "OverCalendar",
-  props: ["centerDay", "events"],
+  props: ["events"],
 
   data() {
     return {
@@ -42,6 +53,7 @@ export default {
       extendOriginal: null,
 
       newEvent: undefined,
+      centralDay: this.$accessor.config.getConfig("event_date"),
     };
   },
 
