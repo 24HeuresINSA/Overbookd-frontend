@@ -2,18 +2,17 @@
   <div>
     <h2>Mes disponibilités</h2>
     <p>{{ detailMessage }}</p>
-
-    <br />
-    <h2>Mes point de charisme: {{ userCharisma }}/{{ maxCharisma }}</h2>
-    <v-progress-linear height="25" :value="(userCharisma / maxCharisma) * 100">
-      <template #default="{ value }">
-        <strong>{{ Math.ceil(value) }}%</strong>
-      </template>
-    </v-progress-linear>
-    <OverTimeslotAdder></OverTimeslotAdder>
     <v-spacer></v-spacer>
+    <v-container>
+      <v-row>
+        <v-col offset-md="5" md="7">
+          <OverTimeslotAdder></OverTimeslotAdder>
+        </v-col>
+      </v-row>
+    </v-container>
     <overTimeslotTable :timeslots="timeslots"></overTimeslotTable>
     <TimeslotSnackBar></TimeslotSnackBar>
+
     <!--
     <template v-for="(availability, index) in availabilities">
       <br />

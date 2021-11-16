@@ -2,7 +2,7 @@
   <v-dialog v-model="dialog" persistent max-width="500px">
     <template #activator="{ on }">
       <v-btn color="primary" dark class="mx-auto" v-on="on">
-        <v-icon left>mdi-clock-outline</v-icon> ADDME
+        <v-icon left>mdi-clock-outline</v-icon> Ajout de multiples créneaux
       </v-btn>
     </template>
     <v-card>

@@ -2,9 +2,9 @@
   <v-card>
     <v-card-title> TODO: GROUTITLES </v-card-title>
     <v-data-table
+      v-model="selectedItems"
       :headers="headers"
       :items="items"
-      :loading="loading"
       class="elevation-1"
       show-select
       dense
@@ -26,6 +26,17 @@
       <template #item.actions="{ item }">
         <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
         <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+      </template>
+      <template #footer.prepend>
+        <v-btn color="error" @click="removeItems">
+          <v-icon left> mdi-plus </v-icon>
+          Supprimer la selection
+        </v-btn>
+
+        <v-btn color="success" @click="acceptSelection"
+          ><v-icon left> mdi-plus </v-icon> Me rendre disponible sur les
+          créneaux selectionnés
+        </v-btn>
       </template>
     </v-data-table>
   </v-card>
@@ -67,6 +78,7 @@ export default {
         end: "",
         date: "",
       },
+      selectedItems: [],
     };
   },
   computed: {
@@ -101,6 +113,16 @@ export default {
       this.editedIndex = this.items.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.$refs.dialog.open();
+    },
+    async enterSelect() {
+      console.log(this.selectedItems.length);
+      this.$emit("select", this.selectedItems);
+    },
+    async acceptSelection() {
+      //TODO
+    },
+    async removeItems() {
+      //TODO
     },
   },
 };
