@@ -10,6 +10,10 @@
         <strong>{{ Math.ceil(value) }}%</strong>
       </template>
     </v-progress-linear>
+    <OverTimeslotAdder></OverTimeslotAdder>
+    <v-spacer></v-spacer>
+    <br />
+    <br />
     <overTimeslotTable :timeslots="timeslots"></overTimeslotTable>
     <!--
     <template v-for="(availability, index) in availabilities">
@@ -150,24 +154,18 @@
 import { getConfig, getUser, hasRole } from "../common/role";
 import overTimeslotTable from "../components/organisms/overTimeslotTable";
 import { timeslotRepo } from "../repositories/repoFactory";
+import OverTimeslotAdder from "../components/organisms/OverTimeslotAdder";
 
 export default {
   name: "Availabilities",
-  components: { overTimeslotTable },
+  components: { overTimeslotTable, OverTimeslotAdder },
   data() {
     return {
       detailMessage: this.getConfig("availabilities_description"),
       userCharisma: this.$accessor.user.me.charisma,
       maxCharisma: this.getConfig("max_charisma"),
       availabilities: [],
-      isAllToggled: false,
       isSnackbarOpen: false,
-      isDialogOpen: false,
-      isDayDialogOpen: false,
-      hasEditRole: hasRole(
-        this,
-        this.getConfig(this, "add_availabilities_roles")
-      ),
       newDay: undefined,
       selectedAvailability: false,
       selectedDate: undefined,
@@ -187,6 +185,9 @@ export default {
   computed: {
     timeslots: function () {
       return this.$accessor.timeslot.timeslots;
+    },
+    existingGroupTitles: function () {
+      return this.$accessor.timeslot.timeslots.map((e) => e.groupTitle);
     },
   },
 
