@@ -9,10 +9,11 @@
     <template #activator="{ on, attrs }">
       <v-text-field
         v-model="time"
-        label="Time"
+        :label="label"
         prepend-icon="mdi-clock-time-four-outline"
         readonly
         v-bind="attrs"
+        :rules="rules"
         v-on="on"
       ></v-text-field>
     </template>
@@ -26,7 +27,16 @@
     >
       <v-spacer></v-spacer>
       <v-btn text color="primary" @click="modal2 = false"> Cancel </v-btn>
-      <v-btn text color="primary" @click="$refs.dialog.save(time)"> OK </v-btn>
+      <v-btn
+        text
+        color="primary"
+        @click="
+          $refs.dialog.save(time);
+          $emit('update:time', time);
+        "
+      >
+        OK
+      </v-btn>
     </v-time-picker>
   </v-dialog>
 </template>
@@ -34,9 +44,13 @@
 export default {
   name: "OverTimePicker",
   props: {
-    dTime: {
+    label: {
       type: String,
       default: "",
+    },
+    rules: {
+      type: Array,
+      default: () => [(v) => !!v || "Heure requise"],
     },
   },
   data() {

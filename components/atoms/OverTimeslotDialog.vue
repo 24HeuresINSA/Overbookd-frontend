@@ -28,14 +28,14 @@
             </v-flex>
             <v-flex xs12>
               <OverDatePicker
-                :d-date="overTimeslot.date"
+                label="Date de début"
                 @update:date="overTimeslot.date = $event"
               >
               </OverDatePicker>
             </v-flex>
             <v-flex xs12>
               <OverTimePicker
-                :d-time="overTimeslot.start"
+                label="Date de fin"
                 @update:time="overTimeslot.start = $event"
               ></OverTimePicker>
             </v-flex>
@@ -63,8 +63,8 @@
 
 <script lang="ts">
 import Vue, { PropType } from "vue";
-import OverTimePicker from "./OverTimePicker";
-import OverDatePicker from "./OverDatePicker";
+import OverTimePicker from "./OverTimePicker.vue";
+import OverDatePicker from "./OverDatePicker.vue";
 export default Vue.extend({
   name: "OverTimeslotDialog",
   components: {

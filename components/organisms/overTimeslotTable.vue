@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title> TODO: GROUTITLES {{ da }} </v-card-title>
+    <v-card-title> TODO: GROUTITLES </v-card-title>
     <v-data-table
       :headers="headers"
       :items="items"
@@ -72,9 +72,6 @@ export default {
   computed: {
     items() {
       return this.overTimeslotTable();
-    },
-    da() {
-      return this.$accessor.timeslot.date;
     },
   },
   methods: {

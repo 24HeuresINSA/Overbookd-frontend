@@ -9,10 +9,11 @@
     <template #activator="{ on, attrs }">
       <v-text-field
         v-model="date"
-        label="Picker in dialog"
+        :label="label"
         prepend-icon="mdi-calendar"
         readonly
         v-bind="attrs"
+        :rules="rules"
         v-on="on"
       ></v-text-field>
     </template>
@@ -33,9 +34,13 @@
 export default {
   name: "OverDatePicker",
   props: {
-    dDate: {
+    label: {
       type: String,
       default: "",
+    },
+    rules: {
+      type: Array,
+      default: () => [(v) => !!v || "Date requise"],
     },
   },
   data() {
@@ -47,7 +52,7 @@ export default {
   methods: {
     save2(date) {
       this.$refs.dialog.save(this.date);
-      this.$accessor.timeslot.setDate(date);
+      this.$emit("update:date", date);
     },
   },
 };

@@ -12,9 +12,8 @@
     </v-progress-linear>
     <OverTimeslotAdder></OverTimeslotAdder>
     <v-spacer></v-spacer>
-    <br />
-    <br />
     <overTimeslotTable :timeslots="timeslots"></overTimeslotTable>
+    <TimeslotSnackBar></TimeslotSnackBar>
     <!--
     <template v-for="(availability, index) in availabilities">
       <br />
@@ -155,10 +154,11 @@ import { getConfig, getUser, hasRole } from "../common/role";
 import overTimeslotTable from "../components/organisms/overTimeslotTable";
 import { timeslotRepo } from "../repositories/repoFactory";
 import OverTimeslotAdder from "../components/organisms/OverTimeslotAdder";
+import TimeslotSnackBar from "../components/atoms/TimeslotSnackBar.vue";
 
 export default {
   name: "Availabilities",
-  components: { overTimeslotTable, OverTimeslotAdder },
+  components: { overTimeslotTable, OverTimeslotAdder, TimeslotSnackBar },
   data() {
     return {
       detailMessage: this.getConfig("availabilities_description"),
