@@ -180,7 +180,6 @@ export default {
       },
     };
   },
-
   computed: {
     timeslots: function () {
       return this.$accessor.timeslot.timeslots;
@@ -195,12 +194,6 @@ export default {
   },
 
   methods: {
-    async addAvailability() {
-      await this.$axios.post("/timeslot", this.newAvailability);
-      this.isDialogOpen = false;
-      this.isSnackbarOpen = true;
-    },
-
     openDayDialog(availability) {
       this.isDayDialogOpen = true;
       this.selectedAvailability = availability;

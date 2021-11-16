@@ -26,4 +26,9 @@ export default {
   delete(context: Context, id: string) {
     return context.$axios.delete(`${resource}/${id}`);
   },
+
+  // PUT
+  update(context: Context, id: string, charisma: number) {
+    return context.$axios.put(`${resource}/${id}/${charisma}`);
+  },
 };

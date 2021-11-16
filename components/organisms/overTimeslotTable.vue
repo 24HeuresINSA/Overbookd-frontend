@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import Vue from "vue";
 import OverTimeslotDialog from "../atoms/OverTimeslotDialog";
 
 export default {
@@ -68,6 +69,11 @@ export default {
           text: "Date",
           value: "date",
         },
+        {
+          text: "Charisme",
+          value: "charisma",
+          sortable: false,
+        },
         { text: "Actions", value: "actions", sortable: false },
       ],
       editedIndex: -1,
@@ -88,6 +94,7 @@ export default {
   },
   methods: {
     overTimeslotTable() {
+      //TODO better style for date !
       return this.timeslots.map((timeslot) => {
         return {
           id: timeslot._id,
@@ -106,12 +113,14 @@ export default {
             (new Date(timeslot.timeFrame.start).getMonth() + 1) +
             "-" +
             new Date(timeslot.timeFrame.start).getDate(),
+          charisma: timeslot.charisma,
         };
       });
     },
     async editItem(item) {
       this.editedIndex = this.items.indexOf(item);
       this.editedItem = Object.assign({}, item);
+      await Vue.nextTick();
       this.$refs.dialog.open();
     },
     async enterSelect() {

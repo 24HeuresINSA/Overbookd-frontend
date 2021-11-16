@@ -26,6 +26,14 @@ export const mutations = mutationTree(state, {
   SET_CREATE_STATUS(state, status: string) {
     state.createStatus = status;
   },
+  REPLACE_TIMESLOT(state, obj: { timeslot: timeslot; id: string }) {
+    const index = state.timeslots.findIndex((t) => t._id === obj.id);
+    if (index !== -1) {
+      state.timeslots[index] = obj.timeslot;
+      //Component that watch this timeslots wont reload if we dont do the next line :D
+      state.timeslots = [...state.timeslots];
+    }
+  },
 });
 
 export const actions = actionTree(
@@ -63,6 +71,18 @@ export const actions = actionTree(
     },
     async setCreateStatus(context, status: string) {
       context.commit("SET_CREATE_STATUS", status);
+    },
+    async updateTimeslot(context, timeslot: { id: string; charisma: number }) {
+      const res = await safeCall(
+        this,
+        timeslotRepo.update(this, timeslot.id, timeslot.charisma)
+      );
+      if (res && res.data) {
+        context.commit("REPLACE_TIMESLOT", {
+          timeslot: res.data,
+          id: timeslot.id,
+        });
+      }
     },
   }
 );
