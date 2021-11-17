@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title> TODO: GROUTITLES </v-card-title>
+    <v-card-title> TODO: GROUTITLES {{ roles }} </v-card-title>
     <v-data-table
       v-model="selectedItems"
       :headers="headers"
@@ -23,7 +23,10 @@
           ></OverTimeslotDialog>
         </v-toolbar>
       </template>
-      <template #item.actions="{ item }">
+      <template
+        v-if="roles.some((e) => editorTeams.includes(e))"
+        #item.actions="{ item }"
+      >
         <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
         <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
       </template>
@@ -85,11 +88,15 @@ export default {
         date: "",
       },
       selectedItems: [],
+      editorTeams: ["admin", "humain", "bural"],
     };
   },
   computed: {
     items() {
       return this.overTimeslotTable();
+    },
+    roles() {
+      return this.$accessor.user.me.team;
     },
   },
   methods: {
@@ -100,13 +107,13 @@ export default {
           id: timeslot._id,
           name: timeslot.groupTitle,
           start:
-            new Date(timeslot.timeFrame.start).getHours() +
+            this.padTime(new Date(timeslot.timeFrame.start).getHours()) +
             ":" +
-            new Date(timeslot.timeFrame.start).getMinutes(),
+            this.padTime(new Date(timeslot.timeFrame.start).getMinutes()),
           end:
-            new Date(timeslot.timeFrame.end).getHours() +
+            this.padTime(new Date(timeslot.timeFrame.end).getHours()) +
             ":" +
-            new Date(timeslot.timeFrame.end).getMinutes(),
+            this.padTime(new Date(timeslot.timeFrame.end).getMinutes()),
           date:
             new Date(timeslot.timeFrame.start).getFullYear() +
             "-" +
@@ -132,6 +139,12 @@ export default {
     },
     async removeItems() {
       //TODO
+    },
+    padTime(time) {
+      if (time < 10) {
+        return "0" + time;
+      }
+      return time;
     },
   },
 };
