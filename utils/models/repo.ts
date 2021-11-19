@@ -71,7 +71,7 @@ export interface User {
   transactionHistory?: Transaction[];
   balance?: number;
   charisma?: number;
-  availabilities: availability[];
+  availabilities: string[];
 }
 
 export interface availability {

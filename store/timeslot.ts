@@ -34,6 +34,12 @@ export const mutations = mutationTree(state, {
       state.timeslots = [...state.timeslots];
     }
   },
+  DELETE_TIMESLOT(state, id: string) {
+    const index = state.timeslots.findIndex((t) => t._id === id);
+    if (index !== -1) {
+      state.timeslots.splice(index, 1);
+    }
+  },
 });
 
 export const actions = actionTree(
@@ -82,6 +88,12 @@ export const actions = actionTree(
           timeslot: res.data,
           id: timeslot.id,
         });
+      }
+    },
+    async deleteTimeslot(context, id: string) {
+      const res = await safeCall(this, timeslotRepo.delete(this, id));
+      if (res && res.data) {
+        context.commit("DELETE_TIMESLOT", id);
       }
     },
   }

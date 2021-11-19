@@ -1,11 +1,11 @@
 <template>
   <v-card>
-    <v-card-title> TODO: GROUTITLES {{ roles }} </v-card-title>
     <v-data-table
       v-model="selectedItems"
       :headers="headers"
       :items="items"
       class="elevation-1"
+      group-by="date"
       show-select
       dense
     >
@@ -13,7 +13,11 @@
         <v-toolbar flat>
           <v-toolbar-title>
             <v-icon>mdi-clock-outline</v-icon>
-            <span class="title">Over Timeslots</span>
+            <span class="title"> {{ timeslots[0].groupTitle }}</span>
+            <br />
+            <span class="text-caption">
+              {{ timeslots[0].groupDescription }}</span
+            >
           </v-toolbar-title>
           <v-spacer></v-spacer>
 
@@ -24,21 +28,34 @@
         </v-toolbar>
       </template>
       <template
-        v-if="roles.some((e) => editorTeams.includes(e))"
+        v-if="roles.some((e) => authorizedEditor.includes(e))"
         #item.actions="{ item }"
       >
         <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
-        <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+        <v-icon small @click="removeItem(item)"> mdi-delete </v-icon>
+      </template>
+      <template #item.data-table-select="{ isSelected, select, item }">
+        <v-simple-checkbox
+          v-if="item.isSelected"
+          :value="item.isSelected"
+          color="primary"
+          :disabled="item.off"
+        ></v-simple-checkbox>
+        <v-simple-checkbox
+          v-else
+          :value="isSelected"
+          color="primary"
+          @input="select($event)"
+        ></v-simple-checkbox>
       </template>
       <template #footer.prepend>
-        <v-btn color="error" @click="removeItems">
+        <!-- <v-btn color="error" @click="removeItems" v-if="roles.some((e) => authorizedEditor.includes(e))">
           <v-icon left> mdi-plus </v-icon>
           Supprimer la selection
-        </v-btn>
+        </v-btn> -->
 
         <v-btn color="success" @click="acceptSelection"
-          ><v-icon left> mdi-plus </v-icon> Me rendre disponible sur les
-          créneaux selectionnés
+          ><v-icon left> mdi-plus </v-icon> Me rendre disponible (ce tableau)
         </v-btn>
       </template>
     </v-data-table>
@@ -66,8 +83,13 @@ export default {
         {
           text: "Heure de début",
           value: "start",
+          sortable: false,
         },
-        { text: "Heure de fin", value: "end" },
+        {
+          text: "Heure de fin",
+          value: "end",
+          sortable: false,
+        },
         {
           text: "Date",
           value: "date",
@@ -88,7 +110,7 @@ export default {
         date: "",
       },
       selectedItems: [],
-      editorTeams: ["admin", "humain", "bural"],
+      authorizedEditor: ["admin", "humain", "bural"],
     };
   },
   computed: {
@@ -97,6 +119,9 @@ export default {
     },
     roles() {
       return this.$accessor.user.me.team;
+    },
+    userSelectedAvailabilities() {
+      return this.$accessor.user.me.availabilities;
     },
   },
   methods: {
@@ -121,6 +146,10 @@ export default {
             "-" +
             new Date(timeslot.timeFrame.start).getDate(),
           charisma: timeslot.charisma,
+          isSelected: this.$accessor.user.me.availabilities.includes(
+            timeslot._id
+          ),
+          off: this.userSelectedAvailabilities.includes(timeslot._id),
         };
       });
     },
@@ -135,10 +164,13 @@ export default {
       this.$emit("select", this.selectedItems);
     },
     async acceptSelection() {
-      //TODO
+      const ids = this.selectedItems.map((item) => item.id);
+      console.log(ids);
+      await this.$store.dispatch("user/acceptSelection", ids);
+      this.selectedItems = [];
     },
-    async removeItems() {
-      //TODO
+    async removeItem(item) {
+      await this.$store.dispatch("timeslot/deleteTimeslot", item.id);
     },
     padTime(time) {
       if (time < 10) {

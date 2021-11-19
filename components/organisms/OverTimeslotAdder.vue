@@ -10,42 +10,63 @@
         <span class="headline">Ajout de multiple créneaux </span>
       </v-card-title>
       <v-card-text>
-        <v-form ref="form" v-model="valid">
-          <v-text-field
-            v-model="title"
-            label="Title"
-            required
-            :rules="groupTitleRules"
-          ></v-text-field>
-          <v-text-field
-            v-model="description"
-            label="Description"
-            required
-            :rules="groupDescriptionRules"
-          ></v-text-field>
-          <v-text-field
-            v-model="charisma"
-            type="number"
-            single-line
-            :rules="charismaRules"
-          >
-          </v-text-field>
-          <OverDatePicker
-            label="Date de début"
-            @update:date="dayStart = $event"
-          >
-          </OverDatePicker>
-          <OverDatePicker label="Date de fin" @update:date="dayEnd = $event">
-          </OverDatePicker>
-          <OverTimePicker
-            label="Heure de début"
-            @update:time="hourStart = $event"
-          ></OverTimePicker>
-          <OverTimePicker
-            label="Heure de fin"
-            @update:time="hourEnd = $event"
-          ></OverTimePicker>
-        </v-form>
+        <v-container>
+          <v-form ref="form" v-model="valid">
+            <v-row>
+              <v-col>
+                <v-text-field
+                  v-model="title"
+                  label="Titre"
+                  required
+                  :rules="groupTitleRules"
+                ></v-text-field>
+              </v-col>
+              <v-col>
+                <v-text-field
+                  v-model="charisma"
+                  type="number"
+                  label="Charisme"
+                  single-line
+                  :rules="charismaRules"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field
+                  v-model="description"
+                  label="Description"
+                  required
+                  :rules="groupDescriptionRules"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <OverDatePicker
+                  label="Date de début"
+                  @update:date="dayStart = $event"
+                >
+                </OverDatePicker>
+                <OverDatePicker
+                  label="Date de fin"
+                  @update:date="dayEnd = $event"
+                >
+                </OverDatePicker>
+              </v-col>
+              <v-col>
+                <OverTimePicker
+                  label="Heure de début"
+                  @update:time="hourStart = $event"
+                ></OverTimePicker>
+                <OverTimePicker
+                  label="Heure de fin"
+                  @update:time="hourEnd = $event"
+                ></OverTimePicker>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-container>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -95,6 +116,13 @@ export default {
       if (!this.valid) return;
       let start = new Date(this.dayStart + "T" + this.hourStart + ":00");
       const end = new Date(this.dayEnd + "T" + this.hourEnd + ":00");
+      if (start.getTime() > end.getTime()) {
+        this.$store.dispatch(
+          "timeslot/setCreateStatus",
+          "La date de fin doit être supérieure à la date de début"
+        );
+        return;
+      }
       const timeslots = [];
       while (true) {
         const newEnd = new Date(start);
