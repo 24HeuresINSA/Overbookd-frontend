@@ -94,6 +94,12 @@ export const actions = actionTree(
       const res = await safeCall(this, timeslotRepo.delete(this, id));
       if (res && res.data) {
         context.commit("DELETE_TIMESLOT", id);
+        context.commit("SET_CREATE_STATUS", "Créneau supprimé");
+      } else {
+        context.commit(
+          "SET_CREATE_STATUS",
+          "Impossible de supprimer le créneau, une personne ou plus a déjà choisi ce créneau"
+        );
       }
     },
   }
