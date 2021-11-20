@@ -54,9 +54,13 @@
           Supprimer la selection
         </v-btn> -->
 
-        <v-btn color="success" @click="acceptSelection"
+        <v-btn color="success" @click="$refs.confirm.open()"
           ><v-icon left> mdi-plus </v-icon> Me rendre disponible (ce tableau)
         </v-btn>
+        <ConfirmDialog ref="confirm" @confirm="acceptSelection()"
+          >Les créneaux que tu as choisis deviendront
+          <b>non modifiable !</b></ConfirmDialog
+        >
       </template>
     </v-data-table>
   </v-card>
@@ -65,11 +69,12 @@
 <script>
 import Vue from "vue";
 import OverTimeslotDialog from "../atoms/OverTimeslotDialog";
-
+import ConfirmDialog from "../atoms/ConfirmDialog";
 export default {
   name: "OverTimeslotTable",
   components: {
     OverTimeslotDialog,
+    ConfirmDialog,
   },
   props: {
     timeslots: {
@@ -164,9 +169,14 @@ export default {
       this.$emit("select", this.selectedItems);
     },
     async acceptSelection() {
+      if (this.selectedItems.length == 0) return;
       const ids = this.selectedItems.map((item) => item.id);
       console.log(ids);
       await this.$store.dispatch("user/acceptSelection", ids);
+      this.$store.dispatch(
+        "timeslot/setCreateStatus",
+        "Créneaux selectionnés validés"
+      );
       this.selectedItems = [];
     },
     async removeItem(item) {
