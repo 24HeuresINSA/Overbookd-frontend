@@ -18,7 +18,7 @@
     </v-container>
     <v-container>
       <v-row>
-        <v-col v-for="title in existingGroupTitles" :key="title">
+        <v-col v-for="title in existingGroupTitles" :key="title" md="6">
           <overTimeslotTable
             :timeslots="timeslotDict[title]"
           ></overTimeslotTable>

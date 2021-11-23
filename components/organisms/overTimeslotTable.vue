@@ -7,6 +7,7 @@
       class="elevation-1"
       group-by="date"
       show-select
+      disable-pagination
       dense
     >
       <template #top>
@@ -47,6 +48,15 @@
           color="primary"
           @input="select($event)"
         ></v-simple-checkbox>
+      </template>
+      <template #group.header="{ group, headers, toggle, isOpen }">
+        <td :colspan="headers.length">
+          <v-btn :ref="group" small icon :data-open="isOpen" @click="toggle">
+            <v-icon v-if="isOpen">mdi-chevron-up</v-icon>
+            <v-icon v-else>mdi-chevron-down</v-icon>
+          </v-btn>
+          {{ group }}
+        </td>
       </template>
       <template #footer.prepend>
         <!-- <v-btn color="error" @click="removeItems" v-if="roles.some((e) => authorizedEditor.includes(e))">
@@ -128,6 +138,14 @@ export default {
     userSelectedAvailabilities() {
       return this.$accessor.user.me.availabilities;
     },
+  },
+  mounted() {
+    Object.keys(this.$refs).forEach((k) => {
+      console.log(this.$refs[k]);
+      if (this.$refs[k] && this.$refs[k].$attrs["data-open"]) {
+        this.$refs[k].$el.click();
+      }
+    });
   },
   methods: {
     overTimeslotTable() {
