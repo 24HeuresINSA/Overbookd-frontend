@@ -31,12 +31,13 @@
         </v-col>
         <v-col md="6">
           <FormCard
-            title="Presta"
-            form-key="fa_external_form"
-            topic="general"
-            :is-disabled="isValidated('humain')"
+            title="Signa"
+            topic="signalisation"
+            details="Contacter les signa à signalitique@24heures.org pour ajouter des lieux non existant dans la liste deroulante"
+            form-key="fa_signalisation_form"
+            :is-disabled="isValidated('signa')"
             :form="FA"
-            @form-change="updateForm('general', $event)"
+            @form-change="updateForm('signalisation', $event)"
           ></FormCard>
         </v-col>
       </v-row>
@@ -76,12 +77,12 @@
         </v-col>
         <v-col md="6">
           <FormCard
-            title="Signa"
-            topic="signalisation"
-            form-key="fa_signalisation_form"
-            :is-disabled="isValidated('signa')"
+            title="Presta"
+            form-key="fa_external_form"
+            topic="general"
+            :is-disabled="isValidated('humain')"
             :form="FA"
-            @form-change="updateForm('signalisation', $event)"
+            @form-change="updateForm('general', $event)"
           ></FormCard>
         </v-col>
       </v-row>
