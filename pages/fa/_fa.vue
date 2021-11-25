@@ -129,6 +129,13 @@
         :store="FAStore"
         :disabled="isValidated('elec')"
       ></LogisticsCard>
+      <FormCard
+        form-key="fa_elec_form"
+        topic="elec"
+        :is-disabled="isValidated('elec')"
+        :form="FA"
+        @form-change="updateForm('elec', $event)"
+      ></FormCard>
 
       <br />
       <CommentCard :comments="FA.comments" form="FA"></CommentCard>
