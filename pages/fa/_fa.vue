@@ -5,7 +5,12 @@
     >
       <h1>Fiche Activitée 🤯</h1>
       <h2 v-if="isNewFA">Create new FA</h2>
-      <h2 v-if="FA.count">FA: {{ FA.count }}</h2>
+      <h2
+        v-if="FA.count"
+        :style="FA.isValid === false ? `text-decoration:line-through;` : ``"
+      >
+        {{ FA.isValid === false ? "[SUPPRIME] " : "" }}FA: {{ FA.count }}
+      </h2>
       <h3>{{ FA.status ? FA.status : "draft" }}</h3>
       <v-icon
         v-for="(validator, i) of validators"
@@ -144,13 +149,19 @@
       "
     >
       <v-btn v-if="validator" color="red" @click="refuseDialog = true"
-        >refusé</v-btn
-      >
+        >refusé
+      </v-btn>
       <v-btn v-if="validator" color="green" @click="validate">validé</v-btn>
       <v-btn color="secondary" @click="validationDialog = true"
         >soumettre à validation
       </v-btn>
       <v-btn color="warning" @click="saveFA">sauvgarder</v-btn>
+      <v-btn
+        v-if="validator && FA.isValid === false"
+        color="red"
+        @click="undelete"
+        >récupérer
+      </v-btn>
     </div>
 
     <v-dialog v-model="validationDialog" width="500">
@@ -208,6 +219,7 @@ import { RepoFactory } from "../../repositories/repoFactory";
 import LogisticsCard from "../../components/organisms/form/LogisticsCard";
 import CommentCard from "../../components/organisms/form/CommentCard";
 import FTCard from "../../components/organisms/form/FTCard";
+import { safeCall } from "../../utils/api/calls";
 
 export default {
   name: "Fa",
@@ -287,6 +299,14 @@ export default {
   },
 
   methods: {
+    async undelete() {
+      await this.FAStore.undelete();
+      await safeCall(
+        this,
+        this.FARepo.updateFA(this, this.FAStore.mFA),
+        "undelete"
+      );
+    },
     getValidatorIcon(validator) {
       try {
         return this.teams.find((team) => team.name === validator).icon;

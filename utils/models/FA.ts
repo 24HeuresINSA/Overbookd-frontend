@@ -13,4 +13,5 @@ export interface FA {
   refused: String[];
   comments: { time: Date; text: string; validator: string; topic?: string }[];
   FTs: FT[];
+  isValid: boolean;
 }

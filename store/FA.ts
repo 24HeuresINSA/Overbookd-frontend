@@ -50,6 +50,7 @@ export const mutations = mutationTree(state, {
       refused: [],
       comments: [],
       FTs: [],
+      isValid: true,
     };
   },
   ADD_TIMEFRAME: function (state, timeframe) {
@@ -155,6 +156,9 @@ export const mutations = mutationTree(state, {
     }
     state.mFA.comments.push(comment);
   },
+  UNDELETE: function (state) {
+    state.mFA.isValid = true;
+  },
 });
 
 export const actions = actionTree(
@@ -188,6 +192,9 @@ export const actions = actionTree(
     },
     setFA: function ({ commit }, payload) {
       commit("SET_FA", payload);
+    },
+    undelete: function ({ commit }) {
+      commit("UNDELETE");
     },
     validate: function ({ commit }, payload) {
       commit("VALIDATE_FA", payload);
