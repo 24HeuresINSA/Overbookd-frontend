@@ -1,42 +1,86 @@
 <template>
   <div>
-    <v-data-table
-      :headers="headers"
-      :items="inventory"
-      group-by="type"
-      :item-class="rowClass"
-      dense
-    >
-      <template #[`item.action`]="{ item }">
-        <v-btn v-if="hasRole('log')" icon small @click="edit(item)">
-          <v-icon small>mdi-circle-edit-outline</v-icon>
-        </v-btn>
-        <v-btn v-if="hasRole('log')" icon small @click="deleteItem(item)">
-          <v-icon small>mdi-delete</v-icon>
-        </v-btn>
-      </template>
+    <v-container>
+      <v-row>
+        <v-col md="3">
+          <v-card>
+            <v-card-title>
+              <span class="headline">Filtres</span>
+            </v-card-title>
+            <v-card-text>
+              <v-text-field
+                v-model="search.name"
+                label="Nom de l'objet"
+                append-icon="mdi-search"
+                single-line
+                hide-details
+              ></v-text-field>
+              <v-text-field
+                v-model="search.location"
+                title="Test"
+                label="Emplacement"
+                append-icon="mdi-loop"
+                single-line
+                hide-details
+              ></v-text-field>
+              <v-select
+                v-model="search.type"
+                :items="selectOptions"
+                label="Catégorie/type"
+                append-icon=""
+                single-line
+                hide-details
+              ></v-select>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" text @click="clear"> Clear </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+        <v-col>
+          <v-data-table
+            :headers="headers"
+            :items="filteredInventory"
+            group-by="type"
+            :item-class="rowClass"
+            dense
+          >
+            <template #[`item.action`]="{ item }">
+              <v-btn v-if="hasRole('log')" icon small @click="edit(item)">
+                <v-icon small>mdi-circle-edit-outline</v-icon>
+              </v-btn>
+              <v-btn v-if="hasRole('log')" icon small @click="deleteItem(item)">
+                <v-icon small>mdi-delete</v-icon>
+              </v-btn>
+            </template>
 
-      <template #[`item.borrow`]="{ item }">
-        <v-list dense>
-          <v-list-item v-for="(borrow, index) of item.borrowed" :key="index">
-            <v-list-item-content>
-              <v-list-item-title style="padding: 0">
-                {{ borrow.amount }} {{ borrow.from }}
-              </v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </template>
+            <template #[`item.borrow`]="{ item }">
+              <v-list dense>
+                <v-list-item
+                  v-for="(borrow, index) of item.borrowed"
+                  :key="index"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title style="padding: 0">
+                      {{ borrow.amount }} {{ borrow.from }}
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </template>
 
-      <template #[`item.borrowedCount`]="{ item }">
-        {{ getBorrowedCount(item) }}
-      </template>
+            <template #[`item.borrowedCount`]="{ item }">
+              {{ getBorrowedCount(item) }}
+            </template>
 
-      <template #[`item.totalCount`]="{ item }">
-        {{ +getBorrowedCount(item) + +item.amount }}
-      </template>
-    </v-data-table>
-
+            <template #[`item.totalCount`]="{ item }">
+              {{ +getBorrowedCount(item) + +item.amount }}
+            </template>
+          </v-data-table>
+        </v-col>
+      </v-row>
+    </v-container>
     <v-btn
       v-if="hasRole(allowedTeams)"
       fab
@@ -101,6 +145,7 @@
 import OverForm from "../components/overForm";
 import { safeCall } from "../utils/api/calls";
 import { RepoFactory } from "../repositories/repoFactory";
+import Vue from "vue";
 
 export default {
   name: "Inventory",
@@ -135,11 +180,28 @@ export default {
         from: undefined,
         amount: undefined,
       },
+      search: {
+        name: "",
+        location: "",
+        type: "",
+      },
+      selectOptions: [],
     };
   },
 
   computed: {
     me: () => this.$store.state.user.me,
+    filteredInventory() {
+      return this.inventory.filter((item) => {
+        return (
+          item.name.toLowerCase().includes(this.search.name.toLowerCase()) &&
+          item.location
+            .toLowerCase()
+            .includes(this.search.location.toLowerCase()) &&
+          item.type.toLowerCase().includes(this.search.type.toLowerCase())
+        );
+      });
+    },
   },
 
   async mounted() {
@@ -148,7 +210,7 @@ export default {
       ? ["log", "hard"]
       : ["log"];
     this.equipmentForm = await this.getConfig("equipment_form");
-
+    this.selectOptions = this.equipmentForm[1].options;
     this.inventory = (await this.$axios.$get("/equipment")).filter(
       (e) => e.isValid !== false
     );
@@ -242,6 +304,13 @@ export default {
       item.isValid = false;
       await this.$axios.put("/equipment", item);
       this.inventory = this.inventory.filter((i) => i._id !== item._id);
+    },
+    clear() {
+      this.search = {
+        name: "",
+        location: "",
+        type: "",
+      };
     },
   },
 };
