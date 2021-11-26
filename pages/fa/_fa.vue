@@ -71,14 +71,7 @@
       </v-row>
       <v-row>
         <v-col md="6">
-          <FormCard
-            title="Sécu"
-            topic="security"
-            form-key="fa_security_form"
-            :is-disabled="isValidated('secu')"
-            :form="FA"
-            @form-change="updateForm('security', $event)"
-          ></FormCard>
+          <PassSecuCard></PassSecuCard>
         </v-col>
         <v-col md="6">
           <FormCard
@@ -156,9 +149,11 @@
       "
     >
       <v-btn v-if="validator" color="red" @click="refuseDialog = true"
-        >refusé
+        >refusé par {{ validator }}
       </v-btn>
-      <v-btn v-if="validator" color="green" @click="validate">validé</v-btn>
+      <v-btn v-if="validator" color="green" @click="validate"
+        >validé par {{ validator }}</v-btn
+      >
       <v-btn color="secondary" @click="validationDialog = true"
         >soumettre à validation
       </v-btn>
@@ -227,10 +222,18 @@ import LogisticsCard from "../../components/organisms/form/LogisticsCard";
 import CommentCard from "../../components/organisms/form/CommentCard";
 import FTCard from "../../components/organisms/form/FTCard";
 import { safeCall } from "../../utils/api/calls";
+import PassSecuCard from "../../components/organisms/form/PassSecuCard";
 
 export default {
   name: "Fa",
-  components: { FTCard, CommentCard, LogisticsCard, TimeframeTable, FormCard },
+  components: {
+    PassSecuCard,
+    FTCard,
+    CommentCard,
+    LogisticsCard,
+    TimeframeTable,
+    FormCard,
+  },
   middleware: "user",
 
   data() {
@@ -371,7 +374,7 @@ export default {
     },
 
     validate() {
-      const validator = this.validator();
+      const validator = this.validator;
       if (validator) {
         this.FAStore.validate(validator);
         this.saveFA();

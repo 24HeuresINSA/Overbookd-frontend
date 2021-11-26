@@ -1,5 +1,5 @@
 import { actionTree, getterTree, mutationTree } from "typed-vuex";
-import { FA } from "~/utils/models/FA";
+import { FA, SecurityPass } from "~/utils/models/FA";
 import { FT } from "~/utils/models/FT";
 import { safeCall } from "~/utils/api/calls";
 import { RepoFactory } from "~/repositories/repoFactory";
@@ -12,6 +12,7 @@ export const state = () => ({
     validated: [] as any,
     refused: [] as any,
     FTs: [] as FT[],
+    securityPasses: [] as SecurityPass[],
   } as FA,
 });
 
@@ -51,6 +52,7 @@ export const mutations = mutationTree(state, {
       comments: [],
       FTs: [],
       isValid: true,
+      securityPasses: [],
     };
   },
   ADD_TIMEFRAME: function (state, timeframe) {
