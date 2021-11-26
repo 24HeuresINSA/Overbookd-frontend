@@ -15,14 +15,6 @@
                 single-line
                 hide-details
               ></v-text-field>
-              <!-- <v-text-field
-                v-model="search.location"
-                title="Test"
-                label="Emplacement"
-                append-icon="mdi-loop"
-                single-line
-                hide-details
-              ></v-text-field> -->
               <v-select
                 v-model="search.type"
                 :items="selectOptions"
@@ -64,7 +56,7 @@
                 hide-details
               ></v-text-field>
             </v-card-text>
-            <v-card-actions>
+            <v-card-actions v-if="hasRole('log')">
               <v-btn color="primary" text @click="pushNewLocation(newLocation)"
                 >Ajouter</v-btn
               >
@@ -83,6 +75,14 @@
             dense
           >
             <template #[`item.action`]="{ item }">
+              <v-tooltip bottom>
+                <template #activator="{ on }">
+                  <v-btn icon small @click="showPreciseLoc(item)" v-on="on">
+                    <v-icon small>mdi-help-circle</v-icon>
+                  </v-btn>
+                </template>
+                Afficher l'emplacement précis
+              </v-tooltip>
               <v-btn v-if="hasRole('log')" icon small @click="edit(item)">
                 <v-icon small>mdi-circle-edit-outline</v-icon>
               </v-btn>
@@ -105,13 +105,30 @@
                 </v-list-item>
               </v-list>
             </template>
-
+            <template #group.header="{ group, headers, toggle, isOpen }">
+              <td :colspan="headers.length" class="primary">
+                <v-btn
+                  :ref="group"
+                  small
+                  icon
+                  :data-open="isOpen"
+                  @click="toggle"
+                >
+                  <v-icon v-if="isOpen">mdi-chevron-up</v-icon>
+                  <v-icon v-else>mdi-chevron-down</v-icon>
+                </v-btn>
+                <span class="mx-5 font-weight-bold">{{ group }}</span>
+              </td>
+            </template>
             <template #[`item.borrowedCount`]="{ item }">
               {{ getBorrowedCount(item) }}
             </template>
 
             <template #[`item.totalCount`]="{ item }">
               {{ +getBorrowedCount(item) + +item.amount }}
+            </template>
+            <template #[`item.fromPool`]="{ item }">
+              <span v-if="item.fromPool"> 🐔 </span>
             </template>
           </v-data-table>
         </v-col>
@@ -138,7 +155,9 @@
             @form-change="onFormChange"
           >
           </OverForm>
+          <br />
           <v-divider></v-divider>
+          <br />
           <h4>Ajout de matos emprunté</h4>
           <v-container style="display: flex; flex-wrap: wrap">
             <v-text-field v-model="newBorrow.from" label="qui"></v-text-field>
@@ -162,6 +181,11 @@
           </v-container>
 
           <v-data-table :headers="borrowedHeader" :items="borrowed">
+            <template #[`item.action`]="{ item }">
+              <v-btn icon small @click="deleteBorrowed(item)">
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </template>
           </v-data-table>
 
           <v-btn fab @click="addNewBorrowedItems"
@@ -174,6 +198,17 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="isPreciseLocDialog" max-width="800">
+      <v-card>
+        <v-card-title>Emplacement précis</v-card-title>
+        <v-card-text v-if="selectedItem.preciseLocation">
+          <b>{{ selectedItem.preciseLocation }}</b>
+        </v-card-text>
+        <v-alert v-else color="error">
+          Aucun emplacement précis n'a été défini
+        </v-alert>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -181,7 +216,7 @@
 import OverForm from "../components/overForm";
 import { safeCall } from "../utils/api/calls";
 import { RepoFactory } from "../repositories/repoFactory";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEqual } from "lodash";
 import Vue from "vue";
 
 export default {
@@ -196,8 +231,9 @@ export default {
         { text: "quantite (inventaire 24)", value: "amount", align: "right" },
         { text: "quantite (emprunté)", value: "borrowedCount", align: "right" },
         { text: "emprunté", value: "borrow" },
+        { text: "Poule", value: "fromPool" },
         { text: "quantite total", value: "totalCount", align: "right" },
-        { text: "requit", value: "required.count", align: "right" },
+        { text: "requis", value: "required.count", align: "right" },
         { text: "action", value: "action", align: "right" },
       ],
       borrowedHeader: [
@@ -205,6 +241,7 @@ export default {
         { text: "quantite", value: "amount" },
         { text: "debut", value: "start" },
         { text: "fin", value: "end" },
+        { text: "action", value: "action" },
       ],
       borrowed: [],
       isFormOpened: false,
@@ -223,6 +260,7 @@ export default {
       },
       selectOptions: [],
       newLocation: "",
+      isPreciseLocDialog: false,
     };
   },
 
@@ -345,6 +383,14 @@ export default {
     },
 
     async deleteItem(item) {
+      if (item.required.count > 0) {
+        //TODO: Create this snackbar/toast for global use
+        this.$store.commit("setSnackbar", {
+          text: "Impossible de supprimer un équipement qui est requis",
+          color: "error",
+        });
+        return;
+      }
       item.isValid = false;
       await this.$axios.put("/equipment", item);
       this.inventory = this.inventory.filter((i) => i._id !== item._id);
@@ -382,6 +428,17 @@ export default {
         value: newEquipmentForm,
       });
       this.$forceUpdate();
+    },
+    async showPreciseLoc(item) {
+      this.selectedItem = item;
+      this.isPreciseLocDialog = true;
+    },
+    async deleteBorrowed(item) {
+      const index = this.selectedItem.borrowed.findIndex((e) =>
+        isEqual(e, item)
+      );
+      this.selectedItem.borrowed.splice(index, 1);
+      await this.$axios.put("/equipment", this.selectedItem);
     },
   },
 };
