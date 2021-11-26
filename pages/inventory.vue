@@ -15,14 +15,14 @@
                 single-line
                 hide-details
               ></v-text-field>
-              <v-text-field
+              <!-- <v-text-field
                 v-model="search.location"
                 title="Test"
                 label="Emplacement"
                 append-icon="mdi-loop"
                 single-line
                 hide-details
-              ></v-text-field>
+              ></v-text-field> -->
               <v-select
                 v-model="search.type"
                 :items="selectOptions"
@@ -35,6 +35,42 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="primary" text @click="clear"> Clear </v-btn>
+            </v-card-actions>
+          </v-card>
+          <br />
+          <v-card>
+            <v-card-title>
+              <span class="headline">Lieux</span>
+            </v-card-title>
+            <v-card-text>
+              <v-chip-group
+                v-model="search.location"
+                column
+                multiple
+                active-class="primary--text"
+              >
+                <v-chip
+                  v-for="location in possibleLocations"
+                  :key="location"
+                  :value="location"
+                  >{{ location }}</v-chip
+                >
+              </v-chip-group>
+              <v-text-field
+                v-model="newLocation"
+                label="Nouveau lieu"
+                append-icon="mdi-search"
+                single-line
+                hide-details
+              ></v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="primary" text @click="pushNewLocation(newLocation)"
+                >Ajouter</v-btn
+              >
+              <v-btn color="primary" text @click="tryDeleteLocation()"
+                >Supprimer</v-btn
+              >
             </v-card-actions>
           </v-card>
         </v-col>
@@ -145,6 +181,7 @@
 import OverForm from "../components/overForm";
 import { safeCall } from "../utils/api/calls";
 import { RepoFactory } from "../repositories/repoFactory";
+import { cloneDeep } from "lodash";
 import Vue from "vue";
 
 export default {
@@ -172,7 +209,6 @@ export default {
       borrowed: [],
       isFormOpened: false,
       allowedTeams: ["log"],
-      equipmentForm: [],
       selectedItem: {},
       newBorrow: {
         start: undefined,
@@ -182,25 +218,34 @@ export default {
       },
       search: {
         name: "",
-        location: "",
+        location: [],
         type: "",
       },
       selectOptions: [],
+      newLocation: "",
     };
   },
 
   computed: {
     me: () => this.$store.state.user.me,
     filteredInventory() {
+      console.log(this.search.location);
       return this.inventory.filter((item) => {
         return (
           item.name.toLowerCase().includes(this.search.name.toLowerCase()) &&
-          item.location
-            .toLowerCase()
-            .includes(this.search.location.toLowerCase()) &&
+          (this.search.location.length === 0 ||
+            this.search.location.includes(item.location)) &&
           item.type.toLowerCase().includes(this.search.type.toLowerCase())
         );
       });
+    },
+    possibleLocations() {
+      return this.getConfig("equipment_form").filter((item) => {
+        return item.key === "location";
+      })[0].options;
+    },
+    equipmentForm() {
+      return this.getConfig("equipment_form");
     },
   },
 
@@ -209,7 +254,6 @@ export default {
     this.allowedTeams = (await this.getConfig(this, "isInventoryOpen"))
       ? ["log", "hard"]
       : ["log"];
-    this.equipmentForm = await this.getConfig("equipment_form");
     this.selectOptions = this.equipmentForm[1].options;
     this.inventory = (await this.$axios.$get("/equipment")).filter(
       (e) => e.isValid !== false
@@ -254,6 +298,7 @@ export default {
     },
 
     onFormChange(form) {
+      console.log(form);
       Object.assign(this.selectedItem, form);
     },
 
@@ -265,10 +310,9 @@ export default {
     async addEquipment() {
       this.selectedItem.borrowed = this.borrowed;
       delete this.selectedItem._id;
-      this.selectedItem = await this.$axios.put(
-        "/equipment",
-        this.selectedItem
-      );
+      this.selectedItem = (
+        await this.$axios.put("/equipment", this.selectedItem)
+      ).data;
       this.inventory.push(this.selectedItem);
       this.isFormOpened = false;
       this.selectedItem = {};
@@ -311,6 +355,33 @@ export default {
         location: "",
         type: "",
       };
+    },
+    async pushNewLocation(location) {
+      if (!location) return;
+      const index = this.equipmentForm.findIndex((e) => e.key === "location");
+      if (this.equipmentForm[index].options.includes(location)) return;
+      const newEquipmentForm = cloneDeep(this.equipmentForm);
+      newEquipmentForm[index].options.push(location);
+      this.$store.dispatch("config/setConfig", {
+        key: "equipment_form",
+        value: newEquipmentForm,
+      });
+      this.$forceUpdate();
+    },
+    async tryDeleteLocation() {
+      const index = this.equipmentForm.findIndex((e) => e.key === "location");
+      //TODO add a notification to know why you can't delete
+      if (this.inventory.some((e) => this.search.location.includes(e.location)))
+        return;
+      const newEquipmentForm = cloneDeep(this.equipmentForm);
+      newEquipmentForm[index].options = newEquipmentForm[index].options.filter(
+        (e) => !this.search.location.includes(e)
+      );
+      this.$store.dispatch("config/setConfig", {
+        key: "equipment_form",
+        value: newEquipmentForm,
+      });
+      this.$forceUpdate();
     },
   },
 };
