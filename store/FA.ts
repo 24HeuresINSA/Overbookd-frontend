@@ -161,11 +161,26 @@ export const mutations = mutationTree(state, {
   UNDELETE: function (state) {
     state.mFA.isValid = true;
   },
+  ADD_SECURITY_PASS: function (state, securityPass) {
+    if (state.mFA.securityPasses === undefined) {
+      state.mFA.securityPasses = [];
+    }
+    state.mFA.securityPasses.push(securityPass);
+  },
+  DELETE_SECURITY_PASS: function (state, index) {
+    state.mFA.securityPasses.splice(index, 1);
+  },
 });
 
 export const actions = actionTree(
   { state },
   {
+    addSecurityPass: async function ({ commit }, securityPass) {
+      commit("ADD_SECURITY_PASS", securityPass);
+    },
+    deleteSecurityPass: async function ({ commit }, index) {
+      commit("DELETE_SECURITY_PASS", index);
+    },
     assignFA: function ({ commit }, payload) {
       commit("ASSIGN_FA", payload);
     },
