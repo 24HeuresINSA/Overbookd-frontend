@@ -86,13 +86,17 @@ export const actions = actionTree(
       return false;
     },
 
-    hasRole(state, roles: string | string[]) {
+    async hasRole(state, roles: string | string[]) {
       if (roles === undefined) {
         return true;
       }
       const teams = state.state.me.team;
       if (teams === undefined) {
         return false;
+      }
+      // if admin, always return true (admin has all roles)
+      if (teams.includes("admin")) {
+        return true;
       }
       if (typeof roles == "string") {
         roles = [roles];
