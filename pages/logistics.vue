@@ -23,8 +23,6 @@
 </template>
 
 <script>
-import { hasRole } from "../common/role";
-
 export default {
   name: "Logistics",
 
@@ -71,61 +69,44 @@ export default {
     },
   },
 
-  async mounted() {
-    if (hasRole(this, "log")) {
-      const {
-        data: { data: FTs },
-      } = await this.$axios.get("/ft");
-      FTs.forEach((FT) => {
-        if (FT.equipments) {
-          FT.equipments.forEach((FTequipment) => {
-            let existingEquipment = this.equipments.find(
-              (equipment) => equipment.name === FTequipment.name
-            );
-            if (existingEquipment) {
-              existingEquipment.requested.push(
-                FT.schedules.map(({ date, start, end }) => {
-                  return {
-                    date,
-                    start,
-                    end,
-                    amount: FTequipment.selectedAmount,
-                    FT: {
-                      id: FT._id,
-                      name: FT.name,
-                    },
-                  };
-                })
-              );
-            } else {
-              if (FT.schedules) {
-                this.equipments.push({
-                  name: FTequipment.name,
-                  requested: FT.schedules.map(({ date, start, end }) => {
-                    return {
-                      date,
-                      start,
-                      end,
-                      amount: FTequipment.selectedAmount,
-                      FT: {
-                        id: FT._id,
-                        name: FT.name,
-                      },
-                    };
-                  }),
-                });
-              }
-            }
-          });
-        }
-      });
+  beforeCreate() {
+    this.$accessor.user.hasRole("log").then((hasRole) => {
+      if (!hasRole) {
+        this.$router.push("/");
+      }
+    });
+  },
 
-      console.log(this.equipments);
-    } else {
-      await this.$router.push({
-        path: "/",
-      });
-    }
+  async beforeMount() {
+    this.equipments = await this.$axios.$get("/equipment");
+    const {
+      data: { data: FTs },
+    } = await this.$axios.get("/ft");
+    FTs.forEach((FT) => {
+      if (FT.equipments) {
+        FT.equipments.forEach((FTequipment) => {
+          let existingEquipment = this.equipments.find(
+            (equipment) => equipment.name === FTequipment.name
+          );
+          if (existingEquipment) {
+            existingEquipment.requested.push(
+              FT.schedules.map(({ date, start, end }) => {
+                return {
+                  date,
+                  start,
+                  end,
+                  amount: FTequipment.selectedAmount,
+                  FT: {
+                    id: FT._id,
+                    name: FT.name,
+                  },
+                };
+              })
+            );
+          }
+        });
+      }
+    });
   },
 
   methods: {
