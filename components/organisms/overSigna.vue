@@ -13,7 +13,7 @@
           <v-data-table :headers="headers" :items="signalisation">
             <template #[`item.action`]="{ index }">
               <v-btn icon @click="deleteSignalisation(index)">
-                <v-icon>mdi-trash-can</v-icon>
+                <v-icon>mdi-delete</v-icon>
               </v-btn>
             </template>
             <template #[`item.number`]="{ index, item }">
@@ -39,6 +39,7 @@
 
     <v-dialog v-model="isSignaFormOpen" max-width="600">
       <v-card>
+        <v-card-title>Ajouter une signalisation</v-card-title>
         <v-card-text>
           <OverForm :fields="fields" @form-change="onFormChange"></OverForm>
         </v-card-text>

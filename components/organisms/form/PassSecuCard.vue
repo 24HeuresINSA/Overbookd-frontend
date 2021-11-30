@@ -13,7 +13,7 @@
         :items-per-page="-1"
         hide-default-footer
       >
-        <template #item.action="{ index }">
+        <template #[`item.action`]="{ index }">
           <v-btn icon small @click="removeSecurityPass(index)">
             <v-icon>mdi-delete</v-icon>
           </v-btn>
@@ -68,7 +68,7 @@ export default {
         },
         { text: "tel", value: "phone" },
         { text: "commentaire", value: "comment" },
-        { text: "actions", value: "actions" },
+        { text: "actions", value: "action" },
       ],
       newSecurityPass: {},
     };
