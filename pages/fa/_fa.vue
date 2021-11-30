@@ -36,15 +36,6 @@
         </v-col>
         <v-col md="6">
           <OverSigna></OverSigna>
-          <!--          <FormCard-->
-          <!--            title="Signa"-->
-          <!--            topic="signalisation"-->
-          <!--            details="Contacter les signa à signalitique@24heures.org pour ajouter des lieux non existant dans la liste deroulante"-->
-          <!--            form-key="fa_signalisation_form"-->
-          <!--            :is-disabled="isValidated('signa')"-->
-          <!--            :form="FA"-->
-          <!--            @form-change="updateForm('signalisation', $event)"-->
-          <!--          ></FormCard>-->
         </v-col>
       </v-row>
       <v-row>
@@ -147,14 +138,82 @@
         position: sticky;
         bottom: 20px;
         z-index: 30;
+        align-items: baseline;
       "
     >
-      <v-btn v-if="validator" color="red" @click="refuseDialog = true"
-        >refusé par {{ validator }}
-      </v-btn>
-      <v-btn v-if="validator" color="green" @click="validate"
-        >validé par {{ validator }}</v-btn
-      >
+      <div>
+        <v-btn
+          v-if="validators.length === 1"
+          color="red"
+          @click="
+            v = validators[0];
+            refuseDialog = true;
+          "
+          >refusé par {{ validators[0] }}
+        </v-btn>
+        <v-menu v-if="validators.length > 1" offset-y>
+          <template #activator="{ attrs, on }">
+            <v-btn
+              class="white--text ma-5"
+              v-bind="attrs"
+              color="red"
+              v-on="on"
+            >
+              Refuser
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item
+              v-for="(validator, i) of validators"
+              :key="validator"
+              link
+            >
+              <v-list-item-title
+                @click="
+                  v = validator;
+                  refuseDialog = true;
+                "
+                v-text="validator"
+              ></v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+      <div>
+        <template v-if="validators.length === 1">
+          <v-btn color="green" @click="validate(validators[0])"
+            >validé par {{ validators[0] }}
+          </v-btn>
+        </template>
+        <v-menu v-if="validators.length > 1" offset-y>
+          <template #activator="{ attrs, on }">
+            <v-btn
+              class="white--text ma-5"
+              v-bind="attrs"
+              color="green"
+              v-on="on"
+            >
+              valider
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item
+              v-for="(validator, i) of validators"
+              :key="validator"
+              link
+            >
+              <v-list-item-title
+                color="green"
+                @click="validate(validator)"
+                v-text="validator"
+              ></v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+
       <v-btn color="secondary" @click="validationDialog = true"
         >soumettre à validation
       </v-btn>
@@ -271,8 +330,8 @@ export default {
         { text: "action", value: "action" },
       ],
 
-      validators: undefined,
       teams: undefined,
+      v: undefined,
     };
   },
 
@@ -283,22 +342,26 @@ export default {
     me: function () {
       return this.$accessor.user.me;
     },
-    validator: function () {
-      let mValidator = null;
-      if (this.validators) {
-        this.validators.forEach((validator) => {
+    validators: function () {
+      let mValidator = [];
+      const validators = this.$accessor.config.getConfig("fa_validators");
+      if (this.me.team.includes("admin")) {
+        // admin has all the validators powers
+        return validators;
+      }
+      if (validators) {
+        validators.forEach((validator) => {
           if (this.me.team && this.me.team.includes(validator)) {
-            mValidator = validator;
+            mValidator.push(validator);
           }
         });
         return mValidator;
       }
-      return null;
+      return [];
     },
   },
 
   async mounted() {
-    this.validators = this.$accessor.config.getConfig("fa_validators");
     this.FAStore = this.$accessor.FA;
     this.teams = this.$accessor.config.getConfig("teams");
 
@@ -376,8 +439,7 @@ export default {
       this.saveFA();
     },
 
-    validate() {
-      const validator = this.validator;
+    validate(validator) {
       if (validator) {
         this.FAStore.validate(validator);
         this.saveFA();
@@ -385,8 +447,8 @@ export default {
     },
 
     refuse() {
+      const validator = this.v;
       // refuse FA
-      const validator = this.validator;
       this.FAStore.refuse({
         validator,
         comment: this.refuseComment,
