@@ -219,7 +219,7 @@
       </v-btn>
       <v-btn color="warning" @click="saveFA">sauvgarder</v-btn>
       <v-btn
-        v-if="validator && FA.isValid === false"
+        v-if="validators.length >= 1 && FA.isValid === false"
         color="red"
         @click="undelete"
         >récupérer
