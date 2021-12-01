@@ -3,11 +3,15 @@
     <v-card :style="isDisabled ? `border-left: 5px solid green` : ``">
       <v-card-title>Signa</v-card-title>
       <v-card-subtitle
-      >Contacter les signa à signalitique@24heures.org pour ajouter des lieux
+        >Contacter les signa à signalitique@24heures.org pour ajouter des lieux
         non existant dans la liste deroulante
       </v-card-subtitle>
       <v-card-text>
-        <v-autocomplete label="lieux" multiple :disabled="isDisabled"></v-autocomplete>
+        <v-autocomplete
+          label="lieux"
+          multiple
+          :disabled="isDisabled"
+        ></v-autocomplete>
         <v-switch v-model="isSignaRequired" label="besoin signa"></v-switch>
         <div v-if="isSignaRequired">
           <v-data-table :headers="headers" :items="signalisation">
@@ -18,13 +22,13 @@
             </template>
             <template #[`item.number`]="{ index, item }">
               <v-text-field
-                  :value="item.number"
-                  label="Nombre"
-                  type="number"
-                  min="0"
-                  step="1"
-                  :disabled="isDisabled"
-                  @change="onItemChange($event, index)"
+                :value="item.number"
+                label="Nombre"
+                type="number"
+                min="0"
+                step="1"
+                :disabled="isDisabled"
+                @change="onItemChange($event, index)"
               ></v-text-field>
             </template>
           </v-data-table>
@@ -33,9 +37,8 @@
       <v-card-actions v-if="isSignaRequired && !isDisabled">
         <v-spacer></v-spacer>
         <v-btn text @click="isSignaFormOpen = true"
-        >Ajouter une signalisation
-        </v-btn
-        >
+          >Ajouter une signalisation
+        </v-btn>
       </v-card-actions>
     </v-card>
 
@@ -64,7 +67,7 @@ import OverForm from "../overForm";
 
 export default {
   name: "OverSigna",
-  components: {OverForm},
+  components: { OverForm },
   props: {
     isDisabled: {
       type: Boolean,
@@ -77,11 +80,11 @@ export default {
       isSignaFormOpen: false,
 
       headers: [
-        {text: "nombre", value: "number"},
-        {text: "type", value: "type"},
-        {text: "text a afficher", value: "text"},
-        {text: "commentaire", value: "comment"},
-        {text: "", value: "action"},
+        { text: "nombre", value: "number" },
+        { text: "type", value: "type" },
+        { text: "text a afficher", value: "text" },
+        { text: "commentaire", value: "comment" },
+        { text: "", value: "action" },
       ],
 
       fields: [],

@@ -1,4 +1,4 @@
-import {FT} from "~/utils/models/FT";
+import { FT } from "~/utils/models/FT";
 
 export interface FA {
   count?: number;
@@ -20,8 +20,8 @@ export interface FA {
 }
 
 export interface ElectricityNeed {
-  connectionType: string,
-  power: number,
+  connectionType: string;
+  power: number;
 }
 
 export interface Signalisation {

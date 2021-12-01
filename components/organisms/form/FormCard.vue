@@ -63,7 +63,7 @@ export default {
   },
   mounted() {
     this.FORM = Array.from(this.$accessor.config.getConfig(this.formKey));
-    console.log(this.data)
+    console.log(this.data);
   },
   methods: {
     onFormChange(form) {

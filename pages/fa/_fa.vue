@@ -13,9 +13,9 @@
       </h2>
       <h3>{{ FA.status ? FA.status : "draft" }}</h3>
       <v-icon
-          v-for="(validator, i) of VALIDATORS"
-          :key="i"
-          :color="getIconColor(validator)"
+        v-for="(validator, i) of VALIDATORS"
+        :key="i"
+        :color="getIconColor(validator)"
       >
         {{ getValidatorIcon(validator) }}
       </v-icon>
@@ -25,14 +25,14 @@
       <v-row>
         <v-col md="6">
           <FormCard
-              style="height: 100%; width: 100%"
-              title="Général"
-              details="N'hésite pas si tu as des questions à contacter humain@24heures.org. Tu peux aussi t'aider en allant voir les FA d'avant sur cetaitmieuxavant.24heures.org/ en te connectant avec jeuneetcon@24heures.org "
-              form-key="fa_general_form"
-              topic="general"
-              :is-disabled="isValidated('humain')"
-              :form="FA"
-              @form-change="updateForm('general', $event)"
+            style="height: 100%; width: 100%"
+            title="Général"
+            details="N'hésite pas si tu as des questions à contacter humain@24heures.org. Tu peux aussi t'aider en allant voir les FA d'avant sur cetaitmieuxavant.24heures.org/ en te connectant avec jeuneetcon@24heures.org "
+            form-key="fa_general_form"
+            topic="general"
+            :is-disabled="isValidated('humain')"
+            :form="FA"
+            @form-change="updateForm('general', $event)"
           ></FormCard>
         </v-col>
         <v-col md="6">
@@ -42,24 +42,24 @@
       <v-row>
         <v-col>
           <FormCard
-              title="Détail"
-              form-key="fa_details_form"
-              details="Décris ici ton activité, soit assez exhaustif, si tu le demande, c'est ce texte qui sera publié sur le site 24heures.org"
-              topic="details"
-              :is-disabled="isValidated('humain')"
-              :form="FA"
-              @form-change="updateForm('details', $event)"
+            title="Détail"
+            form-key="fa_details_form"
+            details="Décris ici ton activité, soit assez exhaustif, si tu le demande, c'est ce texte qui sera publié sur le site 24heures.org"
+            topic="details"
+            :is-disabled="isValidated('humain')"
+            :form="FA"
+            @form-change="updateForm('details', $event)"
           ></FormCard>
         </v-col>
       </v-row>
       <v-row>
         <v-col>
           <TimeframeTable
-              :init-timeframes="FA.timeframes"
-              :disabled="!isValidated('human')"
-              :is-disabled="isValidated('humain')"
-              :form="FA"
-              :store="FAStore"
+            :init-timeframes="FA.timeframes"
+            :disabled="!isValidated('human')"
+            :is-disabled="isValidated('humain')"
+            :form="FA"
+            :store="FAStore"
           ></TimeframeTable>
         </v-col>
       </v-row>
@@ -71,23 +71,23 @@
       <v-row>
         <v-col md="6">
           <FormCard
-              title="Sécurité"
-              form-key="fa_security_form"
-              topic="security"
-              details="Si tu as des questions sur les besoins ou non de dispositif de secu de ton activité, contacte securite@24heures.org"
-              :is-disabled="isValidated('secu')"
-              :form="FA"
-              @form-change="updateForm('security', $event)"
+            title="Sécurité"
+            form-key="fa_security_form"
+            topic="security"
+            details="Si tu as des questions sur les besoins ou non de dispositif de secu de ton activité, contacte securite@24heures.org"
+            :is-disabled="isValidated('secu')"
+            :form="FA"
+            @form-change="updateForm('security', $event)"
           ></FormCard>
         </v-col>
         <v-col md="6">
           <FormCard
-              title="Presta"
-              form-key="fa_external_form"
-              topic="external"
-              :is-disabled="isValidated('humain')"
-              :form="FA"
-              @form-change="updateForm('external', $event)"
+            title="Presta"
+            form-key="fa_external_form"
+            topic="external"
+            :is-disabled="isValidated('humain')"
+            :form="FA"
+            @form-change="updateForm('external', $event)"
           ></FormCard>
         </v-col>
       </v-row>
@@ -95,71 +95,70 @@
         <v-col>
           <h2>Logistique 🚚</h2>
           <h4>
-            Si il manque des informations, ou du matos veuillez contacter le responsable de logistique sur <a
-              href="mailto:logistique@24heures.org">logistique@24heures.org</a>
+            Si il manque des informations, ou du matos veuillez contacter le
+            responsable de logistique sur
+            <a href="mailto:logistique@24heures.org">logistique@24heures.org</a>
           </h4>
           <LogisticsCard
-              title="Matos"
-              :types="[
-            'BARS',
-            'BOIS',
-            'BRICOLAGE',
-            'CANAPE/FAUTEUIL',
-            'CUISINE',
-            'DECO',
-            'FRIGO',
-            'LITTERIE',
-            'PROPRETE',
-            'SCENE',
-            'SECU',
-            'TENTE',
-            'AUTRES MATOS',
-          ]"
-              :store="FAStore"
-              :disabled="isValidated('log')"
+            title="Matos"
+            :types="[
+              'BARS',
+              'BOIS',
+              'BRICOLAGE',
+              'CANAPE/FAUTEUIL',
+              'CUISINE',
+              'DECO',
+              'FRIGO',
+              'LITTERIE',
+              'PROPRETE',
+              'SCENE',
+              'SECU',
+              'TENTE',
+              'AUTRES MATOS',
+            ]"
+            :store="FAStore"
+            :disabled="isValidated('log')"
           ></LogisticsCard>
         </v-col>
       </v-row>
       <v-row />
       <br />
       <LogisticsCard
-          title="Barrieres"
-          :types="['BARRIERE']"
-          :store="FAStore"
-          :disabled="isValidated('barrieres')"
+        title="Barrieres"
+        :types="['BARRIERE']"
+        :store="FAStore"
+        :disabled="isValidated('barrieres')"
       ></LogisticsCard>
-      <br/>
+      <br />
       <LogisticsCard
-          title="Matos Elec"
-          :types="['ALIMENTATION ELECTRIQUE', 'ECLAIRAGE']"
-          :store="FAStore"
-          :disabled="isValidated('elec')"
+        title="Matos Elec"
+        :types="['ALIMENTATION ELECTRIQUE', 'ECLAIRAGE']"
+        :store="FAStore"
+        :disabled="isValidated('elec')"
       ></LogisticsCard>
-      <br/>
+      <br />
 
       <v-row>
         <v-col md="6">
-          <ElecLogisticCard
-              :disabled="isValidated('elec')"
-          ></ElecLogisticCard>
+          <ElecLogisticCard :disabled="isValidated('elec')"></ElecLogisticCard>
         </v-col>
         <v-col md="6">
           <FormCard
-              title="Eau"
-              form-key="fa_water_form"
-              topic="elec"
-              details="Si ton animation a besoin d'élec , il faut savoir maintenant puissance et connectique, rapproche toi du prestataire pour avoir ces réponses ou voit avec la Log Elec via logistique@24heures.org"
-              :is-disabled="isValidated('elec')"
-              :form="FA"
-              @form-change="updateForm('elec', $event)"
+            title="Eau"
+            form-key="fa_water_form"
+            topic="elec"
+            details="Si ton animation a besoin d'élec , il faut savoir maintenant puissance et connectique, rapproche toi du prestataire pour avoir ces réponses ou voit avec la Log Elec via logistique@24heures.org"
+            :is-disabled="isValidated('elec')"
+            :form="FA"
+            @form-change="updateForm('elec', $event)"
           ></FormCard>
         </v-col>
       </v-row>
 
-      <br/>
+      <br />
       <CommentCard :comments="FA.comments" form="FA"></CommentCard>
 
-      <br/>
+      <br />
       <FTCard></FTCard>
     </v-container>
 
@@ -362,8 +361,8 @@ export default {
       },
 
       FTHeader: [
-        {text: "nom", value: "name"},
-        {text: "action", value: "action"},
+        { text: "nom", value: "name" },
+        { text: "action", value: "action" },
       ],
 
       teams: undefined,

@@ -1,8 +1,13 @@
-import {actionTree, getterTree, mutationTree} from "typed-vuex";
-import {ElectricityNeed, FA, SecurityPass, Signalisation} from "~/utils/models/FA";
-import {FT} from "~/utils/models/FT";
-import {safeCall} from "~/utils/api/calls";
-import {RepoFactory} from "~/repositories/repoFactory";
+import { actionTree, getterTree, mutationTree } from "typed-vuex";
+import {
+  ElectricityNeed,
+  FA,
+  SecurityPass,
+  Signalisation,
+} from "~/utils/models/FA";
+import { FT } from "~/utils/models/FT";
+import { safeCall } from "~/utils/api/calls";
+import { RepoFactory } from "~/repositories/repoFactory";
 
 export const state = () => ({
   mFA: {
@@ -183,7 +188,7 @@ export const mutations = mutationTree(state, {
   DELETE_SIGNALISATION: function (state, index) {
     state.mFA.signalisation.splice(index, 1);
   },
-  UPDATE_SIGNALISATION_NUMBER: function (state, {index, number}) {
+  UPDATE_SIGNALISATION_NUMBER: function (state, { index, number }) {
     state.mFA.signalisation[index].number = number;
   },
   DELETE_ELECTRICITY_NEED: function (state, index) {
@@ -198,34 +203,34 @@ export const mutations = mutationTree(state, {
 });
 
 export const actions = actionTree(
-    {state},
-    {
-      addElectricityNeed({commit}, electricityNeed) {
-        commit("ADD_ELECTRICITY_NEED", electricityNeed);
-      },
-      deleteElectricityNeed({commit}, index) {
-        commit("DELETE_ELECTRICITY_NEED", index);
-      },
-      updateSignalisationNumber(context, signalisationNumber) {
-        context.commit("UPDATE_SIGNALISATION_NUMBER", signalisationNumber);
-      },
-      deleteSignalisation: ({commit}, index) => {
-        commit("DELETE_SIGNALISATION", index);
-      },
-      addSignalisation: async ({commit}, signalisation) => {
-        commit("ADD_SIGNALISATION", signalisation);
-      },
-      addSecurityPass: async function ({commit}, securityPass) {
-        commit("ADD_SECURITY_PASS", securityPass);
-      },
-      deleteSecurityPass: async function ({commit}, index) {
-        commit("DELETE_SECURITY_PASS", index);
-      },
-      assignFA: function ({commit}, payload) {
-        commit("ASSIGN_FA", payload);
-      },
-      addTimeframe: function ({commit}, payload) {
-        commit("ADD_TIMEFRAME", payload);
+  { state },
+  {
+    addElectricityNeed({ commit }, electricityNeed) {
+      commit("ADD_ELECTRICITY_NEED", electricityNeed);
+    },
+    deleteElectricityNeed({ commit }, index) {
+      commit("DELETE_ELECTRICITY_NEED", index);
+    },
+    updateSignalisationNumber(context, signalisationNumber) {
+      context.commit("UPDATE_SIGNALISATION_NUMBER", signalisationNumber);
+    },
+    deleteSignalisation: ({ commit }, index) => {
+      commit("DELETE_SIGNALISATION", index);
+    },
+    addSignalisation: async ({ commit }, signalisation) => {
+      commit("ADD_SIGNALISATION", signalisation);
+    },
+    addSecurityPass: async function ({ commit }, securityPass) {
+      commit("ADD_SECURITY_PASS", securityPass);
+    },
+    deleteSecurityPass: async function ({ commit }, index) {
+      commit("DELETE_SECURITY_PASS", index);
+    },
+    assignFA: function ({ commit }, payload) {
+      commit("ASSIGN_FA", payload);
+    },
+    addTimeframe: function ({ commit }, payload) {
+      commit("ADD_TIMEFRAME", payload);
     },
     addTimeframes: function ({ commit }, payload) {
       payload.forEach((t: any) => {

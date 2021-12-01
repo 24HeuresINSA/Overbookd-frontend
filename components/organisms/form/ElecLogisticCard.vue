@@ -3,13 +3,8 @@
     <v-card :style="isDisabled ? `border-left: 5px solid green` : ``">
       <v-card-title>Besoin d'élec</v-card-title>
       <v-card-text>
-        <v-data-table
-            :headers="headers"
-            :items="electricityNeeds"
-        >
-          <template
-              #item.action="{index}"
-          >
+        <v-data-table :headers="headers" :items="electricityNeeds">
+          <template #item.action="{ index }">
             <v-btn icon @click="deleteElectricityNeed(index)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
@@ -37,18 +32,28 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue from "vue";
 import OverForm from "~/components/overForm.vue";
 
-const headers = [{text: "type de raccordement", value: "connectionType"}, {
-  text: "puissance",
-  value: "power"
-}, {text: "action", value: "action"}];
+const headers = [
+  { text: "type de raccordement", value: "connectionType" },
+  {
+    text: "puissance",
+    value: "power",
+  },
+  { text: "action", value: "action" },
+];
 
 export default Vue.extend({
   name: "ElecLogisticCard",
   components: {
-    OverForm
+    OverForm,
+  },
+  props: {
+    isDisabled: {
+      type: Boolean,
+      default: () => false,
+    },
   },
   data: () => ({
     headers,
@@ -56,16 +61,13 @@ export default Vue.extend({
     FORM: [],
     newElectricityNeed: {},
   }),
-  props: {
-    isDisabled: {
-      type: Boolean,
-      default: () => false
-    }
-  },
   computed: {
     electricityNeeds() {
       return this.$accessor.FA.mFA.electricityNeeds;
     },
+  },
+  mounted() {
+    this.FORM = this.$accessor.config.getConfig("fa_elec_form");
   },
   methods: {
     deleteElectricityNeed(index: number) {
@@ -77,16 +79,9 @@ export default Vue.extend({
     addElectricityNeed() {
       this.$accessor.FA.addElectricityNeed(this.newElectricityNeed);
       this.isElectricityNeedDialogOpen = false;
-    }
+    },
   },
-  mounted() {
-    this.FORM = this.$accessor.config.getConfig("fa_elec_form");
-  }
-
 });
-
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
