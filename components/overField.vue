@@ -160,7 +160,14 @@ export default {
       if (typeof this.field.value === "string") {
         value = value.trim();
       }
-      this.$emit("value", { key: this.field.key, value });
+      if (this.field.type === "number") {
+        try {
+          value = +value;
+        } catch (e) {
+          console.log(e);
+        }
+      }
+      this.$emit("value", {key: this.field.key, value});
     },
 
     allowedMinutes: (m) => m % 15 === 0,

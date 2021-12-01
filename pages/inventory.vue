@@ -1,11 +1,12 @@
 <template>
   <div>
     <v-data-table
-      :headers="headers"
-      :items="inventory"
-      group-by="type"
-      :item-class="rowClass"
-      dense
+        :headers="headers"
+        :items="inventory"
+        group-by="type"
+        :item-class="rowClass"
+        dense
+        :items-per-page="-1"
     >
       <template #[`item.action`]="{ item }">
         <v-btn v-if="hasRole('log')" icon small @click="edit(item)">
