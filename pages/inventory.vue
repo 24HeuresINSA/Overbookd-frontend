@@ -1,37 +1,88 @@
 <template>
   <div>
-    <v-data-table
-        :headers="headers"
-        :items="inventory"
-        group-by="type"
-        :item-class="rowClass"
-        dense
-        :items-per-page="-1"
-    >
-      <template #[`item.action`]="{ item }">
-        <v-btn v-if="hasRole('log')" icon small @click="edit(item)">
-          <v-icon small>mdi-circle-edit-outline</v-icon>
-        </v-btn>
-        <v-btn v-if="hasRole('log')" icon small @click="deleteItem(item)">
-          <v-icon small>mdi-delete</v-icon>
-        </v-btn>
-      </template>
-
-      <template #[`item.borrow`]="{ item }">
-        <v-list dense>
-          <v-list-item v-for="(borrow, index) of item.borrowed" :key="index">
-            <v-list-item-content>
-              <v-list-item-title style="padding: 0">
-                {{ borrow.amount }} {{ borrow.from }}
-              </v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </template>
-
-      <template #[`item.borrowedCount`]="{ item }">
-        {{ getBorrowedCount(item) }}
-      </template>
+    <v-container style="display: grid">
+      <v-row>
+        <v-col md="3">
+          <v-card>
+            <v-card-title>
+              <span class="headline">Filtres</span>
+            </v-card-title>
+            <v-card-text>
+              <v-text-field
+                v-model="search.name"
+                label="Nom de l'objet"
+                append-icon="mdi-search"
+                single-line
+                hide-details
+              ></v-text-field>
+              <v-select
+                v-model="search.type"
+                :items="selectOptions"
+                label="Catégorie/type"
+                append-icon=""
+                single-line
+                hide-details
+              ></v-select>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" text @click="clear"> Clear</v-btn>
+            </v-card-actions>
+          </v-card>
+          <br />
+          <v-card>
+            <v-card-title>
+              <span class="headline">Lieux</span>
+            </v-card-title>
+            <v-card-text>
+              <v-chip-group
+                v-model="search.location"
+                column
+                multiple
+                active-class="primary--text"
+              >
+                <v-chip
+                  v-for="location in possibleLocations"
+                  :key="location"
+                  :value="location"
+                  >{{ location }}
+                </v-chip>
+              </v-chip-group>
+              <v-text-field
+                v-model="newLocation"
+                label="Nouveau lieu"
+                append-icon="mdi-search"
+                single-line
+                hide-details
+              ></v-text-field>
+            </v-card-text>
+            <v-card-actions v-if="hasRole('log')">
+              <v-btn color="primary" text @click="pushNewLocation(newLocation)"
+                >Ajouter
+              </v-btn>
+              <v-btn color="primary" text @click="tryDeleteLocation()"
+                >Supprimer
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+        <v-col>
+          <v-data-table
+            :headers="headers"
+            :items="filteredInventory"
+            group-by="type"
+            :item-class="rowClass"
+            dense
+            :items-per-page="-1"
+          >
+            <template #[`item.action`]="{ item }">
+              <v-btn v-if="hasRole('log')" icon small @click="edit(item)">
+                <v-icon small>mdi-circle-edit-outline</v-icon>
+              </v-btn>
+              <v-btn v-if="hasRole('log')" icon small @click="deleteItem(item)">
+                <v-icon small>mdi-delete</v-icon>
+              </v-btn>
+            </template>
 
             <template #[`item.borrow`]="{ item }">
               <v-list dense>
@@ -47,6 +98,11 @@
                 </v-list-item>
               </v-list>
             </template>
+
+            <template #[`item.borrowedCount`]="{ item }">
+              {{ getBorrowedCount(item) }}
+            </template>
+
             <template #group.header="{ group, headers, toggle, isOpen }">
               <td :colspan="headers.length" class="primary">
                 <v-btn
@@ -61,9 +117,6 @@
                 </v-btn>
                 <span class="mx-5 font-weight-bold">{{ group }}</span>
               </td>
-            </template>
-            <template #[`item.borrowedCount`]="{ item }">
-              {{ getBorrowedCount(item) }}
             </template>
 
             <template #[`item.totalCount`]="{ item }">
@@ -167,7 +220,7 @@ import OverForm from "../components/overForm";
 import { safeCall } from "../utils/api/calls";
 import { RepoFactory } from "../repositories/repoFactory";
 import { cloneDeep, isEqual } from "lodash";
-import Vue from "vue";
+import Fuse from "fuse.js";
 
 export default {
   name: "Inventory",
@@ -217,15 +270,30 @@ export default {
   computed: {
     me: () => this.$store.state.user.me,
     filteredInventory() {
-      console.log(this.search.location);
-      return this.inventory.filter((item) => {
-        return (
-          item.name.toLowerCase().includes(this.search.name.toLowerCase()) &&
-          (this.search.location.length === 0 ||
-            this.search.location.includes(item.location)) &&
-          item.type.toLowerCase().includes(this.search.type.toLowerCase())
-        );
+      const fuse = new Fuse(this.inventory, {
+        keys: ["name", "comment"],
       });
+      let items = this.inventory;
+      if (this.search.name !== "") {
+        items = fuse.search(this.search.name).map((e) => e.item);
+      }
+
+      // search by location
+      if (this.search.type !== "") {
+        const fuseType = new Fuse(items, {
+          keys: ["type"],
+        });
+        items = fuseType.search(this.search.type).map((e) => e.item);
+      }
+
+      // filter by location
+      if (this.search.location.length !== 0) {
+        items = items.filter((item) =>
+          this.search.location.includes(item.location)
+        );
+      }
+
+      return items;
     },
     possibleLocations() {
       return this.getConfig("equipment_form").filter((item) => {
@@ -286,7 +354,6 @@ export default {
     },
 
     onFormChange(form) {
-      console.log(form);
       // because it doesn't work ...
       form.isValid = true;
       Object.assign(this.selectedItem, form);
@@ -332,7 +399,6 @@ export default {
     },
 
     edit(item) {
-      console.log(item);
       this.borrowed = item.borrowed;
       this.selectedItem = item;
       this.isFormOpened = true;
