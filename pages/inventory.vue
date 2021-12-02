@@ -59,7 +59,7 @@
                 >
               </v-chip-group>
             </v-card-text>
-            <v-card-actions v-if="hasRole('log')">
+            <v-card-actions v-if="hasRole(['log'])">
               <v-btn
                 color="primary"
                 text
@@ -145,7 +145,10 @@
       v-if="hasRole(allowedTeams)"
       fab
       style="right: 20px; bottom: 45px; position: fixed"
-      @click="openDialog()"
+      @click="
+        isNewEquipment = true;
+        openDialog();
+      "
     >
       <v-icon> mdi-plus </v-icon>
     </v-btn>
@@ -346,6 +349,7 @@ export default {
         location: [(v) => !!v || "Veuillez choisir un lieu de stockage"],
         type: [(v) => !!v || "Veuillez choisir un type"],
       },
+      isNewEquipment: false,
     };
   },
 
@@ -443,12 +447,18 @@ export default {
       this.$refs.form.validate();
       if (!this.valid) return;
       this.selectedItem.borrowed = this.borrowed;
-      this.selectedItem = (
-        await this.$axios.put("/equipment", this.selectedItem)
-      ).data;
+      if (this.isNewEquipment) {
+        this.selectedItem = (
+          await this.$axios.$post("/equipment", this.selectedItem)
+        ).data;
+        this.isNewEquipment = false;
+      } else {
+        this.selectedItem = (
+          await this.$axios.put("/equipment", this.selectedItem)
+        ).data;
+      }
       if (
-        this.inventory.findIndex((e) => e.name === this.selectedItem.name) ===
-        -1
+        this.inventory.findIndex((e) => e._id === this.selectedItem._id) === -1
       ) {
         this.inventory.push(this.selectedItem);
       }
