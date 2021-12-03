@@ -43,6 +43,7 @@
                   v-model="selectedTeam"
                   label="équipe"
                   :items="getConfig('teams').map((e) => e.name)"
+                  clearable
                 ></v-select>
               </v-card-text>
             </v-card>
@@ -182,7 +183,7 @@ export default {
     },
 
     filterBySelectedTeam(FAs, team) {
-      if (team === undefined) {
+      if (!team) {
         return FAs;
       }
       return FAs.filter((FA) => {
