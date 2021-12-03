@@ -4,7 +4,7 @@ type Context = { $axios: NuxtAxiosInstance };
 
 export default {
   requestResetPassword(context: Context, data: { userEmail: string }) {
-    return context.$axios.post("/forgot", data);
+    return context.$axios.post("/oubli", data);
   },
   resetPassword(
     context: Context,

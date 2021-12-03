@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-img
+    <!-- <v-img
       :src="randomURL"
       style="
         position: absolute;
@@ -10,7 +10,7 @@
         width: 100%;
         padding: 0;
       "
-    ></v-img>
+    ></v-img> -->
     <v-form>
       <v-container class="form-container">
         <v-row>
@@ -60,6 +60,7 @@
             @keydown.enter="login()"
           ></v-text-field>
         </v-row>
+        <a href="/forgot">Mot de passe oublié ?</a>
       </v-container>
       <v-btn color="secondary" elevation="2" to="/signup" class="signupBtn Btn"
         >s'inscrire

@@ -1,11 +1,11 @@
 <template>
   <div>
-    <H1>Password reset</H1>
     <v-form>
       <v-container class="form-container">
+        <v-row><p>Entre l'email de ton compte.</p></v-row>
         <v-row>
           <v-text-field
-            v-model="email"
+            v-model="userEmail"
             label="email"
             type="text"
             required
@@ -17,6 +17,7 @@
             @keydown.enter="sendResetRequest()"
           ></v-text-field>
         </v-row>
+        <v-btn @click="sendResetRequest()">Envoyer</v-btn>
       </v-container>
     </v-form>
   </div>
@@ -24,6 +25,7 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { safeCall } from "~/utils/api/calls";
 import { RepoFactory } from "~/repositories/repoFactory";
 export default Vue.extend({
   name: "ForgotPassword",
@@ -36,16 +38,31 @@ export default Vue.extend({
   methods: {
     sendResetRequest: async function () {
       // todo: Notify user
-      const res = await this.$safeCall(
+      const res = await safeCall(
         this.$store,
         RepoFactory.authRepo.requestResetPassword(this, {
           userEmail: this.userEmail,
         })
       );
       if (res) {
-        console.log("Reset request sent succesfully");
+        await this.$router.push({
+          path: "/",
+        }); // redirect to login page
+      } else {
+        // todo handle error
       }
+      return;
     },
   },
 });
 </script>
+
+<style>
+.form-container {
+  align-self: center;
+  justify-self: center;
+  margin-top: 10%;
+  width: 75%;
+  max-width: 600px;
+}
+</style>
