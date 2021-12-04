@@ -1,5 +1,5 @@
 const configsData = require("../config/configs.json");
-import { getterTree, mutationTree, actionTree } from "typed-vuex";
+import { actionTree, getterTree, mutationTree } from "typed-vuex";
 import configRepo from "../repositories/configRepo";
 import { safeCall } from "~/utils/api/calls";
 
@@ -17,6 +17,21 @@ export const getters = getterTree(state, {
         return config.value;
       } else {
         return;
+      }
+    }
+  },
+
+  getTeamIcon: (state) => (teamName: string) => {
+    if (state.data && state.data.data) {
+      const config = state.data.data.find((o: any) => o.key === "teams");
+      console.log(config);
+      if (config) {
+        const team = config.value.find((o: any) => o.name === teamName);
+        if (team) {
+          return team.icon;
+        } else {
+          return;
+        }
       }
     }
   },
