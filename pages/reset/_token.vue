@@ -32,6 +32,9 @@
         <v-btn @click="sendResetRequest()">Valider</v-btn>
       </v-container>
     </v-form>
+    <v-snackbar v-model="snackbar" :timeout="timeout">
+      {{ feedbackMessage }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -47,6 +50,9 @@ export default Vue.extend({
   data: () => ({
     password: "",
     password2: "",
+    snackbar: false,
+    feedbackMessage: "",
+    timeout: 5000,
   }),
   methods: {
     sendResetRequest: async function () {
@@ -59,9 +65,17 @@ export default Vue.extend({
         })
       );
       if (res) {
-        await this.$router.push({
-          path: "/",
-        });
+        this.feedbackMessage = "Password changé, redirection au login...";
+        this.snackbar = true;
+        setTimeout(async () => {
+          await this.$router.push({
+            path: "/",
+          });
+        }, 2000);
+      } else {
+        this.feedbackMessage =
+          "Ca n'a pas marché, peut-etre que le lien est expiré...";
+        this.snackbar = true;
       }
     },
   },

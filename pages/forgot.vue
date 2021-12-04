@@ -20,6 +20,9 @@
         <v-btn @click="sendResetRequest()">Envoyer</v-btn>
       </v-container>
     </v-form>
+    <v-snackbar v-model="snackbar" :timeout="timeout">
+      {{ feedbackMessage }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -34,10 +37,12 @@ export default Vue.extend({
   layout: "none",
   data: () => ({
     userEmail: "",
+    snackbar: false,
+    feedbackMessage: "",
+    timeout: 5000,
   }),
   methods: {
     sendResetRequest: async function () {
-      // todo: Notify user
       const res = await safeCall(
         this.$store,
         RepoFactory.authRepo.requestResetPassword(this, {
@@ -45,11 +50,17 @@ export default Vue.extend({
         })
       );
       if (res) {
-        await this.$router.push({
-          path: "/",
-        }); // redirect to login page
+        this.feedbackMessage =
+          "OK ! Regarde ta boite mail ! Redirection au login...";
+        this.snackbar = true;
+        setTimeout(async () => {
+          await this.$router.push({
+            path: "/",
+          }); // redirect to login page
+        }, 2000);
       } else {
-        // todo handle error
+        this.feedbackMessage = "Il y a eu une erreur, recommence plus tard.";
+        this.snackbar = true;
       }
       return;
     },
