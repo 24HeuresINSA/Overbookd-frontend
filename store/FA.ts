@@ -221,7 +221,7 @@ export const actions = actionTree(
       commit("ADD_SIGNALISATION", signalisation);
     },
     addSecurityPass: async function ({ commit }, securityPass) {
-      commit("ADD_SECURITY_PASS", securityPass);
+      commit("ADD_SECURITY_PASS", { ...securityPass });
     },
     deleteSecurityPass: async function ({ commit }, index) {
       commit("DELETE_SECURITY_PASS", index);
