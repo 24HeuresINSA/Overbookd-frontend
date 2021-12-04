@@ -24,7 +24,6 @@ export const getters = getterTree(state, {
   getTeamIcon: (state) => (teamName: string) => {
     if (state.data && state.data.data) {
       const config = state.data.data.find((o: any) => o.key === "teams");
-      console.log(config);
       if (config) {
         const team = config.value.find((o: any) => o.name === teamName);
         if (team) {

@@ -136,15 +136,6 @@ export default {
     };
   },
 
-  watch: {
-    data: {
-      deep: true,
-      handler() {
-        this.value = this.data;
-      },
-    },
-  },
-
   async mounted() {
     if (this.field.type === "user") {
       let users = this.$accessor.user.usernames;
