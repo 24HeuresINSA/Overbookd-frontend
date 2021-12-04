@@ -18,7 +18,7 @@
       </template>
       <template #[`item.action`]="{ index }">
         <v-btn v-if="!isDisabled" icon>
-          <v-icon @click="deleteTimeframe(index)">mdi-trash-can</v-icon>
+          <v-icon @click="deleteTimeframe(index)">mdi-delete</v-icon>
         </v-btn>
       </template>
     </v-data-table>

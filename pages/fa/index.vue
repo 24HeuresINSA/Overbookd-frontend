@@ -89,7 +89,7 @@
                     class="mx-2"
                     icon
                     small
-                    @click="onItemSelected(row.item)"
+                    :href="`/fa/${row.item.count}`"
                   >
                     <v-icon small>mdi-circle-edit-outline</v-icon>
                   </v-btn>
@@ -258,10 +258,6 @@ export default {
         return FA;
       });
       return FAs.filter((FA) => FA?.status === s[status]);
-    },
-
-    onItemSelected(item) {
-      this.$router.push({ path: "fa/" + item.count });
     },
 
     async createNewFA() {
