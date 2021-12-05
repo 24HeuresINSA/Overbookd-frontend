@@ -20,7 +20,7 @@
                   dense
                 ></v-select>
 
-                <v-list dense shaped style="font-size: 10px">
+                <v-list dense shaped>
                   <v-list-item-group v-model="selectedStatus">
                     <v-list-item>
                       <v-list-item-title class="small">Tous</v-list-item-title>
@@ -101,12 +101,9 @@
             </template>
 
             <template #[`item.status`]="row">
-              <v-avatar
-                v-if="row.item"
-                :color="color[row.item.status]"
-                size="25"
+              <v-chip v-if="row.item" :color="color[row.item.status]" small
                 >{{ row.item.count }}
-              </v-avatar>
+              </v-chip>
             </template>
           </v-data-table>
         </v-col>
