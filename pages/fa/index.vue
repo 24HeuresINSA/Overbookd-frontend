@@ -127,13 +127,14 @@
     </v-dialog>
 
     <v-btn
-      color="secondary"
       elevation="2"
       fab
-      class="fab-right"
+      style="right: 20px; bottom: 45px; position: fixed"
+      color="primary"
+      small
       @click="isNewFADialogOpen = true"
     >
-      <v-icon> mdi-plus-thick</v-icon>
+      <v-icon small> mdi-plus-thick</v-icon>
     </v-btn>
   </div>
 </template>
@@ -302,9 +303,9 @@ export default {
 
 <style scoped>
 .fab-right {
-  position: absolute;
+  position: sticky;
   right: 10px;
-  bottom: 10px;
+  bottom: 35px;
 }
 
 .small {
