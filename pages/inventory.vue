@@ -88,7 +88,15 @@
                     <v-icon small>mdi-help-circle</v-icon>
                   </v-btn>
                 </template>
-                Afficher les informations de l'objet
+                Afficher les informations de l'objet44
+              </v-tooltip>
+              <v-tooltip bottom>
+                <template #activator="{ on }">
+                  <v-btn icon small @click="itemChangeProposal(item)" v-on="on">
+                    <v-icon small>mdi-book-edit-outline </v-icon>
+                  </v-btn>
+                </template>
+                Propose des changements sur l'objet (et voit ses infos)
               </v-tooltip>
               <v-btn v-if="hasRole('log')" icon small @click="edit(item)">
                 <v-icon small>mdi-circle-edit-outline</v-icon>
@@ -144,8 +152,15 @@
     >
       <v-icon> mdi-plus </v-icon>
     </v-btn>
+    <v-btn
+      fab
+      style="right: 80px; bottom: 45px; position: fixed"
+      @click="changeProposalForm = true"
+    >
+      <v-icon>mdi-clipboard-edit-outline</v-icon>
+    </v-btn>
 
-    <v-dialog v-model="isFormOpened" max-width="800" persistent>
+    <v-dialog v-model="isFormOpened" max-width="800" persistent scrollable>
       <v-card>
         <v-card-title>Ajouter un nouveau objet</v-card-title>
         <v-card-text>
@@ -266,10 +281,133 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="addEquipment">
+          <v-btn color="primary" @click="addEquipment"> Sauvegarder </v-btn>
+          <v-btn color="error" text @click="isFormOpened = false">
+            Annuler
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
+      v-model="changeProposalForm"
+      max-width="800"
+      persistent
+      scrollable
+    >
+      <v-card>
+        <v-card-title> Proposition d'un objet </v-card-title>
+        <v-card-text>
+          <v-form ref="proposalForm" v-model="proposalValid">
+            <v-container>
+              <v-text-field
+                v-model="proposalItem.name"
+                label="Nom de l'objet"
+                append-icon="mdi-search"
+                single-line
+                hide-details
+                :rules="rules.name"
+                required
+              ></v-text-field>
+              <v-select
+                v-model="proposalItem.type"
+                required
+                :items="[...equipmentForm[1].options].sort()"
+                label="Catégorie/type"
+                append-icon=""
+                single-line
+                :rules="rules.type"
+              ></v-select>
+              <v-text-field
+                v-model="proposalItem.amount"
+                label="Quantité"
+                append-icon="mdi-search"
+                single-line
+                required
+                type="number"
+                :rules="rules.amount"
+              ></v-text-field>
+
+              <v-switch
+                v-model="proposalItem.fromPool"
+                label="Vient du pool des assos ? 🐔"
+              ></v-switch>
+              <v-select
+                v-model="proposalItem.location"
+                :items="possibleLocations"
+                label="Lieux de l'objet"
+                item-text="name"
+                :rules="rules.location"
+                single-line
+              ></v-select>
+              <v-text-field
+                v-model="proposalItem.preciseLocation"
+                label="Espace de stockage exact"
+                single-line
+              ></v-text-field>
+              <v-text-field
+                v-model="proposalItem.comment"
+                label="Commentaire"
+                single-line
+              ></v-text-field>
+              <v-text-field
+                v-model="proposalItem.referencePicture"
+                label="Référence photo 📷"
+                single-line
+              ></v-text-field>
+              <v-text-field
+                v-model="proposalItem.referenceInvoice"
+                label="Référence facture 📃"
+                single-line
+              ></v-text-field>
+            </v-container>
+            <br />
+            <v-divider></v-divider>
+            <br />
+            <h4>Ajout de matos emprunté</h4>
+            <v-container style="display: flex; flex-wrap: wrap">
+              <v-text-field
+                v-model="newBorrowProposal.from"
+                label="qui"
+              ></v-text-field>
+              <v-text-field
+                v-model="newBorrowProposal.amount"
+                type="number"
+                label="quantite"
+              ></v-text-field>
+            </v-container>
+            <v-container
+              style="
+                display: flex;
+                justify-content: space-around;
+                align-content: baseline;
+              "
+            >
+              <label>debut</label>
+              <v-date-picker v-model="newBorrowProposal.start"></v-date-picker>
+              <label>fin</label>
+              <v-date-picker v-model="newBorrowProposal.end"></v-date-picker>
+            </v-container>
+
+            <v-data-table :headers="borrowedHeader" :items="borrowed">
+              <template #[`item.action`]="{ item }">
+                <v-btn icon small @click="deleteBorrowed(item)">
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </template>
+            </v-data-table>
+
+            <v-btn fab @click="addNewBorrowedItemsProposal"
+              ><v-icon>mdi-plus</v-icon></v-btn
+            >
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" @click="addEquipmentProposal">
             Sauvegarder
           </v-btn>
-          <v-btn color="error" text @click="isFormOpened = false">
+          <v-btn color="error" text @click="changeProposalForm = false">
             Annuler
           </v-btn>
         </v-card-actions>
@@ -330,9 +468,17 @@ export default {
       ],
       borrowed: [],
       isFormOpened: false,
-      allowedTeams: ["log", "barriers", "elec"],
+      changeProposalForm: false,
+      allowedTeams: ["log"],
       selectedItem: {},
       newBorrow: {
+        start: undefined,
+        end: undefined,
+        from: undefined,
+        amount: undefined,
+      },
+      proposalItem: {},
+      newBorrowProposal: {
         start: undefined,
         end: undefined,
         from: undefined,
@@ -348,6 +494,7 @@ export default {
       newLocation: "",
       isPreciseLocDialog: false,
       valid: false,
+      proposalValid: false,
       rules: {
         name: [(v) => !!v || "Veuillez entrer un nom"],
         amount: [
@@ -457,7 +604,7 @@ export default {
       this.selectedItem.borrowed = this.borrowed;
       if (this.isNewEquipment) {
         this.selectedItem = (
-          await this.$axios.$post("/equipment", this.selectedItem)
+          await this.$axios.post("/equipment", this.selectedItem)
         ).data;
         this.isNewEquipment = false;
       } else {
@@ -475,6 +622,19 @@ export default {
       this.borrowed = [];
     },
 
+    async addEquipmentProposal() {
+      this.$refs.proposalForm.validate();
+      if (!this.proposalValid) return;
+      this.proposalItem.borrowed = this.borrowed;
+      this.proposalItem = (
+        await this.$axios.post("/equipment", this.proposalItem)
+      ).data;
+      this.proposalItem.borrowed = this.borrowed;
+      this.proposalItem = {};
+      this.isFormOpened = false;
+      this.selectedItem = {};
+      this.borrowed = [];
+    },
     addNewBorrowedItems() {
       this.borrowed.push({ ...this.newBorrow });
     },
@@ -498,6 +658,12 @@ export default {
       this.borrowed = item.borrowed;
       this.selectedItem = item;
       this.isFormOpened = true;
+    },
+    async itemChangeProposal(item) {
+      this.borrowedProposal = item.borrowed;
+      this.proposalItem = item;
+      await Vue.nextTick();
+      this.changeProposalForm = true;
     },
 
     async deleteItem(item) {
