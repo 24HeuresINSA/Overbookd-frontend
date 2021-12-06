@@ -84,11 +84,11 @@
             <template #[`item.action`]="{ item }">
               <v-tooltip bottom>
                 <template #activator="{ on }">
-                  <v-btn icon small @click="showPreciseLoc(item)" v-on="on">
+                  <v-btn icon small @click="showItemInfos(item)" v-on="on">
                     <v-icon small>mdi-help-circle</v-icon>
                   </v-btn>
                 </template>
-                Afficher l'emplacement précis
+                Afficher les informations de l'objet
               </v-tooltip>
               <v-btn v-if="hasRole('log')" icon small @click="edit(item)">
                 <v-icon small>mdi-circle-edit-outline</v-icon>
@@ -99,18 +99,10 @@
             </template>
 
             <template #[`item.borrow`]="{ item }">
-              <v-list dense>
-                <v-list-item
-                  v-for="(borrow, index) of item.borrowed"
-                  :key="index"
-                >
-                  <v-list-item-content>
-                    <v-list-item-title style="padding: 0">
-                      {{ borrow.amount }} {{ borrow.from }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
+              <!-- Divs get better style, and list not that needed -->
+              <div v-for="(borrow, index) of item.borrowed" :key="index">
+                {{ borrow.amount }} {{ borrow.from }}
+              </div>
             </template>
             <template #[`group.header`]="{ group, headers, toggle, isOpen }">
               <td :colspan="headers.length" class="primary">
@@ -169,59 +161,68 @@
           >
           </OverForm> -->
           <v-form ref="form" v-model="valid">
-            <v-text-field
-              v-model="selectedItem.name"
-              label="Nom de l'objet"
-              append-icon="mdi-search"
-              single-line
-              hide-details
-              :rules="rules.name"
-              required
-            ></v-text-field>
-            <v-select
-              v-model="selectedItem.type"
-              required
-              :items="[...equipmentForm[1].options].sort()"
-              label="Catégorie/type"
-              append-icon=""
-              single-line
-              :rules="rules.type"
-            ></v-select>
-            <v-text-field
-              v-model="selectedItem.amount"
-              label="Quantité"
-              append-icon="mdi-search"
-              single-line
-              required
-              type="number"
-              :rules="rules.amount"
-            ></v-text-field>
+            <v-container>
+              <v-text-field
+                v-model="selectedItem.name"
+                label="Nom de l'objet"
+                append-icon="mdi-search"
+                single-line
+                hide-details
+                :rules="rules.name"
+                required
+              ></v-text-field>
+              <v-select
+                v-model="selectedItem.type"
+                required
+                :items="[...equipmentForm[1].options].sort()"
+                label="Catégorie/type"
+                append-icon=""
+                single-line
+                :rules="rules.type"
+              ></v-select>
+              <v-text-field
+                v-model="selectedItem.amount"
+                label="Quantité"
+                append-icon="mdi-search"
+                single-line
+                required
+                type="number"
+                :rules="rules.amount"
+              ></v-text-field>
 
-            <v-switch
-              v-model="selectedItem.fromPool"
-              label="Vient du pool des assos ? 🐔"
-            ></v-switch>
-            <v-select
-              v-model="selectedItem.location"
-              :items="possibleLocations"
-              label="Lieux de l'objet"
-              item-text="name"
-              :rules="rules.location"
-              single-line
-            ></v-select>
-            <v-text-field
-              v-model="selectedItem.preciseLocation"
-              label="Espace de stockage exact"
-              append-icon="mdi-search"
-              single-line
-            ></v-text-field>
-            <v-text-field
-              v-model="selectedItem.comment"
-              label="Commentaire"
-              append-icon="mdi-search"
-              single-line
-            ></v-text-field>
-
+              <v-switch
+                v-model="selectedItem.fromPool"
+                label="Vient du pool des assos ? 🐔"
+              ></v-switch>
+              <v-select
+                v-model="selectedItem.location"
+                :items="possibleLocations"
+                label="Lieux de l'objet"
+                item-text="name"
+                :rules="rules.location"
+                single-line
+              ></v-select>
+              <v-text-field
+                v-model="selectedItem.preciseLocation"
+                label="Espace de stockage exact"
+                single-line
+              ></v-text-field>
+              <v-text-field
+                v-model="selectedItem.comment"
+                label="Commentaire"
+                single-line
+              ></v-text-field>
+              <v-text-field
+                v-model="selectedItem.referencePicture"
+                label="Référence photo 📷"
+                single-line
+              ></v-text-field>
+              <v-text-field
+                v-model="selectedItem.referenceInvoice"
+                label="Référence facture 📃"
+                single-line
+              ></v-text-field>
+            </v-container>
             <br />
             <v-divider></v-divider>
             <br />
@@ -286,6 +287,10 @@
         </v-alert>
       </v-card>
     </v-dialog>
+    <EquipmentInformations
+      ref="equipmentInformationsDialog"
+      :equipment="selectedItem"
+    ></EquipmentInformations>
   </div>
 </template>
 
@@ -295,10 +300,13 @@ import locationAdder from "../components/organisms/locationAdder";
 import { safeCall } from "../utils/api/calls";
 import { RepoFactory } from "../repositories/repoFactory";
 import { cloneDeep, isEqual } from "lodash";
+import Vue from "vue";
+import LocationAdder from "~/components/organisms/locationAdder.vue";
+import EquipmentInformations from "~/components/organisms/EquipmentInformations.vue";
 
 export default {
   name: "Inventory",
-  components: { locationAdder },
+  components: { locationAdder, EquipmentInformations },
   data() {
     return {
       inventory: [],
@@ -527,9 +535,10 @@ export default {
       });
       this.$forceUpdate();
     },
-    async showPreciseLoc(item) {
+    async showItemInfos(item) {
       this.selectedItem = item;
-      this.isPreciseLocDialog = true;
+      await Vue.nextTick();
+      this.$refs.equipmentInformationsDialog.openDialog();
     },
     async deleteBorrowed(item) {
       const index = this.selectedItem.borrowed.findIndex((e) =>
@@ -543,11 +552,11 @@ export default {
 </script>
 
 <style scoped>
-.v-list-item {
+/* .v-list-item {
   padding: 0;
 }
 
 .v-list-item__content {
   padding: 0;
-}
+} */
 </style>
