@@ -625,11 +625,11 @@ export default {
     async addEquipmentProposal() {
       this.$refs.proposalForm.validate();
       if (!this.proposalValid) return;
-      this.proposalItem.borrowed = this.borrowed;
-      this.proposalItem = (
-        await this.$axios.post("/equipment", this.proposalItem)
-      ).data;
-      this.proposalItem.borrowed = this.borrowed;
+      this.proposalItem.borrowed = this.borrowedProposal;
+      this.$store.dispatch(
+        "equipmentProposal/createEquipmentProposal",
+        this.proposalItem
+      );
       this.proposalItem = {};
       this.isFormOpened = false;
       this.selectedItem = {};
