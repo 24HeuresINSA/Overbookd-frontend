@@ -5,10 +5,18 @@ import { safeCall } from "~/utils/api/calls";
 
 const UserRepo = RepoFactory.userRepo;
 
-export const state = () => ({
-  me: {} as User,
-  usernames: [] as Partial<User>[],
-  mUser: {} as User,
+interface State {
+  me: User | undefined;
+  mUser: User | undefined;
+  //todo no anys
+  usernames: Array<any>;
+  timeslots: any;
+}
+
+export const state = (): State => ({
+  me: undefined,
+  usernames: [],
+  mUser: undefined,
   timeslots: [],
 });
 
@@ -22,19 +30,7 @@ export const mutations = mutationTree(state, {
     state.mUser = data;
   },
   SET_USERNAMES(state: UserState, data: User[]) {
-    data.sort(
-      ({ username: username1 }: User, { username: username2 }: User) => {
-        if (username1 && username2) {
-          if (username1 < username2) {
-            return -1;
-          }
-          if (username1 > username2) {
-            return -1;
-          }
-        }
-        return 0;
-      }
-    );
+    data.sort();
     state.usernames = data;
   },
   UPDATE_USER(state: UserState, data: Partial<User>) {
@@ -46,9 +42,16 @@ export const mutations = mutationTree(state, {
 });
 
 export const getters = getterTree(state, {
-  availabilities: (state: UserState) => {
+  /**
+   * Get all avaibilies of mUser.
+   * @returns Availabilies ids array
+   */
+  availabilities: (state: UserState): undefined | any => {
+    if (!state.mUser) {
+      return undefined;
+    }
     return state.mUser.availabilities.map((_id) => {
-      return state.timeslots.find((_timeslot) => _timeslot === _id);
+      return state.timeslots.find((_timeslot: any) => _timeslot === _id);
     });
   },
   hasRole(state: UserState) {
@@ -94,7 +97,12 @@ export const actions = actionTree(
         commit("SET_USERNAMES", res.data);
       }
     },
-    async getUsername({ dispatch, commit, state }, userID) {
+    /**
+     * Query database and then retrieve username for the user with given UserID
+     * @param userID ID of the user
+     * @returns username
+     */
+    async getUsername({ dispatch, state }, userID) {
       if (state.usernames.length === 0) {
         await dispatch("fetchUsernames");
       }
