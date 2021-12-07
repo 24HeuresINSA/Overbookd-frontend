@@ -14,7 +14,7 @@ export default {
   deleteLocation(context: Context, id: string) {
     return context.$axios.delete(resource + `/${id}`);
   },
-  createNewLocation(context: Context, location: location) {
+  createNewLocation(context: Context, location: Omit<location, "_id">) {
     //ITS post not **$**post  !!!
     return context.$axios.post(resource, location);
   },
