@@ -71,6 +71,12 @@
               > -->
             </v-card-actions>
           </v-card>
+          <br />
+          <v-card>
+            <v-btn @click="$refs.equipmentProposalDialogPage.openDialog()">
+              open dialog
+            </v-btn>
+          </v-card>
         </v-col>
         <v-col>
           <v-data-table
@@ -155,7 +161,10 @@
     <v-btn
       fab
       style="right: 80px; bottom: 45px; position: fixed"
-      @click="changeProposalForm = true"
+      @click="
+        isNewEquipment = true;
+        $refs.propDialog.changeProposalFormState();
+      "
     >
       <v-icon>mdi-clipboard-edit-outline</v-icon>
     </v-btn>
@@ -168,13 +177,6 @@
           <v-btn color="error" text @click="isFormOpened = false">
             Annuler
           </v-btn>
-
-          <!-- <OverForm
-            :fields="equipmentForm"
-            :data="selectedItem"
-            @form-change="onFormChange"
-          >
-          </OverForm> -->
           <v-form ref="form" v-model="valid">
             <v-container>
               <v-text-field
@@ -289,130 +291,14 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="changeProposalForm"
-      max-width="800"
-      persistent
-      scrollable
-    >
-      <v-card>
-        <v-card-title> Proposition d'un objet </v-card-title>
-        <v-card-text>
-          <v-form ref="proposalForm" v-model="proposalValid">
-            <v-container>
-              <v-text-field
-                v-model="proposalItem.name"
-                label="Nom de l'objet"
-                append-icon="mdi-search"
-                single-line
-                hide-details
-                :rules="rules.name"
-                required
-              ></v-text-field>
-              <v-select
-                v-model="proposalItem.type"
-                required
-                :items="[...equipmentForm[1].options].sort()"
-                label="Catégorie/type"
-                append-icon=""
-                single-line
-                :rules="rules.type"
-              ></v-select>
-              <v-text-field
-                v-model="proposalItem.amount"
-                label="Quantité"
-                append-icon="mdi-search"
-                single-line
-                required
-                type="number"
-                :rules="rules.amount"
-              ></v-text-field>
-
-              <v-switch
-                v-model="proposalItem.fromPool"
-                label="Vient du pool des assos ? 🐔"
-              ></v-switch>
-              <v-select
-                v-model="proposalItem.location"
-                :items="possibleLocations"
-                label="Lieux de l'objet"
-                item-text="name"
-                :rules="rules.location"
-                single-line
-              ></v-select>
-              <v-text-field
-                v-model="proposalItem.preciseLocation"
-                label="Espace de stockage exact"
-                single-line
-              ></v-text-field>
-              <v-text-field
-                v-model="proposalItem.comment"
-                label="Commentaire"
-                single-line
-              ></v-text-field>
-              <v-text-field
-                v-model="proposalItem.referencePicture"
-                label="Référence photo 📷"
-                single-line
-              ></v-text-field>
-              <v-text-field
-                v-model="proposalItem.referenceInvoice"
-                label="Référence facture 📃"
-                single-line
-              ></v-text-field>
-            </v-container>
-            <br />
-            <v-divider></v-divider>
-            <br />
-            <h4>Ajout de matos emprunté</h4>
-            <v-container style="display: flex; flex-wrap: wrap">
-              <v-text-field
-                v-model="newBorrowProposal.from"
-                label="qui"
-              ></v-text-field>
-              <v-text-field
-                v-model="newBorrowProposal.amount"
-                type="number"
-                label="quantite"
-              ></v-text-field>
-            </v-container>
-            <v-container
-              style="
-                display: flex;
-                justify-content: space-around;
-                align-content: baseline;
-              "
-            >
-              <label>debut</label>
-              <v-date-picker v-model="newBorrowProposal.start"></v-date-picker>
-              <label>fin</label>
-              <v-date-picker v-model="newBorrowProposal.end"></v-date-picker>
-            </v-container>
-
-            <v-data-table :headers="borrowedHeader" :items="borrowed">
-              <template #[`item.action`]="{ item }">
-                <v-btn icon small @click="deleteBorrowed(item)">
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
-              </template>
-            </v-data-table>
-
-            <v-btn fab @click="addNewBorrowedItemsProposal"
-              ><v-icon>mdi-plus</v-icon></v-btn
-            >
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" @click="addEquipmentProposal">
-            Sauvegarder
-          </v-btn>
-          <v-btn color="error" text @click="changeProposalForm = false">
-            Annuler
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <EquipmentProposalDialog
+      ref="propDialog"
+      :equipment="selectedItem"
+      :is-new-equipment="isNewEquipment"
+    ></EquipmentProposalDialog>
+    <EquipmentProposalDialogPage
+      ref="equipmentProposalDialogPage"
+    ></EquipmentProposalDialogPage>
 
     <v-dialog v-model="isPreciseLocDialog" max-width="800">
       <v-card>
@@ -441,10 +327,17 @@ import { cloneDeep, isEqual } from "lodash";
 import Vue from "vue";
 import LocationAdder from "~/components/organisms/locationAdder.vue";
 import EquipmentInformations from "~/components/organisms/EquipmentInformations.vue";
+import EquipmentProposalDialog from "~/components/organisms/EquipmentProposalDialog.vue";
+import EquipmentProposalDialogPage from "~/components/organisms/EquipmentProposalDialogPage.vue";
 
 export default {
   name: "Inventory",
-  components: { locationAdder, EquipmentInformations },
+  components: {
+    locationAdder,
+    EquipmentInformations,
+    EquipmentProposalDialog,
+    EquipmentProposalDialogPage,
+  },
   data() {
     return {
       inventory: [],
@@ -477,13 +370,6 @@ export default {
         from: undefined,
         amount: undefined,
       },
-      proposalItem: {},
-      newBorrowProposal: {
-        start: undefined,
-        end: undefined,
-        from: undefined,
-        amount: undefined,
-      },
       search: {
         name: "",
         location: [],
@@ -494,7 +380,6 @@ export default {
       newLocation: "",
       isPreciseLocDialog: false,
       valid: false,
-      proposalValid: false,
       rules: {
         name: [(v) => !!v || "Veuillez entrer un nom"],
         amount: [
@@ -622,21 +507,11 @@ export default {
       this.borrowed = [];
     },
 
-    async addEquipmentProposal() {
-      this.$refs.proposalForm.validate();
-      if (!this.proposalValid) return;
-      this.proposalItem.borrowed = this.borrowedProposal;
-      this.$store.dispatch(
-        "equipmentProposal/createEquipmentProposal",
-        this.proposalItem
-      );
-      this.proposalItem = {};
-      this.isFormOpened = false;
-      this.selectedItem = {};
-      this.borrowed = [];
-    },
     addNewBorrowedItems() {
       this.borrowed.push({ ...this.newBorrow });
+    },
+    addNewBorrowedItemsProposal() {
+      this.borrowedProposal.push({ ...this.newBorrow });
     },
 
     getBorrowedCount(item) {
@@ -660,10 +535,10 @@ export default {
       this.isFormOpened = true;
     },
     async itemChangeProposal(item) {
-      this.borrowedProposal = item.borrowed;
-      this.proposalItem = item;
+      this.selectedItem = item;
+      console.log(this.selectedItem);
       await Vue.nextTick();
-      this.changeProposalForm = true;
+      this.$refs.propDialog.changeProposalFormState();
     },
 
     async deleteItem(item) {
@@ -711,7 +586,7 @@ export default {
         isEqual(e, item)
       );
       this.selectedItem.borrowed.splice(index, 1);
-      await this.$axios.put("/equipment", this.selectedItem);
+      //await this.$axios.put("/equipment", this.selectedItem);
     },
   },
 };
