@@ -19,7 +19,7 @@
           <v-data-table :headers="headers" :items="signalisation">
             <template #[`item.action`]="{ index }">
               <v-btn
-                v-if="!isDisabled"
+                :disabled="isDisabled"
                 icon
                 @click="deleteSignalisation(index)"
               >
@@ -68,19 +68,34 @@
   </div>
 </template>
 
-<script>
-import OverForm from "../overForm";
+<script lang="ts">
+import OverForm from "../overForm.vue";
+import Vue from "vue";
+import { Signalisation } from "~/utils/models/FA";
+import { Field } from "../../utils/models/form";
 
-export default {
+interface Data {
+  isSignaRequired: boolean;
+  isSignaFormOpen: boolean;
+  newSignalisation: undefined | Signalisation;
+  fields: Field[];
+  //todo: specify below
+  headers: Array<Object>;
+}
+
+export default Vue.extend({
   name: "OverSigna",
   components: { OverForm },
   props: {
+    /**
+     * Define if this is editable or not
+     */
     isDisabled: {
       type: Boolean,
       default: () => false,
     },
   },
-  data() {
+  data(): Data {
     return {
       isSignaRequired: false,
       isSignaFormOpen: false,
@@ -94,11 +109,11 @@ export default {
       ],
 
       fields: [],
-      newSignalisation: {},
+      newSignalisation: undefined,
     };
   },
   computed: {
-    signalisation() {
+    signalisation(): Signalisation[] {
       return this.$accessor.FA.mFA.signalisation;
     },
     locations() {
@@ -120,23 +135,23 @@ export default {
       this.$accessor.config.getConfig("fa_signalisation_form") || [];
   },
   methods: {
-    updateLocations(locations) {},
-    onFormChange(form) {
+    onFormChange(form: any) {
       this.newSignalisation = form;
     },
     onFormSubmit() {
-      this.$accessor.FA.addSignalisation(this.newSignalisation);
-      this.isSignaFormOpen = false;
-      console.log(this.$accessor.FA.mFA);
+      if (this.newSignalisation) {
+        this.$accessor.FA.addSignalisation(this.newSignalisation);
+        this.isSignaFormOpen = false;
+      }
     },
-    deleteSignalisation(index) {
+    deleteSignalisation(index: number) {
       this.$accessor.FA.deleteSignalisation(index);
     },
-    onItemChange(number, index) {
-      this.$accessor.FA.updateSignalisationNumber({ index, number });
+    onItemChange(num: number, index: number) {
+      this.$accessor.FA.updateSignalisationNumber({ index, num });
     },
   },
-};
+});
 </script>
 
 <style scoped></style>

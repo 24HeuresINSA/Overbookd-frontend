@@ -126,7 +126,7 @@ export default Vue.extend({
      * Add item to FA store
      */
     addItemToFA(): void {
-      if (this.item) {
+      if (this.item && this.store) {
         this.store.addEquipmentToFA({
           _id: this.item._id,
           name: this.item.name,

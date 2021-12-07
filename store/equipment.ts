@@ -26,6 +26,7 @@ export const actions = actionTree(
       if (res) {
         commit("SET_ALL_EQUIPMENT", res.data);
       }
+      return res;
     },
   }
 );

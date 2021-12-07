@@ -1,26 +1,25 @@
 import { actionTree, getterTree, mutationTree } from "typed-vuex";
-import {
-  ElectricityNeed,
-  FA,
-  SecurityPass,
-  Signalisation,
-} from "~/utils/models/FA";
+import { FA, Signalisation } from "~/utils/models/FA";
 import { FT } from "~/utils/models/FT";
 import { safeCall } from "~/utils/api/calls";
 import { RepoFactory } from "~/repositories/repoFactory";
 
-export const state = () => ({
+interface State {
+  mFA: FA;
+}
+
+export const state = (): State => ({
   mFA: {
     status: "draft",
-    equipments: [] as any,
-    timeframes: [] as any,
-    validated: [] as any,
-    refused: [] as any,
-    FTs: [] as FT[],
-    securityPasses: [] as SecurityPass[],
-    signalisation: [] as Signalisation[],
-    electricityNeeds: [] as ElectricityNeed[],
-  } as FA,
+    equipments: [],
+    timeframes: [],
+    validated: [],
+    refused: [],
+    FTs: [],
+    securityPasses: [],
+    signalisation: [],
+    electricityNeeds: [],
+  },
 });
 
 export const getters = getterTree(state, {
@@ -179,17 +178,20 @@ export const mutations = mutationTree(state, {
   DELETE_SECURITY_PASS: function (state, index) {
     state.mFA.securityPasses.splice(index, 1);
   },
-  ADD_SIGNALISATION: function (state, signalisation) {
+  ADD_SIGNALISATION: function (state, signalisation: Signalisation) {
     if (state.mFA.signalisation === undefined) {
       state.mFA.signalisation = [];
     }
     state.mFA.signalisation.push(signalisation);
   },
-  DELETE_SIGNALISATION: function (state, index) {
+  DELETE_SIGNALISATION: function (state, index: number) {
     state.mFA.signalisation.splice(index, 1);
   },
-  UPDATE_SIGNALISATION_NUMBER: function (state, { index, number }) {
-    state.mFA.signalisation[index].number = number;
+  UPDATE_SIGNALISATION_NUMBER: function (
+    state,
+    payload: { index: number; number: number }
+  ) {
+    state.mFA.signalisation[payload.index].number = payload.number;
   },
   DELETE_ELECTRICITY_NEED: function (state, index) {
     state.mFA.electricityNeeds.splice(index, 1);
@@ -211,13 +213,16 @@ export const actions = actionTree(
     deleteElectricityNeed({ commit }, index) {
       commit("DELETE_ELECTRICITY_NEED", index);
     },
-    updateSignalisationNumber(context, signalisationNumber) {
-      context.commit("UPDATE_SIGNALISATION_NUMBER", signalisationNumber);
+    updateSignalisationNumber(
+      context,
+      payload: { index: number; num: number }
+    ) {
+      context.commit("UPDATE_SIGNALISATION_NUMBER", payload);
     },
-    deleteSignalisation: ({ commit }, index) => {
+    deleteSignalisation: ({ commit }, index: number) => {
       commit("DELETE_SIGNALISATION", index);
     },
-    addSignalisation: async ({ commit }, signalisation) => {
+    addSignalisation: async ({ commit }, signalisation: Signalisation) => {
       commit("ADD_SIGNALISATION", { ...signalisation });
     },
     addSecurityPass: async function ({ commit }, securityPass) {

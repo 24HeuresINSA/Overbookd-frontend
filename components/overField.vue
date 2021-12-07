@@ -119,13 +119,43 @@
   </div>
 </template>
 
-<script>
-import RichEditor from "~/components/organisms/richEditor";
-export default {
+<script lang="ts">
+import RichEditor from "~/components/organisms/richEditor.vue";
+import Vue from "vue";
+import { Field } from "../utils/models/form";
+import { PropType } from "vue";
+
+// Component data type definition
+// todo replaces anys
+interface Data {
+  activePicker: unknown;
+  menu: unknown;
+  users: unknown;
+  mField: unknown;
+  value: unknown;
+  teams: unknown;
+}
+/**
+ * Dynamically defined form field. Corner stone of config-defined forms
+ */
+export default Vue.extend({
   name: "OverField",
   components: { RichEditor },
-  props: ["field", "data", "disabled"],
-  data() {
+  props: {
+    /**
+     * Field properties definition
+     */
+    field: { type: Object as PropType<Field>, required: true },
+    /**
+     * todo
+     */
+    data: { type: [String, Number, Object, Array], required: true },
+    /**
+     * If the field is editable or not
+     */
+    disabled: { type: Boolean, default: () => false },
+  },
+  data(): Data {
     return {
       activePicker: null,
       menu: false,
@@ -135,13 +165,19 @@ export default {
       teams: [],
     };
   },
-
+  computed: {
+    usernames: function (): any {
+      return this.$accessor.user.usernames;
+    },
+  },
   async mounted() {
     if (this.field.type === "user") {
       let users = this.$accessor.user.usernames;
+      //! Unsafe regarding what seems to be expected (an up to date usernames db)
       if (users.length === 0) {
         // fetch usernames
-        await this.$accessor.user.getUsername();
+        //! Unsafe
+        await this.$accessor.user.fetchUsernames();
         users = this.$accessor.user.usernames;
       }
       // sort alphabetically
@@ -153,16 +189,21 @@ export default {
       });
     }
     if (this.field.type === "teams") {
-      this.teams = this.$accessor.config.getConfig("teams").map((t) => t.name);
+      this.teams = this.$accessor.config
+        .getConfig("teams")
+        .map((t: any) => t.name);
     }
   },
 
   methods: {
-    onChange(value) {
-      if (typeof this.field.value === "string") {
+    /**
+     * Form field changed
+     */
+    onChange(value: unknown) {
+      if (typeof value === "string") {
         value = value.trim();
       }
-      if (this.field.type === "number") {
+      if (typeof value === "number") {
         try {
           value = +value;
         } catch (e) {
@@ -171,10 +212,20 @@ export default {
       }
       this.$emit("value", { key: this.field.key, value });
     },
-
-    allowedMinutes: (m) => m % 15 === 0,
+    /**
+     * Returns if it is an exact nb of quarter
+     * @param m nb of minute
+     */
+    allowedMinutes: (m: number) => m % 15 === 0,
+    /**
+     * Generate validation rules for the given field.
+     */
+    getRules(): Array<Function> {
+      // todo
+      return [];
+    },
   },
-};
+});
 </script>
 
 <style scoped></style>

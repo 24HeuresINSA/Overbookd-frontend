@@ -100,6 +100,7 @@
             <a href="mailto:logistique@24heures.org">logistique@24heures.org</a>
           </h4>
           <LogisticsCard
+            v-if="FAStore"
             title="Matos"
             :types="Object.values(EquipmentTypes)"
             :store="store"
@@ -110,6 +111,7 @@
       <v-row />
       <br />
       <LogisticsCard
+        v-if="FAStore"
         title="Barrieres"
         :types="Object.values(BarrieresTypes)"
         :store="store"
@@ -117,6 +119,7 @@
       ></LogisticsCard>
       <br />
       <LogisticsCard
+        v-if="FAStore"
         title="Matos Elec / Eau"
         :types="Object.values(ElecTypes)"
         :store="store"

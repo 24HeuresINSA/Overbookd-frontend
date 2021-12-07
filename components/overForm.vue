@@ -12,35 +12,48 @@
   </div>
 </template>
 
-<script>
-import OverField from "./overField";
+<script lang="ts">
+import OverField from "./overField.vue";
+import { Field } from "../utils/models/form";
+import Vue, { PropType } from "vue";
 
-export default {
+export default Vue.extend({
   name: "OverForm",
   components: { OverField },
-  props: ["fields", "data", "disabled"],
-
+  props: {
+    fields: {
+      type: Array as PropType<Field[]>,
+      required: true,
+    },
+    data: {
+      type: Object,
+      default: () => undefined,
+    },
+    disabled: {
+      type: Boolean,
+      default: () => false,
+    },
+  },
   data() {
     return {
-      compiledForm: {},
+      compiledForm: {} as any,
     };
   },
 
   mounted() {},
 
   methods: {
-    getData(key) {
+    getData(key: any): any {
       if (this.data) {
         return this.data[key];
       }
     },
-
-    onValueChange({ key, value }) {
+    onValueChange({ key, value }: any): any {
       this.compiledForm[key] = value;
       let isValid = true;
       this.fields.forEach((field) => {
         // check regex
-        if (field.regex) {
+        if (field.type == "string" && field.regex) {
           let r = new RegExp(field.regex);
           if (!r.test(this.compiledForm[field.key])) {
             isValid = false;
@@ -59,7 +72,7 @@ export default {
       this.$emit("form-change", this.compiledForm);
     },
   },
-};
+});
 </script>
 
 <style scoped></style>

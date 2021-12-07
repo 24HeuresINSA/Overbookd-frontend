@@ -287,7 +287,6 @@
 </template>
 
 <script>
-import OverForm from "../components/overForm";
 import locationAdder from "../components/organisms/locationAdder";
 import { safeCall } from "../utils/api/calls";
 import { RepoFactory } from "../repositories/repoFactory";
