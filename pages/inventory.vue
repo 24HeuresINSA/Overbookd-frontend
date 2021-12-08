@@ -384,12 +384,16 @@ export default {
     newEquip() {
       this.selectedItem = {};
       this.isNewEquipment = true;
-      this.$refs.equipDialog.openDialog();
+      Vue.nextTick(() => {
+        this.$refs.equipDialog.openDialog();
+      });
     },
     newProposal() {
       this.selectedItem = {};
       this.isNewEquipment = true;
-      this.$refs.propDialog.openDialog();
+      Vue.nextTick(() => {
+        this.$refs.propDialog.openDialog();
+      });
     },
     async deleteItem(item) {
       if (item.required && item.required.count > 0) {
