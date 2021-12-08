@@ -50,7 +50,7 @@
               <label>Permis</label>
               <div>
                 <v-btn-toggle
-                  v-model="filters.hasDriverLicence"
+                  v-model="filters.hasDriverLicense"
                   tile
                   color="deep-purple accent-3"
                   group
@@ -244,7 +244,7 @@ export default {
 
       filters: {
         search: undefined,
-        hasDriverLicence: undefined,
+        hasDriverLicense: undefined,
         teams: [],
         isValidated: undefined,
         hasPayedContribution: undefined,
@@ -290,9 +290,9 @@ export default {
         }
 
         // filter by driver licence
-        if (this.filters.hasDriverLicence !== undefined) {
+        if (this.filters.hasDriverLicense !== undefined) {
           mUsers = mUsers.filter(
-            (user) => user.hasDriverLicence === this.filters.hasDriverLicence
+            (user) => user.hasDriverLicense === this.filters.hasDriverLicense
           );
         }
 

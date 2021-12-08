@@ -73,6 +73,11 @@
                     </v-btn>
                   </v-btn-toggle>
                 </div>
+                <v-switch
+                  v-if="isAdmin"
+                  v-model="isDeletedFilter"
+                  label="Afficher les FA supprimées"
+                ></v-switch>
               </v-card-text>
             </v-card>
           </v-container>
@@ -87,6 +92,17 @@
           >
             <template #[`item.validation`]="{ item }">
               <ValidatorsIcons :form="item"></ValidatorsIcons>
+            </template>
+            <template #item.general.name="{ item }">
+              <a
+                :href="`/fa/${item.count}`"
+                :style="
+                  item.isValid === false
+                    ? `text-decoration:line-through;`
+                    : `text-decoration:none;`
+                "
+                >{{ item.general.name }}</a
+              >
             </template>
             <template #[`item.action`]="row">
               <tr>
@@ -176,6 +192,7 @@ export default {
       mFA: null,
       search: undefined,
       filter: {},
+      isDeletedFilter: false, // true if deleted FAs are displayed
       sortDesc: false,
       page: 1,
       itemsPerPage: 4,
@@ -209,8 +226,12 @@ export default {
       return Math.ceil(this.items.length / this.itemsPerPage);
     },
 
+    isAdmin() {
+      return this.$accessor.user.hasRole("admin");
+    },
     selectedFAs() {
       let mFAs = this.filterByStatus(this.FAs, this.selectedStatus);
+      mFAs = this.filterByDeletedStatus(mFAs);
       mFAs = this.filterBySelectedTeam(mFAs, this.selectedTeam);
       mFAs = this.filterByValidatorStatus(mFAs);
       const options = {
@@ -227,9 +248,7 @@ export default {
   async mounted() {
     this.validators = this.$accessor.config.getConfig("fa_validators");
     // get FAs
-    this.FAs = (await this.$axios.get("/FA")).data.filter(
-      (e) => e.isValid !== false
-    );
+    this.FAs = (await this.$axios.get("/FA")).data;
   },
 
   methods: {
@@ -252,6 +271,13 @@ export default {
           return false;
         }
       });
+    },
+
+    filterByDeletedStatus(FAs) {
+      if (this.isDeletedFilter === false) {
+        return FAs.filter((FA) => FA.isValid !== false);
+      }
+      return FAs;
     },
 
     filterByValidatorStatus(FAs) {
