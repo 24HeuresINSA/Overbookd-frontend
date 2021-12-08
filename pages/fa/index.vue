@@ -2,19 +2,19 @@
   <div>
     <h1>Fiche Animation 🎉</h1>
 
-    <v-container style="display: grid; width: 100%; margin: auto">
+    <v-container style="display: grid; width: 100%; margin: 0">
       <v-row>
-        <v-col md="2">
+        <v-col md="3">
           <v-container style="padding: 0">
             <v-card>
               <v-card-title>Filters</v-card-title>
               <v-card-text>
-                <v-text-field v-model="search" label="recherche" dense>
+                <v-text-field v-model="search" label="Recherche" dense>
                 </v-text-field>
 
                 <v-select
                   v-model="selectedTeam"
-                  label="équipe"
+                  label="Équipe"
                   :items="getConfig('teams').map((e) => e.name)"
                   clearable
                   dense
@@ -57,13 +57,19 @@
                       x-small
                       :value="true"
                       style="padding-right: 2px; padding-left: 2px"
-                      >valider
+                      >validée
                     </v-btn>
                     <v-btn
                       x-small
                       :value="false"
                       style="padding-right: 2px; padding-left: 2px"
-                      >refuser
+                      >refusée
+                    </v-btn>
+                    <v-btn
+                      x-small
+                      :value="2"
+                      style="padding-right: 2px; padding-left: 2px"
+                      >à valider
                     </v-btn>
                   </v-btn-toggle>
                 </div>
@@ -72,7 +78,7 @@
           </v-container>
         </v-col>
 
-        <v-col md="10">
+        <v-col md="9">
           <v-data-table
             :headers="headers"
             :items="selectedFAs"
@@ -229,12 +235,17 @@ export default {
     filterByValidatorStatus(FAs) {
       const filter = this.filter;
       Object.entries(filter).forEach(([validator, value]) => {
-        console.log(validator);
+        console.log(validator, value);
         FAs = FAs.filter((FA) => {
           if (value === true) {
             return FA.validated.includes(validator);
           } else if (value === false) {
             return FA.refused.includes(validator);
+          } else if (value === 2) {
+            return (
+              !FA.validated.includes(validator) &&
+              (FA.status === "submitted" || FA.status === "refused")
+            );
           }
           return true;
         });
