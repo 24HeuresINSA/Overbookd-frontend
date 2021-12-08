@@ -192,7 +192,6 @@ export default {
       return this.getConfig("equipment_form");
     },
   },
-  mounted() {},
   methods: {
     getConfig(key) {
       return this.$accessor.config.getConfig(key);
@@ -200,6 +199,8 @@ export default {
     addEquipmentProposal() {
       const form = this.$refs.proposalForm;
       form.validate();
+      if (!this.proposalValid) return;
+
       if (this.isNewEquipment) {
         this.item.isNewEquipment = this.isNewEquipment;
       } else {
@@ -207,7 +208,7 @@ export default {
         this.item.oldEquipment = this.item._id;
         delete this.item._id;
       }
-      if (!this.proposalValid) return;
+      this.item.byUser = this.$accessor.user.me._id;
       this.$store.dispatch(
         "equipmentProposal/createEquipmentProposal",
         this.item

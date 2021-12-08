@@ -2,7 +2,9 @@
   <v-dialog v-model="dialog" persistent max-width="80%" scrollable>
     <v-card>
       <v-card-title>
-        <span class="headline">{{ title }}</span>
+        <span class="headline"
+          >Proposition de {{ byUser.nickname || byUser.firstname }}</span
+        >
       </v-card-title>
       <v-card-text>
         <v-alert v-if="mEquipmentProposal.isNewEquipment" color="blue-grey">
@@ -238,7 +240,7 @@
           >Annuler</v-btn
         >
         <v-btn color="error" @click="dialog = false">Refuser</v-btn>
-        <v-btn color="primary" @click="dialog = false">Accpeter</v-btn>
+        <v-btn color="primary" @click="confirm">Accpeter</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -259,7 +261,6 @@ export default Vue.extend({
   data() {
     return {
       dialog: false,
-      title: "Proposition de (inserer pseduo personne)",
       message: "C'est un nouvel equipement",
     };
   },
@@ -276,13 +277,22 @@ export default Vue.extend({
     mEquipmentProposal(): any {
       return _.cloneDeep(this.equipmentProposal);
     },
+    byUser(): any {
+      return this.$accessor.user.mUser;
+    },
   },
   methods: {
     openDialog() {
-      this.dialog = true;
+      Vue.nextTick(() => {
+        this.$accessor.user.findUserById(this.equipmentProposal.byUser);
+        this.dialog = true;
+      });
     },
     closeDialog() {
       this.dialog = false;
+    },
+    confirm() {
+      console.log(this.byUser);
     },
   },
 });
