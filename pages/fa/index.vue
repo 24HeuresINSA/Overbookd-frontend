@@ -99,7 +99,15 @@
                   >
                     <v-icon small>mdi-circle-edit-outline</v-icon>
                   </v-btn>
-                  <v-btn class="mx-2" icon small @click="deleteFA(row.item)">
+                  <v-btn
+                    class="mx-2"
+                    icon
+                    small
+                    @click="
+                      mFA = row.item;
+                      isDeleteFAOpen = true;
+                    "
+                  >
                     <v-icon small>mdi-delete</v-icon>
                   </v-btn>
                 </td>
@@ -129,6 +137,17 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="isDeleteFAOpen" max-width="600">
+      <v-card>
+        <v-card-title>Supprimer une FA</v-card-title>
+        <v-card-text> Voulez-vous vraiment supprimer cette FA ?</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="deleteFA">supprimer</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-btn
       elevation="2"
       fab
@@ -154,6 +173,7 @@ export default {
   data() {
     return {
       FAs: [],
+      mFA: null,
       search: undefined,
       filter: {},
       sortDesc: false,
@@ -177,7 +197,9 @@ export default {
         draft: "grey",
         undefined: "grey",
       },
+
       isNewFADialogOpen: false,
+      isDeleteFAOpen: false,
       faName: undefined,
     };
   },
@@ -235,7 +257,6 @@ export default {
     filterByValidatorStatus(FAs) {
       const filter = this.filter;
       Object.entries(filter).forEach(([validator, value]) => {
-        console.log(validator, value);
         FAs = FAs.filter((FA) => {
           if (value === true) {
             return FA.validated.includes(validator);
@@ -287,13 +308,15 @@ export default {
         await this.$router.push({ path: "fa/" + res.count });
       }
     },
-    async deleteFA(FA) {
+    async deleteFA() {
       await safeCall(
         this.$store,
-        RepoFactory.faRepo.deleteFA(this, FA),
+        RepoFactory.faRepo.deleteFA(this, this.mFA),
         "FA deleted 🥳"
       );
-      this.FAs = this.FAs.filter((e) => e.count !== FA.count);
+      this.FAs = this.FAs.filter((e) => e.count !== this.mFA.count);
+      this.isDeleteFAOpen = false;
+      this.mFA = undefined;
     },
 
     nextPage() {
