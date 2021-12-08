@@ -1,5 +1,9 @@
 <template>
   <div>
+    <EquipmentProposalDialogPage
+      ref="equipPropPage"
+    ></EquipmentProposalDialogPage>
+
     <v-container>
       <v-row>
         <v-col md="3">
@@ -73,9 +77,7 @@
           </v-card>
           <br />
           <v-card>
-            <v-btn @click="$refs.equipmentProposalDialogPage.openDialog()">
-              open dialog
-            </v-btn>
+            <v-btn @click="openProposalPage()"> open dialog </v-btn>
           </v-card>
         </v-col>
         <v-col>
@@ -86,6 +88,7 @@
             :item-class="rowClass"
             dense
             :items-per-page="-1"
+            :loading="loading"
           >
             <template #[`item.action`]="{ item }">
               <v-tooltip bottom>
@@ -151,155 +154,29 @@
       v-if="hasRole(allowedTeams)"
       fab
       style="right: 20px; bottom: 45px; position: fixed"
-      @click="
-        isNewEquipment = true;
-        openDialog();
-      "
+      @click="newEquip()"
     >
       <v-icon> mdi-plus </v-icon>
     </v-btn>
     <v-btn
       fab
       style="right: 80px; bottom: 45px; position: fixed"
-      @click="
-        isNewEquipment = true;
-        $refs.propDialog.changeProposalFormState();
-      "
+      @click="newProposal()"
     >
       <v-icon>mdi-clipboard-edit-outline</v-icon>
     </v-btn>
-
-    <v-dialog v-model="isFormOpened" max-width="800" persistent scrollable>
-      <v-card>
-        <v-card-title>Ajouter un nouveau objet</v-card-title>
-        <v-card-text>
-          <v-btn color="primary" text @click="addEquipment">Sauvegarder</v-btn>
-          <v-btn color="error" text @click="isFormOpened = false">
-            Annuler
-          </v-btn>
-          <v-form ref="form" v-model="valid">
-            <v-container>
-              <v-text-field
-                v-model="selectedItem.name"
-                label="Nom de l'objet"
-                append-icon="mdi-search"
-                single-line
-                hide-details
-                :rules="rules.name"
-                required
-              ></v-text-field>
-              <v-select
-                v-model="selectedItem.type"
-                required
-                :items="[...equipmentForm[1].options].sort()"
-                label="Catégorie/type"
-                append-icon=""
-                single-line
-                :rules="rules.type"
-              ></v-select>
-              <v-text-field
-                v-model="selectedItem.amount"
-                label="Quantité"
-                append-icon="mdi-search"
-                single-line
-                required
-                type="number"
-                :rules="rules.amount"
-              ></v-text-field>
-
-              <v-switch
-                v-model="selectedItem.fromPool"
-                label="Vient du pool des assos ? 🐔"
-              ></v-switch>
-              <v-select
-                v-model="selectedItem.location"
-                :items="possibleLocations"
-                label="Lieux de l'objet"
-                item-text="name"
-                :rules="rules.location"
-                single-line
-              ></v-select>
-              <v-text-field
-                v-model="selectedItem.preciseLocation"
-                label="Espace de stockage exact"
-                single-line
-              ></v-text-field>
-              <v-text-field
-                v-model="selectedItem.comment"
-                label="Commentaire"
-                single-line
-              ></v-text-field>
-              <v-text-field
-                v-model="selectedItem.referencePicture"
-                label="Référence photo 📷"
-                single-line
-              ></v-text-field>
-              <v-text-field
-                v-model="selectedItem.referenceInvoice"
-                label="Référence facture 📃"
-                single-line
-              ></v-text-field>
-            </v-container>
-            <br />
-            <v-divider></v-divider>
-            <br />
-            <h3>Ajout de matos emprunté</h3>
-            <v-container style="display: flex; flex-wrap: wrap">
-              <v-text-field v-model="newBorrow.from" label="qui"></v-text-field>
-              <v-text-field
-                v-model="newBorrow.amount"
-                type="number"
-                label="quantite"
-              ></v-text-field>
-            </v-container>
-            <v-container
-              style="
-                display: flex;
-                justify-content: space-around;
-                align-content: baseline;
-              "
-            >
-              <label>debut</label>
-              <v-date-picker
-                v-model="newBorrow.start"
-                first-day-of-week="1"
-              ></v-date-picker>
-              <label>fin</label>
-              <v-date-picker v-model="newBorrow.end"></v-date-picker>
-            </v-container>
-
-            <v-data-table :headers="borrowedHeader" :items="borrowed">
-              <template #[`item.action`]="{ item }">
-                <v-btn icon small @click="deleteBorrowed(item)">
-                  <v-icon>mdi-delete</v-icon>
-                </v-btn>
-              </template>
-            </v-data-table>
-
-            <v-btn fab @click="addNewBorrowedItems"
-              ><v-icon>mdi-plus</v-icon></v-btn
-            >
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" @click="addEquipment"> Sauvegarder </v-btn>
-          <v-btn color="error" text @click="isFormOpened = false">
-            Annuler
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
 
     <EquipmentProposalDialog
       ref="propDialog"
       :equipment="selectedItem"
       :is-new-equipment="isNewEquipment"
     ></EquipmentProposalDialog>
-    <EquipmentProposalDialogPage
-      ref="equipmentProposalDialogPage"
-    ></EquipmentProposalDialogPage>
 
+    <EquipmentDialog
+      ref="equipDialog"
+      :equipment="selectedItem"
+      :is-new-equipment="isNewEquipment"
+    ></EquipmentDialog>
     <v-dialog v-model="isPreciseLocDialog" max-width="800">
       <v-card>
         <v-card-title>Emplacement précis</v-card-title>
@@ -329,6 +206,7 @@ import LocationAdder from "~/components/organisms/locationAdder.vue";
 import EquipmentInformations from "~/components/organisms/EquipmentInformations.vue";
 import EquipmentProposalDialog from "~/components/organisms/EquipmentProposalDialog.vue";
 import EquipmentProposalDialogPage from "~/components/organisms/EquipmentProposalDialogPage.vue";
+import EquipmentDialog from "~/components/organisms/EquipmentDialog.vue";
 
 export default {
   name: "Inventory",
@@ -337,10 +215,10 @@ export default {
     EquipmentInformations,
     EquipmentProposalDialog,
     EquipmentProposalDialogPage,
+    EquipmentDialog,
   },
   data() {
     return {
-      inventory: [],
       headers: [
         { text: "nom", value: "name" },
         { text: "lieu de stockage", value: "location" },
@@ -364,12 +242,6 @@ export default {
       changeProposalForm: false,
       allowedTeams: ["log"],
       selectedItem: {},
-      newBorrow: {
-        start: undefined,
-        end: undefined,
-        from: undefined,
-        amount: undefined,
-      },
       search: {
         name: "",
         location: [],
@@ -380,16 +252,9 @@ export default {
       newLocation: "",
       isPreciseLocDialog: false,
       valid: false,
-      rules: {
-        name: [(v) => !!v || "Veuillez entrer un nom"],
-        amount: [
-          (v) => !!v || "Veuillez entrer une quantité",
-          (v) => v >= 0 || "Veuillez entrer une quantité positive",
-        ],
-        location: [(v) => !!v || "Veuillez choisir un lieu de stockage"],
-        type: [(v) => !!v || "Veuillez choisir un type"],
-      },
+
       isNewEquipment: false,
+      loading: false,
     };
   },
 
@@ -416,10 +281,14 @@ export default {
     equipmentForm() {
       return this.getConfig("equipment_form");
     },
+    inventory() {
+      return cloneDeep(this.$accessor.equipment.items);
+    },
   },
 
   async mounted() {
     // setup config
+    this.loading = true;
     const res = await this.$accessor.location.getAllLocations();
     if (!res) {
       // todo display snackbar notif
@@ -429,9 +298,7 @@ export default {
       ? ["log", "hard"]
       : ["log"];
     this.selectOptions = this.equipmentForm[1].options;
-    this.inventory = (await this.$axios.$get("/equipment")).filter(
-      (e) => e.isValid !== false
-    );
+    await this.$accessor.equipment.fetchAll();
     const FTs = await safeCall(this.$store, RepoFactory.ftRepo.getAllFTs(this));
     const FAs = await safeCall(this.$store, RepoFactory.faRepo.getAllFAs(this));
 
@@ -452,6 +319,7 @@ export default {
         }
       });
     });
+    this.loading = false;
   },
 
   methods: {
@@ -483,37 +351,9 @@ export default {
       this.isFormOpened = true;
     },
 
-    async addEquipment() {
-      this.$refs.form.validate();
-      if (!this.valid) return;
-      this.selectedItem.borrowed = this.borrowed;
-      if (this.isNewEquipment) {
-        this.selectedItem = (
-          await this.$axios.post("/equipment", this.selectedItem)
-        ).data;
-        this.isNewEquipment = false;
-      } else {
-        this.selectedItem = (
-          await this.$axios.put("/equipment", this.selectedItem)
-        ).data;
-      }
-      if (
-        this.inventory.findIndex((e) => e._id === this.selectedItem._id) === -1
-      ) {
-        this.inventory.push(this.selectedItem);
-      }
-      this.isFormOpened = false;
-      this.selectedItem = {};
-      this.borrowed = [];
+    openProposalPage() {
+      this.$refs.equipPropPage.openDialog();
     },
-
-    addNewBorrowedItems() {
-      this.borrowed.push({ ...this.newBorrow });
-    },
-    addNewBorrowedItemsProposal() {
-      this.borrowedProposal.push({ ...this.newBorrow });
-    },
-
     getBorrowedCount(item) {
       let count = 0;
       if (item && item.borrowed) {
@@ -529,18 +369,28 @@ export default {
     },
 
     edit(item) {
-      console.log(item);
-      this.borrowed = item.borrowed;
       this.selectedItem = item;
-      this.isFormOpened = true;
+      Vue.nextTick(() => {
+        this.$refs.equipDialog.openDialog();
+      });
     },
     async itemChangeProposal(item) {
       this.selectedItem = item;
       console.log(this.selectedItem);
+      this.isNewEquipment = false;
       await Vue.nextTick();
-      this.$refs.propDialog.changeProposalFormState();
+      this.$refs.propDialog.openDialog();
     },
-
+    newEquip() {
+      this.selectedItem = {};
+      this.isNewEquipment = true;
+      this.$refs.equipDialog.openDialog();
+    },
+    newProposal() {
+      this.selectedItem = {};
+      this.isNewEquipment = true;
+      this.$refs.propDialog.openDialog();
+    },
     async deleteItem(item) {
       if (item.required && item.required.count > 0) {
         //TODO: Create this snackbar/toast for global use
@@ -550,9 +400,7 @@ export default {
         });
         return;
       }
-      item.isValid = false;
-      await this.$axios.put("/equipment", item);
-      this.inventory = this.inventory.filter((i) => i.name !== item.name);
+      this.$accessor.equipment.delete(item);
     },
     clear() {
       this.search = {

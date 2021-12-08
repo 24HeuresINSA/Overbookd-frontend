@@ -1,8 +1,12 @@
 <template>
   <v-card>
+    <EquipmentProposalValidationDialog
+      ref="validationDialog"
+      :equipment-proposal="proposal"
+    ></EquipmentProposalValidationDialog>
     <v-data-table :headers="headers" :items="equipmentProposals">
-      <template #item.actions="{ item }">
-        <v-btn icon @click="$emit('edit', item)">
+      <template #[`item.actions`]="{ item }">
+        <v-btn icon @click="open(item)">
           <v-icon>mdi-circle-edit-outline</v-icon>
         </v-btn>
       </template>
@@ -12,8 +16,13 @@
 
 <script lang="ts">
 import Vue from "vue";
+import EquipmentProposalValidationDialog from "./EquipmentProposalValidationDialog.vue";
+
 export default Vue.extend({
   name: "EquipmentProposalTable",
+  components: {
+    EquipmentProposalValidationDialog,
+  },
   data() {
     return {
       headers: [
@@ -36,6 +45,7 @@ export default Vue.extend({
           align: "left",
         },
       ],
+      proposal: {},
     };
   },
   computed: {
@@ -46,6 +56,13 @@ export default Vue.extend({
   async mounted() {
     await this.$accessor.equipmentProposal.getEquipmentProposal();
     console.log(this.equipmentProposals);
+  },
+  methods: {
+    open(item: any) {
+      this.proposal = item;
+      //How do i fix this ? :(
+      (this.$refs.validationDialog as any).openDialog();
+    },
   },
 });
 </script>

@@ -18,6 +18,7 @@
               single-line
               hide-details
               :rules="rules.name"
+              :disabled="!isNewEquipment"
               required
             ></v-text-field>
             <v-select
@@ -41,6 +42,7 @@
 
             <v-switch
               v-model="item.fromPool"
+              :disabled="!isNewEquipment"
               label="Vient du pool des assos ? 🐔"
             ></v-switch>
             <v-select
@@ -123,7 +125,7 @@
 
 <script>
 import _ from "lodash";
-
+import Vue from "vue";
 export default {
   name: "EquipmentProposalDialog",
   props: {
@@ -226,8 +228,23 @@ export default {
       this.item.borrowed.splice(this.item.borrowed.indexOf(item), 1);
     },
     openDialog() {
-      this.item = _.cloneDeep(this.equipment);
-      this.changeProposalForm = !this.changeProposalForm;
+      if (this.isNewEquipment) {
+        this.item = {
+          name: "",
+          amount: "",
+          location: "",
+          type: "",
+          comment: "",
+          referencePicture: "",
+          referenceInvoice: "",
+          borrowed: [],
+        };
+      } else {
+        this.item = _.cloneDeep(this.equipment);
+      }
+      Vue.nextTick(() => {
+        this.changeProposalForm = true;
+      });
     },
     closeDialog() {
       this.changeProposalForm = false;
