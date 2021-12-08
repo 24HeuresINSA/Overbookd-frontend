@@ -13,4 +13,7 @@ export default {
   deleteEquipmentProposal(context: Context, id: string) {
     return context.$axios.delete(`${resource}/${id}`);
   },
+  validateEquipmentProposal(context: Context, id: string) {
+    return context.$axios.put(`${resource}/${id}/validate`);
+  },
 };

@@ -10,22 +10,22 @@ export const state = () => ({
 });
 
 export const mutations = mutationTree(state, {
-  SET_PROPOSALS(state, equipmentProposal: location[]) {
+  SET_PROPOSALS(state, equipmentProposal: any[]) {
     state.equipmentProposals = equipmentProposal;
   },
-  SET_PROPOSAL(state, location: location) {
-    state.equipmentProposals.push(location);
+  SET_PROPOSAL(state, equipmentProposal: any) {
+    state.equipmentProposals.push(equipmentProposal);
   },
-  DELETE_PROPOSAL(state, location: location) {
+  DELETE_PROPOSAL(state, equipmentProposal: any) {
     state.equipmentProposals = state.equipmentProposals.filter(
-      (l) => l._id !== location._id
+      (l) => l._id !== equipmentProposal._id
     );
   },
-  UPDATE_PROPOSAL(state, location: location) {
+  UPDATE_PROPOSAL(state, equipmentProposal: any) {
     const index = state.equipmentProposals.findIndex(
-      (l) => l._id === location._id
+      (l) => l._id === equipmentProposal._id
     );
-    state.equipmentProposals[index] = location;
+    state.equipmentProposals[index] = equipmentProposal;
   },
 });
 
@@ -50,13 +50,25 @@ export const actions = actionTree(
         context.commit("DELETE_PROPOSAL", res.data);
       }
     },
-    async createEquipmentProposal(context, location: location) {
+    async createEquipmentProposal(context, eq: any) {
       const res = await safeCall(
         this,
-        equipmentProposalRepo.createEquipmentProposal(this, location)
+        equipmentProposalRepo.createEquipmentProposal(this, eq)
       );
       if (res && res.data) {
         context.commit("SET_PROPOSAL", res.data);
+      }
+    },
+    async validateEquipmentProposal(context, equipmentProposal: any) {
+      const res = await safeCall(
+        this,
+        equipmentProposalRepo.validateEquipmentProposal(
+          this,
+          equipmentProposal._id
+        )
+      );
+      if (res && res.data) {
+        context.commit("UPDATE_PROPOSAL", res.data);
       }
     },
   }

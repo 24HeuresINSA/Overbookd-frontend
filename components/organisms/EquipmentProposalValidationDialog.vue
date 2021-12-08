@@ -292,6 +292,9 @@ export default Vue.extend({
       this.dialog = false;
     },
     confirm() {
+      this.$accessor.equipmentProposal.validateEquipmentProposal(
+        this.mEquipmentProposal
+      );
       console.log(this.byUser);
     },
   },
