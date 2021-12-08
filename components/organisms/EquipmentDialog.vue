@@ -1,15 +1,13 @@
 <template>
-  <v-dialog
-    v-model="changeProposalForm"
-    max-width="800"
-    persistent
-    scrollable
-    @keydown.escape="closeDialog"
-  >
+  <v-dialog v-model="isFormOpened" max-width="800" persistent scrollable>
     <v-card>
-      <v-card-title> Proposition d'un objet </v-card-title>
+      <v-card-title>Ajouter un nouveau objet</v-card-title>
       <v-card-text>
-        <v-form ref="proposalForm" v-model="proposalValid">
+        <v-btn color="primary" text @click="addEquipment">Sauvegarder</v-btn>
+        <v-btn color="error" text @click="isFormOpened = false">
+          Annuler
+        </v-btn>
+        <v-form ref="form" v-model="valid">
           <v-container>
             <v-text-field
               v-model="item.name"
@@ -75,7 +73,7 @@
           <br />
           <v-divider></v-divider>
           <br />
-          <h4>Ajout de matos emprunté</h4>
+          <h3>Ajout de matos emprunté</h3>
           <v-container style="display: flex; flex-wrap: wrap">
             <v-text-field v-model="newBorrow.from" label="qui"></v-text-field>
             <v-text-field
@@ -92,14 +90,17 @@
             "
           >
             <label>debut</label>
-            <v-date-picker v-model="newBorrow.start"></v-date-picker>
+            <v-date-picker
+              v-model="newBorrow.start"
+              first-day-of-week="1"
+            ></v-date-picker>
             <label>fin</label>
             <v-date-picker v-model="newBorrow.end"></v-date-picker>
           </v-container>
 
           <v-data-table :headers="borrowedHeader" :items="item.borrowed">
             <template #[`item.action`]="{ item }">
-              <v-btn icon small @click="deleteBorrowedProposal(item)">
+              <v-btn icon small @click="deleteBorrowed(item)">
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
             </template>
@@ -112,40 +113,44 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="addEquipmentProposal">
-          Sauvegarder
+        <v-btn color="primary" @click="addEquipment"> Sauvegarder </v-btn>
+        <v-btn color="error" text @click="isFormOpened = false">
+          Annuler
         </v-btn>
-        <v-btn color="error" text @click="closeDialog"> Annuler </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
-<script>
-import _ from "lodash";
+<script lang="ts">
+import Vue from "vue";
+import _, { cloneDeep } from "lodash";
 
-export default {
-  name: "EquipmentProposalDialog",
+export default Vue.extend({
+  name: "EquipmentDialog",
   props: {
-    equipment: Object,
     isNewEquipment: Boolean,
+    equipment: Object,
   },
   data() {
     return {
-      changeProposalForm: false,
-      proposalValid: false,
+      isFormOpened: false,
+
       rules: {
-        name: [(v) => !!v || "Veuillez entrer un nom"],
+        name: [(v: string) => !!v || "Veuillez entrer un nom"],
         amount: [
-          (v) => !!v || "Veuillez entrer une quantité",
-          (v) => v >= 0 || "Veuillez entrer une quantité positive",
+          (v: number) => !!v || "Veuillez entrer une quantité",
+          (v: number) => v >= 0 || "Veuillez entrer une quantité positive",
         ],
-        location: [(v) => !!v || "Veuillez choisir un lieu de stockage"],
-        type: [(v) => !!v || "Veuillez choisir un type"],
+        location: [
+          (v: string) => !!v || "Veuillez choisir un lieu de stockage",
+        ],
+        type: [(v: string) => !!v || "Veuillez choisir un type"],
       },
+      valid: false,
       newBorrow: {
         from: "",
-        amount: "",
+        amount: 0,
         start: "",
         end: "",
       },
@@ -176,8 +181,18 @@ export default {
           value: "action",
         },
       ],
-      borrowedProposal: [],
-      item: _.cloneDeep(this.equipment),
+      item: {
+        name: "",
+        amount: 0,
+        fromPool: false,
+        location: "",
+        preciseLocation: "",
+        comment: "",
+        referencePicture: "",
+        referenceInvoice: "",
+        type: "",
+        borrowed: Array<any>(),
+      },
     };
   },
   computed: {
@@ -187,54 +202,43 @@ export default {
       );
     },
     equipmentForm() {
-      return this.getConfig("equipment_form");
+      return this.$accessor.config.getConfig("equipment_form");
     },
   },
-  mounted() {},
   methods: {
-    getConfig(key) {
-      return this.$accessor.config.getConfig(key);
-    },
-    addEquipmentProposal() {
-      const form = this.$refs.proposalForm;
+    async addEquipment() {
+      const form = this.$refs.form as HTMLFormElement;
       form.validate();
+      if (!this.valid) return;
       if (this.isNewEquipment) {
-        this.item.isNewEquipment = this.isNewEquipment;
+        this.$accessor.equipment.set(this.item);
       } else {
-        this.item.isNewEquipment = this.isNewEquipment;
-        this.item.oldEquipment = this.item._id;
-        delete this.item._id;
+        this.$accessor.equipment.update(this.item);
       }
-      if (!this.proposalValid) return;
-      this.$store.dispatch(
-        "equipmentProposal/createEquipmentProposal",
-        this.item
-      );
-      this.changeProposalForm = false;
+      this.isFormOpened = false;
       form.reset();
     },
     addNewBorrowedItems() {
       this.item.borrowed.push(this.newBorrow);
       this.newBorrow = {
         from: "",
-        amount: "",
+        amount: 0,
         start: "",
         end: "",
       };
     },
-    deleteBorrowedProposal(item) {
+    deleteBorrowedProposal(item: any) {
       this.item.borrowed.splice(this.item.borrowed.indexOf(item), 1);
     },
     openDialog() {
       this.item = _.cloneDeep(this.equipment);
-      this.changeProposalForm = !this.changeProposalForm;
+      this.isFormOpened = true;
     },
-    closeDialog() {
-      this.changeProposalForm = false;
-      this.$refs.proposalForm.reset();
+    getConfig(key: string): any {
+      return this.$accessor.config.getConfig(key);
     },
   },
-};
+});
 </script>
 
 <style></style>
