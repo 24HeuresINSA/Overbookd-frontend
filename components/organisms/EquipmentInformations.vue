@@ -42,6 +42,7 @@
 </template>
 
 <script>
+import _ from "lodash";
 export default {
   name: "EquipmentInformations",
   props: {
@@ -54,11 +55,12 @@ export default {
     return {
       dialog: false,
       title: "Informations sur l'équipement",
-      mEquipment: { ...this.equipment },
+      mEquipment: _.cloneDeep(this.equipment),
     };
   },
   methods: {
     openDialog() {
+      this.mEquipment = _.cloneDeep(this.equipment);
       this.dialog = true;
     },
     closeDialog() {
