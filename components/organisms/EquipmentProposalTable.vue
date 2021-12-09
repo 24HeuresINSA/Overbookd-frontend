@@ -53,10 +53,7 @@ export default Vue.extend({
       return this.$accessor.equipmentProposal.equipmentProposals;
     },
   },
-  async mounted() {
-    await this.$accessor.equipmentProposal.getEquipmentProposal();
-    console.log(this.equipmentProposals);
-  },
+  async mounted() {},
   methods: {
     open(item: any) {
       this.proposal = item;

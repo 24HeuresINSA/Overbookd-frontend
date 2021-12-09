@@ -27,6 +27,11 @@
                 single-line
                 hide-details
               ></v-select>
+              <v-switch
+                v-model="search.fromPool"
+                label="Poule 🐔"
+                hide-details
+              ></v-switch>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
@@ -76,8 +81,15 @@
             </v-card-actions>
           </v-card>
           <br />
-          <v-card>
-            <v-btn @click="openProposalPage()"> open dialog </v-btn>
+          <v-card v-if="hasRole('log')">
+            <v-card-title> Propososition d'équipement </v-card-title>
+            <v-card-subtitle
+              >Nombre de propositions :
+              <b>{{ nbProposals }}</b></v-card-subtitle
+            >
+            <v-card-text>
+              <v-btn @click="openProposalPage()"> Voir les propositions </v-btn>
+            </v-card-text>
           </v-card>
         </v-col>
         <v-col>
@@ -196,7 +208,6 @@
 </template>
 
 <script>
-import OverForm from "../components/overForm";
 import locationAdder from "../components/organisms/locationAdder";
 import { safeCall } from "../utils/api/calls";
 import { RepoFactory } from "../repositories/repoFactory";
@@ -247,6 +258,7 @@ export default {
         location: [],
         locationSigna: [],
         type: "",
+        fromPool: false,
       },
       selectOptions: [],
       newLocation: "",
@@ -284,6 +296,9 @@ export default {
     inventory() {
       return cloneDeep(this.$accessor.equipment.items);
     },
+    nbProposals() {
+      return this.$accessor.equipmentProposal.count;
+    },
   },
 
   async mounted() {
@@ -303,7 +318,6 @@ export default {
     const FAs = await safeCall(this.$store, RepoFactory.faRepo.getAllFAs(this));
 
     const Form = FAs.data.concat(FTs.data);
-
     this.inventory.forEach((item) => {
       item.required = {
         count: 0,
@@ -319,6 +333,7 @@ export default {
         }
       });
     });
+    await this.$accessor.equipmentProposal.getEquipmentProposal();
     this.loading = false;
   },
 

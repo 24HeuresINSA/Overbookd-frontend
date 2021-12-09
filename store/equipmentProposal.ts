@@ -1,4 +1,4 @@
-import { mutationTree, actionTree } from "typed-vuex";
+import { mutationTree, actionTree, getterTree } from "typed-vuex";
 import { RepoFactory } from "~/repositories/repoFactory";
 import { location } from "~/utils/models/repo";
 import { safeCall } from "~/utils/api/calls";
@@ -8,6 +8,8 @@ const equipmentProposalRepo = RepoFactory.equipmentProposalRepo;
 export const state = () => ({
   equipmentProposals: [] as any[],
 });
+
+export type EquipmentProposalState = ReturnType<typeof state>;
 
 export const mutations = mutationTree(state, {
   SET_PROPOSALS(state, equipmentProposal: any[]) {
@@ -68,8 +70,35 @@ export const actions = actionTree(
         )
       );
       if (res && res.data) {
-        context.commit("UPDATE_PROPOSAL", res.data);
+        if (equipmentProposal.isNewEquipment) {
+          (context as any).commit("equipment/SET_EQUIPMENT", res.data, {
+            root: true,
+          });
+        } else {
+          (context as any).commit("equipment/UPDATE_EQUIPMENT", res.data, {
+            root: true,
+          });
+        }
+        context.commit("DELETE_PROPOSAL", equipmentProposal);
+      }
+    },
+    async refuseEquipmentProposal(context, equipmentProposal: any) {
+      const res = await safeCall(
+        this,
+        equipmentProposalRepo.deleteEquipmentProposal(
+          this,
+          equipmentProposal._id
+        )
+      );
+      if (res && res.data) {
+        context.commit("DELETE_PROPOSAL", equipmentProposal);
       }
     },
   }
 );
+
+export const getters = getterTree(state, {
+  count(state: EquipmentProposalState): number {
+    return state.equipmentProposals.length;
+  },
+});

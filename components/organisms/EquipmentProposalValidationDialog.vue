@@ -239,7 +239,7 @@
         <v-btn color="blue darken-1" text @click="dialog = false"
           >Annuler</v-btn
         >
-        <v-btn color="error" @click="dialog = false">Refuser</v-btn>
+        <v-btn color="error" @click="refuse">Refuser</v-btn>
         <v-btn color="primary" @click="confirm">Accpeter</v-btn>
       </v-card-actions>
     </v-card>
@@ -295,7 +295,13 @@ export default Vue.extend({
       this.$accessor.equipmentProposal.validateEquipmentProposal(
         this.mEquipmentProposal
       );
-      console.log(this.byUser);
+      this.closeDialog();
+    },
+    refuse() {
+      this.$accessor.equipmentProposal.refuseEquipmentProposal(
+        this.mEquipmentProposal
+      );
+      this.closeDialog();
     },
   },
 });
