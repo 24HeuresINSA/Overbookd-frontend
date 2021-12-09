@@ -14,19 +14,12 @@
             <v-card-text>
               <v-text-field
                 v-model="search.name"
-                label="Nom de l'objet"
+                label="Nom / type / commentaire"
                 append-icon="mdi-search"
                 single-line
                 hide-details
               ></v-text-field>
-              <v-select
-                v-model="search.type"
-                :items="selectOptions"
-                label="Catégorie/type"
-                append-icon=""
-                single-line
-                hide-details
-              ></v-select>
+
               <v-switch
                 v-model="search.fromPool"
                 label="Poule 🐔"
@@ -218,6 +211,7 @@ import EquipmentInformations from "~/components/organisms/EquipmentInformations.
 import EquipmentProposalDialog from "~/components/organisms/EquipmentProposalDialog.vue";
 import EquipmentProposalDialogPage from "~/components/organisms/EquipmentProposalDialogPage.vue";
 import EquipmentDialog from "~/components/organisms/EquipmentDialog.vue";
+import Fuse from "fuse.js";
 
 export default {
   name: "Inventory",
@@ -273,14 +267,25 @@ export default {
   computed: {
     me: () => this.$store.state.user.me,
     filteredInventory() {
-      return this.inventory.filter((item) => {
-        return (
-          item.name.toLowerCase().includes(this.search.name.toLowerCase()) &&
-          (this.search.location.length === 0 ||
-            this.search.location.includes(item.location)) &&
-          item.type.toLowerCase().includes(this.search.type.toLowerCase())
-        );
+      const fuse = new Fuse(this.inventory, {
+        keys: ["name", "type", "comment"],
+        threshold: 0.3,
       });
+      let res = fuse.search(this.search.name).map((item) => {
+        return item.item;
+      });
+      res = res.length === 0 ? this.inventory : res;
+      if (this.search.location.length > 0) {
+        res = res.filter((i) => {
+          return this.search.location.includes(i.location);
+        });
+      }
+      if (this.search.fromPool) {
+        res = res.filter((i) => {
+          return i.fromPool;
+        });
+      }
+      return res;
     },
     possibleLocations() {
       return this.$accessor.location.locations.filter((e) =>
