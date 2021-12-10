@@ -17,9 +17,9 @@ export const mutations = mutationTree(state, {
     const index = state.items.findIndex((i: any) => i._id === item._id);
     if (index !== -1) {
       state.items[index] = item;
+      state.items = [...state.items];
     }
     //Force update the store
-    state.items = [...state.items];
   },
   DELETE_EQUIPMENT: function (state, item) {
     state.items = state.items.filter((i: any) => i._id !== item._id);
@@ -40,15 +40,17 @@ export const actions = actionTree(
       if (res) {
         commit("SET_ALL_EQUIPMENT", res.data);
       }
+      return res;
     },
     set: async function ({ commit }, equipment) {
       const res = await safeCall(
         this,
         RepoFactory.equipmentRepo.setEquipment(this, equipment)
       );
-      if (res) {
+      if (res && res.data) {
         commit("SET_EQUIPMENT", res.data);
       }
+      return res;
     },
     delete: async function ({ commit }, equipment) {
       equipment.isValid = false;
@@ -56,18 +58,20 @@ export const actions = actionTree(
         this,
         RepoFactory.equipmentRepo.setEquipment(this, equipment)
       );
-      if (res) {
+      if (res && res.data) {
         commit("DELETE_EQUIPMENT", res.data);
       }
+      return res;
     },
     update: async function ({ commit }, equipment) {
       const res = await safeCall(
         this,
         RepoFactory.equipmentRepo.setEquipment(this, equipment)
       );
-      if (res) {
+      if (res && res.data) {
         commit("UPDATE_EQUIPMENT", res.data);
       }
+      return res;
     },
   }
 );

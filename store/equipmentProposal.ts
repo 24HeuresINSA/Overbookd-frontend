@@ -42,15 +42,17 @@ export const actions = actionTree(
       if (res && res.data) {
         context.commit("SET_PROPOSALS", res.data);
       }
+      return res;
     },
     async deleteEquipmentProposal(context, id: string) {
       const res = await safeCall(
         this,
         equipmentProposalRepo.deleteEquipmentProposal(this, id)
       );
-      if (res) {
+      if (res && res.data) {
         context.commit("DELETE_PROPOSAL", res.data);
       }
+      return res;
     },
     async createEquipmentProposal(context, eq: any) {
       const res = await safeCall(
@@ -60,6 +62,7 @@ export const actions = actionTree(
       if (res && res.data) {
         context.commit("SET_PROPOSAL", res.data);
       }
+      return res;
     },
     async validateEquipmentProposal(context, equipmentProposal: any) {
       const res = await safeCall(
@@ -81,6 +84,7 @@ export const actions = actionTree(
         }
         context.commit("DELETE_PROPOSAL", equipmentProposal);
       }
+      return res;
     },
     async refuseEquipmentProposal(context, equipmentProposal: any) {
       const res = await safeCall(
@@ -93,6 +97,7 @@ export const actions = actionTree(
       if (res && res.data) {
         context.commit("DELETE_PROPOSAL", equipmentProposal);
       }
+      return res;
     },
   }
 );

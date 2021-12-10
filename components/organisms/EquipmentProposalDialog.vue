@@ -24,7 +24,7 @@
             <v-select
               v-model="item.type"
               required
-              :items="[...equipmentForm[1].options].sort()"
+              :items="sortedEquipmentTypes"
               label="Catégorie/type"
               append-icon=""
               single-line
@@ -115,7 +115,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="primary" @click="addEquipmentProposal">
-          Sauvegarder
+          Envoyer la proposition
         </v-btn>
         <v-btn color="error" text @click="closeDialog"> Annuler </v-btn>
       </v-card-actions>
@@ -123,7 +123,7 @@
   </v-dialog>
 </template>
 
-<script>
+<script lang="ts">
 import _ from "lodash";
 import Vue from "vue";
 export default {
@@ -137,13 +137,15 @@ export default {
       changeProposalForm: false,
       proposalValid: false,
       rules: {
-        name: [(v) => !!v || "Veuillez entrer un nom"],
+        name: [(v: string) => !!v || "Veuillez entrer un nom"],
         amount: [
-          (v) => !!v || "Veuillez entrer une quantité",
-          (v) => v >= 0 || "Veuillez entrer une quantité positive",
+          (v: number) => !!v || "Veuillez entrer une quantité",
+          (v: number) => v >= 0 || "Veuillez entrer une quantité positive",
         ],
-        location: [(v) => !!v || "Veuillez choisir un lieu de stockage"],
-        type: [(v) => !!v || "Veuillez choisir un type"],
+        location: [
+          (v: string) => !!v || "Veuillez choisir un lieu de stockage",
+        ],
+        type: [(v: string) => !!v || "Veuillez choisir un type"],
       },
       newBorrow: {
         from: "",
@@ -183,21 +185,23 @@ export default {
     };
   },
   computed: {
-    possibleLocations() {
+    possibleLocations(): any {
       return this.$accessor.location.locations.filter((e) =>
         e.neededBy.includes("INVENTAIRE")
       );
     },
-    equipmentForm() {
-      return this.getConfig("equipment_form");
+    sortedEquipmentTypes(): any {
+      return [
+        ...this.$accessor.config.getConfig("equipment_form")[1].options,
+      ].sort();
     },
   },
   methods: {
-    getConfig(key) {
+    getConfig(key: string) {
       return this.$accessor.config.getConfig(key);
     },
     addEquipmentProposal() {
-      const form = this.$refs.proposalForm;
+      const form = this.$refs.proposalForm as HTMLFormElement;
       form.validate();
       if (!this.proposalValid) return;
 
@@ -209,10 +213,7 @@ export default {
         delete this.item._id;
       }
       this.item.byUser = this.$accessor.user.me._id;
-      this.$store.dispatch(
-        "equipmentProposal/createEquipmentProposal",
-        this.item
-      );
+      this.$accessor.equipmentProposal.createEquipmentProposal(this.item);
       this.changeProposalForm = false;
       form.reset();
     },
@@ -225,7 +226,7 @@ export default {
         end: "",
       };
     },
-    deleteBorrowedProposal(item) {
+    deleteBorrowedProposal(item: any) {
       this.item.borrowed.splice(this.item.borrowed.indexOf(item), 1);
     },
     openDialog() {
@@ -249,7 +250,7 @@ export default {
     },
     closeDialog() {
       this.changeProposalForm = false;
-      this.$refs.proposalForm.reset();
+      (this.$refs.proposalForm as HTMLFormElement).reset();
     },
   },
 };

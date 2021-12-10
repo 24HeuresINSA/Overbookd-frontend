@@ -4,7 +4,7 @@
       v-model="dialog"
       persistent
       max-width="80%"
-      @keydown.esc="dialog = dialog"
+      @keydown.esc="dialog = false"
     >
       <v-card>
         <v-card-title>
@@ -15,7 +15,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="error" @click="closeDialog()">Annuler</v-btn>
+          <v-btn color="error" @click="closeDialog">Annuler</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

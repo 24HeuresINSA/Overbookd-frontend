@@ -102,7 +102,7 @@
                     <v-icon small>mdi-help-circle</v-icon>
                   </v-btn>
                 </template>
-                Afficher les informations de l'objet44
+                Afficher les informations de l'objet
               </v-tooltip>
               <v-tooltip bottom>
                 <template #activator="{ on }">
@@ -159,14 +159,14 @@
       v-if="hasRole(allowedTeams)"
       fab
       style="right: 20px; bottom: 45px; position: fixed"
-      @click="newEquip()"
+      @click="newEquip"
     >
       <v-icon> mdi-plus </v-icon>
     </v-btn>
     <v-btn
       fab
       style="right: 80px; bottom: 45px; position: fixed"
-      @click="newProposal()"
+      @click="newProposal"
     >
       <v-icon>mdi-clipboard-edit-outline</v-icon>
     </v-btn>
@@ -359,13 +359,6 @@ export default {
       return this.$accessor.config.getConfig(key);
     },
 
-    onFormChange(form) {
-      console.log(form);
-      // because it doesn't work ...
-      form.isValid = true;
-      Object.assign(this.selectedItem, form);
-    },
-
     openDialog() {
       this.selectedItem = {};
       this.isFormOpened = true;
@@ -396,7 +389,6 @@ export default {
     },
     async itemChangeProposal(item) {
       this.selectedItem = item;
-      console.log(this.selectedItem);
       this.isNewEquipment = false;
       await Vue.nextTick();
       this.$refs.propDialog.openDialog();
@@ -458,7 +450,6 @@ export default {
         isEqual(e, item)
       );
       this.selectedItem.borrowed.splice(index, 1);
-      //await this.$axios.put("/equipment", this.selectedItem);
     },
   },
 };

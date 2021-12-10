@@ -1,12 +1,14 @@
 <template>
-  <v-dialog v-model="isFormOpened" max-width="800" persistent scrollable>
+  <v-dialog
+    v-model="isFormOpened"
+    max-width="800"
+    persistent
+    scrollable
+    @keydown.esc="closeDialog"
+  >
     <v-card>
       <v-card-title>Ajouter un nouvel objet</v-card-title>
       <v-card-text>
-        <v-btn color="primary" text @click="addEquipment">Sauvegarder</v-btn>
-        <v-btn color="error" text @click="isFormOpened = false">
-          Annuler
-        </v-btn>
         <v-form ref="form" v-model="valid">
           <v-container>
             <v-text-field
@@ -21,7 +23,7 @@
             <v-select
               v-model="item.type"
               required
-              :items="[...equipmentForm[1].options].sort()"
+              :items="sortedEquipmentTypes"
               label="Catégorie/type"
               append-icon=""
               single-line
@@ -114,9 +116,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="primary" @click="addEquipment"> Sauvegarder </v-btn>
-        <v-btn color="error" text @click="isFormOpened = false">
-          Annuler
-        </v-btn>
+        <v-btn color="error" text @click="closeDialog"> Annuler </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -129,8 +129,8 @@ import _, { cloneDeep } from "lodash";
 export default Vue.extend({
   name: "EquipmentDialog",
   props: {
-    isNewEquipment: Boolean,
-    equipment: Object,
+    isNewEquipment: { type: Boolean, required: true },
+    equipment: { type: Object, required: true },
   },
   data() {
     return {
@@ -161,7 +161,7 @@ export default Vue.extend({
           value: "from",
         },
         {
-          text: "quantite",
+          text: "quantité",
           align: "left",
           value: "amount",
         },
@@ -201,8 +201,10 @@ export default Vue.extend({
         e.neededBy.includes("INVENTAIRE")
       );
     },
-    equipmentForm() {
-      return this.$accessor.config.getConfig("equipment_form");
+    sortedEquipmentTypes() {
+      return [
+        ...this.$accessor.config.getConfig("equipment_form")[1].options,
+      ].sort();
     },
   },
   methods: {
@@ -233,6 +235,10 @@ export default Vue.extend({
     openDialog() {
       this.item = _.cloneDeep(this.equipment);
       this.isFormOpened = true;
+    },
+    closeDialog() {
+      (this.$refs.form as HTMLFormElement).reset();
+      this.isFormOpened = false;
     },
     getConfig(key: string): any {
       return this.$accessor.config.getConfig(key);

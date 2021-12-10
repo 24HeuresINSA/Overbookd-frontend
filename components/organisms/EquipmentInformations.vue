@@ -41,8 +41,8 @@
   </v-dialog>
 </template>
 
-<script>
-import _ from "lodash";
+<script lang="ts">
+import cloneDeep from "lodash/cloneDeep";
 export default {
   name: "EquipmentInformations",
   props: {
@@ -55,12 +55,12 @@ export default {
     return {
       dialog: false,
       title: "Informations sur l'équipement",
-      mEquipment: _.cloneDeep(this.equipment),
+      mEquipment: cloneDeep(this.equipment),
     };
   },
   methods: {
     openDialog() {
-      this.mEquipment = _.cloneDeep(this.equipment);
+      this.mEquipment = cloneDeep(this.equipment);
       this.dialog = true;
     },
     closeDialog() {
