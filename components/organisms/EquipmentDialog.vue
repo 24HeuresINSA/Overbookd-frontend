@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="isFormOpened" max-width="800" persistent scrollable>
     <v-card>
-      <v-card-title>Ajouter un nouveau objet</v-card-title>
+      <v-card-title>Ajouter un nouvel objet</v-card-title>
       <v-card-text>
         <v-btn color="primary" text @click="addEquipment">Sauvegarder</v-btn>
         <v-btn color="error" text @click="isFormOpened = false">
