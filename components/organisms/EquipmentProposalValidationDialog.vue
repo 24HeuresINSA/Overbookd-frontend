@@ -261,12 +261,14 @@
 import Vue from "vue";
 import _ from "lodash";
 import { Snack } from "~/utils/models/snack";
+import { Equipment, EquipmentProposal } from "~/utils/models/Equipment";
+import { User } from "~/utils/models/repo";
 
 export default Vue.extend({
   name: "EquipmentProposalValidationDialog",
   props: {
     equipmentProposal: {
-      type: Object,
+      type: Object as () => EquipmentProposal,
       required: true,
     },
   },
@@ -278,7 +280,7 @@ export default Vue.extend({
     };
   },
   computed: {
-    oldEquipment(): any {
+    oldEquipment(): Equipment | undefined {
       if (!this.mEquipmentProposal.isNewEquipment) {
         return this.$accessor.equipment.items.find(
           (item: any) => item._id === this.equipmentProposal.oldEquipment
@@ -287,15 +289,16 @@ export default Vue.extend({
         return undefined;
       }
     },
-    mEquipmentProposal(): any {
+    mEquipmentProposal(): EquipmentProposal {
       return _.cloneDeep(this.equipmentProposal);
     },
-    byUser(): any {
+    byUser(): User {
       return this.$accessor.user.mUser;
     },
   },
   methods: {
-    openDialog() {
+    async openDialog() {
+      await Vue.nextTick();
       this.$accessor.user.findUserById(this.equipmentProposal.byUser);
       this.dialog = true;
     },

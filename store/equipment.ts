@@ -1,27 +1,24 @@
 import { actionTree, mutationTree } from "typed-vuex";
 import { safeCall } from "~/utils/api/calls";
 import { RepoFactory } from "~/repositories/repoFactory";
+import { Equipment } from "~/utils/models/Equipment";
 
 export const state = () => ({
-  items: [] as any,
+  items: [] as Equipment[],
 });
 
 export const mutations = mutationTree(state, {
-  SET_ALL_EQUIPMENT: function (state, items) {
+  SET_ALL_EQUIPMENT: function (state, items: Equipment[]) {
     state.items = items;
   },
-  SET_EQUIPMENT: function (state, item) {
+  SET_EQUIPMENT: function (state, item: Equipment) {
     state.items.push(item);
   },
-  UPDATE_EQUIPMENT: function (state, item) {
+  UPDATE_EQUIPMENT: function (state, item: Equipment) {
     const index = state.items.findIndex((i: any) => i._id === item._id);
-    if (index !== -1) {
-      state.items[index] = item;
-      state.items = [...state.items];
-    }
-    //Force update the store
+    state.items.splice(index, 1, item);
   },
-  DELETE_EQUIPMENT: function (state, item) {
+  DELETE_EQUIPMENT: function (state, item: Equipment) {
     state.items = state.items.filter((i: any) => i._id !== item._id);
   },
 });
@@ -42,7 +39,7 @@ export const actions = actionTree(
       }
       return res;
     },
-    set: async function ({ commit }, equipment) {
+    set: async function ({ commit }, equipment: Equipment) {
       const res = await safeCall(
         this,
         RepoFactory.equipmentRepo.setEquipment(this, equipment)
@@ -52,7 +49,7 @@ export const actions = actionTree(
       }
       return res;
     },
-    delete: async function ({ commit }, equipment) {
+    delete: async function ({ commit }, equipment: Equipment) {
       equipment.isValid = false;
       const res = await safeCall(
         this,
@@ -63,7 +60,7 @@ export const actions = actionTree(
       }
       return res;
     },
-    update: async function ({ commit }, equipment) {
+    update: async function ({ commit }, equipment: Equipment) {
       const res = await safeCall(
         this,
         RepoFactory.equipmentRepo.setEquipment(this, equipment)

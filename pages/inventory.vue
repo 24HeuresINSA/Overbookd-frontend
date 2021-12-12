@@ -200,8 +200,8 @@
   </div>
 </template>
 
-<script>
-import locationAdder from "../components/organisms/locationAdder";
+<script lang="ts">
+import locationAdder from "../components/organisms/locationAdder.vue";
 import { safeCall } from "../utils/api/calls";
 import { RepoFactory } from "../repositories/repoFactory";
 import { cloneDeep, isEqual } from "lodash";
@@ -212,7 +212,8 @@ import EquipmentProposalDialog from "~/components/organisms/EquipmentProposalDia
 import EquipmentProposalDialogPage from "~/components/organisms/EquipmentProposalDialogPage.vue";
 import EquipmentDialog from "~/components/organisms/EquipmentDialog.vue";
 import Fuse from "fuse.js";
-
+import { User, location } from "~/utils/models/repo";
+import { Equipment } from "~/utils/models/Equipment";
 export default {
   name: "Inventory",
   components: {
@@ -242,19 +243,19 @@ export default {
         { text: "fin", value: "end" },
         { text: "action", value: "action" },
       ],
-      borrowed: [],
+      borrowed: Array<any>(),
       isFormOpened: false,
       changeProposalForm: false,
       allowedTeams: ["log"],
-      selectedItem: {},
+      selectedItem: {} as Equipment,
       search: {
         name: "",
-        location: [],
-        locationSigna: [],
+        location: "",
+        locationSigna: "",
         type: "",
         fromPool: false,
       },
-      selectOptions: [],
+      selectOptions: Array<string>(),
       newLocation: "",
       isPreciseLocDialog: false,
       valid: false,
@@ -265,8 +266,10 @@ export default {
   },
 
   computed: {
-    me: () => this.$store.state.user.me,
-    filteredInventory() {
+    me(): User {
+      return this.$store.state.user.me;
+    },
+    filteredInventory(): Equipment[] {
       const fuse = new Fuse(this.inventory, {
         keys: ["name", "type", "comment"],
         threshold: 0.3,
@@ -276,7 +279,7 @@ export default {
       });
       res = res.length === 0 ? this.inventory : res;
       if (this.search.location.length > 0) {
-        res = res.filter((i) => {
+        res = res.filter((i: any) => {
           return this.search.location.includes(i.location);
         });
       }
@@ -287,21 +290,21 @@ export default {
       }
       return res;
     },
-    possibleLocations() {
+    possibleLocations(): location[] {
       return this.$accessor.location.locations.filter((e) =>
         e.neededBy.includes("INVENTAIRE")
       );
     },
-    signaLocations() {
+    signaLocations(): location[] {
       return this.$accessor.location.signa;
     },
-    equipmentForm() {
+    equipmentForm(): any {
       return this.getConfig("equipment_form");
     },
-    inventory() {
+    inventory(): Equipment[] {
       return cloneDeep(this.$accessor.equipment.items);
     },
-    nbProposals() {
+    nbProposals(): number {
       return this.$accessor.equipmentProposal.count;
     },
   },
@@ -314,26 +317,31 @@ export default {
       // todo display snackbar notif
       console.log("Error, could not fetch the DB");
     }
-    this.allowedTeams = (await this.getConfig(this, "isInventoryOpen"))
+    this.allowedTeams = (await this.getConfig("isInventoryOpen"))
       ? ["log", "hard"]
       : ["log"];
     this.selectOptions = this.equipmentForm[1].options;
     await this.$accessor.equipment.fetchAll();
     const FTs = await safeCall(this.$store, RepoFactory.ftRepo.getAllFTs(this));
     const FAs = await safeCall(this.$store, RepoFactory.faRepo.getAllFAs(this));
-
-    const Form = FAs.data.concat(FTs.data);
+    if (!res) {
+      // todo display snackbar notif
+      console.log("Error, could not fetch the DB");
+    }
+    const Form = FAs!.data.concat(FTs!.data);
     this.inventory.forEach((item) => {
       item.required = {
         count: 0,
-        form: [],
+        form: Array<any>(),
       };
-      Form.forEach((form) => {
+      Form.forEach((form: any) => {
         if (form.equipments && form.isValid !== false) {
-          const mEquipment = form.equipments.find((e) => e._id === item._id);
+          const mEquipment = form.equipments.find(
+            (e: any) => e._id === item._id
+          );
           if (mEquipment) {
-            item.required.count += mEquipment.required;
-            item.required.form.push(form);
+            item.required!.count += mEquipment.required;
+            item.required!.form.push(form);
           }
         }
       });
@@ -343,7 +351,7 @@ export default {
   },
 
   methods: {
-    rowClass(item) {
+    rowClass(item: Equipment) {
       if (item.required) {
         let isNegatif =
           item.required.count > +this.getBorrowedCount(item) + +item.amount;
@@ -351,23 +359,30 @@ export default {
       }
     },
 
-    hasRole(role) {
+    hasRole(role: string | string[]) {
       return this.$accessor.user.hasRole(role);
     },
 
-    getConfig(key) {
+    getConfig(key: string) {
       return this.$accessor.config.getConfig(key);
     },
 
     openDialog() {
-      this.selectedItem = {};
+      this.selectedItem = {
+        name: "",
+        type: "",
+        comment: "",
+        location: "",
+        fromPool: false,
+        amount: 0,
+      };
       this.isFormOpened = true;
     },
 
     openProposalPage() {
-      this.$refs.equipPropPage.openDialog();
+      (this.$refs.equipPropPage as any).openDialog();
     },
-    getBorrowedCount(item) {
+    getBorrowedCount(item: Equipment) {
       let count = 0;
       if (item && item.borrowed) {
         if (item.borrowed.length) {
@@ -381,33 +396,47 @@ export default {
       return count;
     },
 
-    edit(item) {
+    edit(item: Equipment) {
       this.selectedItem = item;
       Vue.nextTick(() => {
-        this.$refs.equipDialog.openDialog();
+        (this.$refs.equipDialog as any).openDialog();
       });
     },
-    async itemChangeProposal(item) {
+    async itemChangeProposal(item: Equipment) {
       this.selectedItem = item;
       this.isNewEquipment = false;
       await Vue.nextTick();
-      this.$refs.propDialog.openDialog();
+      (this.$refs.propDialog as any).openDialog();
     },
     newEquip() {
-      this.selectedItem = {};
+      this.selectedItem = {
+        name: "",
+        type: "",
+        comment: "",
+        location: "",
+        fromPool: false,
+        amount: 0,
+      };
       this.isNewEquipment = true;
       Vue.nextTick(() => {
-        this.$refs.equipDialog.openDialog();
+        (this.$refs.equipDialog as any).openDialog();
       });
     },
     newProposal() {
-      this.selectedItem = {};
+      this.selectedItem = {
+        name: "",
+        type: "",
+        comment: "",
+        location: "",
+        fromPool: false,
+        amount: 0,
+      };
       this.isNewEquipment = true;
       Vue.nextTick(() => {
-        this.$refs.propDialog.openDialog();
+        (this.$refs.propDialog as any).openDialog();
       });
     },
-    async deleteItem(item) {
+    async deleteItem(item: Equipment) {
       if (item.required && item.required.count > 0) {
         //TODO: Create this snackbar/toast for global use
         this.$store.commit("setSnackbar", {
@@ -422,17 +451,21 @@ export default {
       this.search = {
         name: "",
         location: "",
+        locationSigna: "",
         type: "",
+        fromPool: false,
       };
     },
     async tryDeleteLocation() {
-      const index = this.equipmentForm.findIndex((e) => e.key === "location");
+      const index = this.equipmentForm.findIndex(
+        (e: any) => e.key === "location"
+      );
       //TODO add a notification to know why you can't delete
       if (this.inventory.some((e) => this.search.location.includes(e.location)))
         return;
       const newEquipmentForm = cloneDeep(this.equipmentForm);
       newEquipmentForm[index].options = newEquipmentForm[index].options.filter(
-        (e) => !this.search.location.includes(e)
+        (e: string) => !this.search.location.includes(e)
       );
       this.$store.dispatch("config/setConfig", {
         key: "equipment_form",
@@ -440,13 +473,14 @@ export default {
       });
       this.$forceUpdate();
     },
-    async showItemInfos(item) {
+    async showItemInfos(item: Equipment) {
       this.selectedItem = item;
       await Vue.nextTick();
-      this.$refs.equipmentInformationsDialog.openDialog();
+      (this.$refs.equipmentInformationsDialog as any).openDialog();
     },
-    async deleteBorrowed(item) {
-      const index = this.selectedItem.borrowed.findIndex((e) =>
+    async deleteBorrowed(item: Equipment) {
+      if (!this.selectedItem.borrowed) return;
+      const index = this.selectedItem.borrowed.findIndex((e: any) =>
         isEqual(e, item)
       );
       this.selectedItem.borrowed.splice(index, 1);
