@@ -1,28 +1,31 @@
 import { mutationTree, actionTree, getterTree } from "typed-vuex";
 import { RepoFactory } from "~/repositories/repoFactory";
 import { safeCall } from "~/utils/api/calls";
+import { EquipmentProposal } from "~/utils/models/Equipment";
 
 const equipmentProposalRepo = RepoFactory.equipmentProposalRepo;
 
-export const state = () => ({
-  equipmentProposals: [] as any[],
+declare interface EquipmentProposalState {
+  equipmentProposals: EquipmentProposal[];
+}
+
+export const state = (): EquipmentProposalState => ({
+  equipmentProposals: [],
 });
 
-export type EquipmentProposalState = ReturnType<typeof state>;
-
 export const mutations = mutationTree(state, {
-  SET_PROPOSALS(state, equipmentProposal: any[]) {
+  SET_PROPOSALS(state, equipmentProposal: EquipmentProposal[]) {
     state.equipmentProposals = equipmentProposal;
   },
-  SET_PROPOSAL(state, equipmentProposal: any) {
+  SET_PROPOSAL(state, equipmentProposal: EquipmentProposal) {
     state.equipmentProposals.push(equipmentProposal);
   },
-  DELETE_PROPOSAL(state, equipmentProposal: any) {
+  DELETE_PROPOSAL(state, equipmentProposal: EquipmentProposal) {
     state.equipmentProposals = state.equipmentProposals.filter(
       (l) => l._id !== equipmentProposal._id
     );
   },
-  UPDATE_PROPOSAL(state, equipmentProposal: any) {
+  UPDATE_PROPOSAL(state, equipmentProposal: EquipmentProposal) {
     const index = state.equipmentProposals.findIndex(
       (l) => l._id === equipmentProposal._id
     );
@@ -53,7 +56,7 @@ export const actions = actionTree(
       }
       return res;
     },
-    async createEquipmentProposal(context, eq: any) {
+    async createEquipmentProposal(context, eq: EquipmentProposal) {
       const res = await safeCall(
         this,
         equipmentProposalRepo.createEquipmentProposal(this, eq)
@@ -63,12 +66,15 @@ export const actions = actionTree(
       }
       return res;
     },
-    async validateEquipmentProposal(context, equipmentProposal: any) {
+    async validateEquipmentProposal(
+      context,
+      equipmentProposal: EquipmentProposal
+    ) {
       const res = await safeCall(
         this,
         equipmentProposalRepo.validateEquipmentProposal(
           this,
-          equipmentProposal._id
+          equipmentProposal._id!
         )
       );
       if (res && res.data) {
@@ -85,12 +91,15 @@ export const actions = actionTree(
       }
       return res;
     },
-    async refuseEquipmentProposal(context, equipmentProposal: any) {
+    async refuseEquipmentProposal(
+      context,
+      equipmentProposal: EquipmentProposal
+    ) {
       const res = await safeCall(
         this,
         equipmentProposalRepo.deleteEquipmentProposal(
           this,
-          equipmentProposal._id
+          equipmentProposal._id!
         )
       );
       if (res && res.data) {
