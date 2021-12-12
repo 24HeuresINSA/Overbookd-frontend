@@ -1,130 +1,136 @@
 <template>
-  <v-dialog
-    v-model="isFormOpened"
-    max-width="800"
-    persistent
-    scrollable
-    @keydown.esc="closeDialog"
-  >
-    <v-card>
-      <v-card-title>Ajouter un nouvel objet</v-card-title>
-      <v-card-text>
-        <v-form ref="form" v-model="valid">
-          <v-container>
-            <v-text-field
-              v-model="item.name"
-              label="Nom de l'objet"
-              append-icon="mdi-search"
-              single-line
-              hide-details
-              :rules="rules.name"
-              required
-            ></v-text-field>
-            <v-select
-              v-model="item.type"
-              required
-              :items="sortedEquipmentTypes"
-              label="Catégorie/type"
-              append-icon=""
-              single-line
-              :rules="rules.type"
-            ></v-select>
-            <v-text-field
-              v-model="item.amount"
-              label="Quantité"
-              append-icon="mdi-search"
-              single-line
-              required
-              type="number"
-              :rules="rules.amount"
-            ></v-text-field>
+  <div>
+    <v-dialog
+      v-model="isFormOpened"
+      max-width="800"
+      persistent
+      scrollable
+      @keydown.esc="closeDialog"
+    >
+      <v-card>
+        <v-card-title>Ajouter un nouvel objet</v-card-title>
+        <v-card-text>
+          <v-form ref="form" v-model="valid">
+            <v-container>
+              <v-text-field
+                v-model="item.name"
+                label="Nom de l'objet"
+                append-icon="mdi-search"
+                single-line
+                hide-details
+                :rules="rules.name"
+                required
+              ></v-text-field>
+              <v-select
+                v-model="item.type"
+                required
+                :items="sortedEquipmentTypes"
+                label="Catégorie/type"
+                append-icon=""
+                single-line
+                :rules="rules.type"
+              ></v-select>
+              <v-text-field
+                v-model="item.amount"
+                label="Quantité"
+                append-icon="mdi-search"
+                single-line
+                required
+                type="number"
+                :rules="rules.amount"
+              ></v-text-field>
 
-            <v-switch
-              v-model="item.fromPool"
-              label="Vient du pool des assos ? 🐔"
-            ></v-switch>
-            <v-select
-              v-model="item.location"
-              :items="possibleLocations"
-              label="Lieux de l'objet"
-              item-text="name"
-              :rules="rules.location"
-              single-line
-            ></v-select>
-            <v-text-field
-              v-model="item.preciseLocation"
-              label="Espace de stockage exact"
-              single-line
-            ></v-text-field>
-            <v-text-field
-              v-model="item.comment"
-              label="Commentaire"
-              single-line
-            ></v-text-field>
-            <v-text-field
-              v-model="item.referencePicture"
-              label="Référence photo 📷"
-              single-line
-            ></v-text-field>
-            <v-text-field
-              v-model="item.referenceInvoice"
-              label="Référence facture 📃"
-              single-line
-            ></v-text-field>
-          </v-container>
-          <br />
-          <v-divider></v-divider>
-          <br />
-          <h3>Ajout de matos emprunté</h3>
-          <v-container style="display: flex; flex-wrap: wrap">
-            <v-text-field v-model="newBorrow.from" label="qui"></v-text-field>
-            <v-text-field
-              v-model="newBorrow.amount"
-              type="number"
-              label="quantite"
-            ></v-text-field>
-          </v-container>
-          <v-container
-            style="
-              display: flex;
-              justify-content: space-around;
-              align-content: baseline;
-            "
-          >
-            <label>debut</label>
-            <v-date-picker
-              v-model="newBorrow.start"
-              first-day-of-week="1"
-            ></v-date-picker>
-            <label>fin</label>
-            <v-date-picker v-model="newBorrow.end"></v-date-picker>
-          </v-container>
+              <v-switch
+                v-model="item.fromPool"
+                label="Vient du pool des assos ? 🐔"
+              ></v-switch>
+              <v-select
+                v-model="item.location"
+                :items="possibleLocations"
+                label="Lieux de l'objet"
+                item-text="name"
+                :rules="rules.location"
+                single-line
+              ></v-select>
+              <v-text-field
+                v-model="item.preciseLocation"
+                label="Espace de stockage exact"
+                single-line
+              ></v-text-field>
+              <v-text-field
+                v-model="item.comment"
+                label="Commentaire"
+                single-line
+              ></v-text-field>
+              <v-text-field
+                v-model="item.referencePicture"
+                label="Référence photo 📷"
+                single-line
+              ></v-text-field>
+              <v-text-field
+                v-model="item.referenceInvoice"
+                label="Référence facture 📃"
+                single-line
+              ></v-text-field>
+            </v-container>
+            <br />
+            <v-divider></v-divider>
+            <br />
+            <h3>Ajout de matos emprunté</h3>
+            <v-container style="display: flex; flex-wrap: wrap">
+              <v-text-field v-model="newBorrow.from" label="qui"></v-text-field>
+              <v-text-field
+                v-model="newBorrow.amount"
+                type="number"
+                label="quantite"
+              ></v-text-field>
+            </v-container>
+            <v-container
+              style="
+                display: flex;
+                justify-content: space-around;
+                align-content: baseline;
+              "
+            >
+              <label>debut</label>
+              <v-date-picker
+                v-model="newBorrow.start"
+                first-day-of-week="1"
+              ></v-date-picker>
+              <label>fin</label>
+              <v-date-picker v-model="newBorrow.end"></v-date-picker>
+            </v-container>
 
-          <v-data-table :headers="borrowedHeader" :items="item.borrowed">
-            <template #[`item.action`]="{ item }">
-              <v-btn icon small @click="deleteBorrowed(item)">
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
-            </template>
-          </v-data-table>
+            <v-data-table :headers="borrowedHeader" :items="item.borrowed">
+              <template #[`item.action`]="{ item }">
+                <v-btn icon small @click="deleteBorrowed(item)">
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </template>
+            </v-data-table>
 
-          <v-btn fab @click="addNewBorrowedItems"
-            ><v-icon>mdi-plus</v-icon></v-btn
-          >
-        </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="primary" @click="addEquipment"> Sauvegarder </v-btn>
-        <v-btn color="error" text @click="closeDialog"> Annuler </v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+            <v-btn fab @click="addNewBorrowedItems"
+              ><v-icon>mdi-plus</v-icon></v-btn
+            >
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" @click="addEquipment"> Sauvegarder </v-btn>
+          <v-btn color="error" text @click="closeDialog"> Annuler </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-snackbar v-model="snack.active" :timeout="snack.timeout">
+      {{ snack.feedbackMessage }}
+    </v-snackbar>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import _, { cloneDeep } from "lodash";
+import _ from "lodash";
+import { Snack } from "~/utils/models/snack";
 
 export default Vue.extend({
   name: "EquipmentDialog",
@@ -193,6 +199,7 @@ export default Vue.extend({
         type: "",
         borrowed: Array<any>(),
       },
+      snack: new Snack(),
     };
   },
   computed: {
@@ -213,9 +220,19 @@ export default Vue.extend({
       form.validate();
       if (!this.valid) return;
       if (this.isNewEquipment) {
-        this.$accessor.equipment.set(this.item);
+        const res = await this.$accessor.equipment.set(this.item);
+        if (res) {
+          this.snack.display("Ajout réussi");
+        } else {
+          this.snack.display("Erreur lors de l'ajout");
+        }
       } else {
-        this.$accessor.equipment.update(this.item);
+        const res = await this.$accessor.equipment.update(this.item);
+        if (res) {
+          this.snack.display("Mise à jour réussie");
+        } else {
+          this.snack.display("Erreur lors de la mise à jour");
+        }
       }
       this.isFormOpened = false;
       form.reset();
