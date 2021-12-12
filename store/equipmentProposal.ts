@@ -1,6 +1,5 @@
 import { mutationTree, actionTree, getterTree } from "typed-vuex";
 import { RepoFactory } from "~/repositories/repoFactory";
-import { location } from "~/utils/models/repo";
 import { safeCall } from "~/utils/api/calls";
 
 const equipmentProposalRepo = RepoFactory.equipmentProposalRepo;
