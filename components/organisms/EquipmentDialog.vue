@@ -238,7 +238,8 @@ export default Vue.extend({
       form.reset();
     },
     addNewBorrowedItems() {
-      this.item.borrowed.push(this.newBorrow);
+      if (this.item.borrowed) this.item.borrowed.push(this.newBorrow);
+      else this.item.borrowed = [this.newBorrow];
       this.newBorrow = {
         from: "",
         amount: 0,
