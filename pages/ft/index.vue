@@ -1,28 +1,58 @@
 <template>
   <div>
     <h1>Fiche Tache 👻</h1>
-    <v-data-table :headers="headers" :items="FTs">
-      <template #[`item.status`]="row">
-        <v-avatar size="25" :color="color[row.item.status]">
-          {{ row.item.count }}
-        </v-avatar>
-      </template>
-      <template #[`item.action`]="row">
-        <v-btn style="margin: 5px" icon small :to="'/ft/' + row.item.count">
-          <v-icon small>mdi-link</v-icon>
-        </v-btn>
-        <v-btn
-          icon
-          small
-          @click="
-            mFT = row.item;
-            isDialogOpen = true;
-          "
-        >
-          <v-icon small>mdi-delete</v-icon>
-        </v-btn>
-      </template>
-    </v-data-table>
+
+    <v-container>
+      <v-row>
+        <v-col md="2">
+          <v-card>
+            <v-card-title>Filtres</v-card-title>
+            <v-card-text>
+              <v-text-field
+                v-model="filters.search"
+                label="recherche"
+              ></v-text-field>
+              <v-select
+                v-model="filters.teams"
+                label="Équipe"
+                :items="getConfig('teams').map((e) => e.name)"
+                clearable
+                dense
+              ></v-select>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col md="10">
+          <v-data-table :headers="headers" :items="FTs">
+            <template #[`item.status`]="row">
+              <v-avatar size="25" :color="color[row.item.status]">
+                {{ row.item.count }}
+              </v-avatar>
+            </template>
+            <template #[`item.action`]="row">
+              <v-btn
+                style="margin: 5px"
+                icon
+                small
+                :href="'/ft/' + row.item.count"
+              >
+                <v-icon small>mdi-link</v-icon>
+              </v-btn>
+              <v-btn
+                icon
+                small
+                @click="
+                  mFT = row.item;
+                  isDialogOpen = true;
+                "
+              >
+                <v-icon small>mdi-delete</v-icon>
+              </v-btn>
+            </template>
+          </v-data-table>
+        </v-col>
+      </v-row>
+    </v-container>
 
     <v-btn
       color="secondary"
@@ -46,23 +76,39 @@
   </div>
 </template>
 
-<script>
-const { hasRole } = require("../../common/role");
-import { safeCall } from "../../utils/api/calls";
+<script lang="ts">
+import { safeCall } from "~/utils/api/calls";
 import ftRepo from "../../repositories/ftRepo";
+import { Header } from "~/utils/models/Data";
+import Vue from "vue";
+import { FT } from "~/utils/models/FT";
 
-export default {
+interface Data {
+  color: { [key: string]: string };
+  headers: Header[];
+  FTs: any[];
+  mFT: any;
+  isDialogOpen: boolean;
+
+  filters: {
+    search: string;
+    teams: string;
+  };
+}
+
+const color = {
+  undefined: "grey",
+  draft: "grey",
+  submitted: "orange",
+  validated: "green",
+  refused: "red",
+};
+
+export default Vue.extend({
   name: "Index",
-  data() {
+  data(): Data {
     return {
-      color: {
-        undefined: "grey",
-        draft: "grey",
-        submitted: "orange",
-        validated: "green",
-        refused: "red",
-      },
-
+      color,
       headers: [
         {
           text: "Status",
@@ -81,19 +127,22 @@ export default {
           value: "action",
         },
       ],
-
       FTs: [],
-
+      filters: {
+        search: "",
+        teams: "",
+      },
       mFT: undefined,
       isDialogOpen: false,
     };
   },
 
   async mounted() {
-    if (hasRole(this, "hard")) {
-      this.FTs = (await this.$axios.$get("/FT")).data.filter(
-        (ft) => ft.isValid !== false
-      );
+    if (this.hasRole("hard")) {
+      const res = await safeCall(this.$store, ftRepo.getAllFTs(this));
+      if (res) {
+        this.FTs = res.data.data; // includes deleted FTs
+      }
     } else {
       await this.$router.push({
         path: "/",
@@ -102,8 +151,16 @@ export default {
   },
 
   methods: {
+    hasRole(role: string) {
+      return this.$accessor.user.hasRole(role);
+    },
+
+    getConfig(key: string) {
+      return this.$accessor.config.getConfig(key);
+    },
+
     async createNewFT() {
-      const blankFT = {
+      const blankFT: FT = {
         FA: 0,
         general: {
           name: "",
@@ -113,6 +170,10 @@ export default {
         refused: [],
         equipments: [],
         timeframes: [],
+        _id: "",
+        count: 0,
+        details: {},
+        comments: [],
       };
       let res = await safeCall(
         this.$store,
@@ -132,7 +193,7 @@ export default {
       this.isDialogOpen = false;
     },
   },
-};
+});
 </script>
 
 <style scoped></style>
