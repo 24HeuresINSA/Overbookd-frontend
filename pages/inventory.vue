@@ -197,6 +197,9 @@
       ref="equipmentInformationsDialog"
       :equipment="selectedItem"
     ></EquipmentInformations>
+    <v-snackbar v-model="snack.active" :timeout="snack.timeout">
+      {{ snack.feedbackMessage }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -204,7 +207,8 @@
 import locationAdder from "../components/organisms/locationAdder.vue";
 import { safeCall } from "../utils/api/calls";
 import { RepoFactory } from "../repositories/repoFactory";
-import { cloneDeep, isEqual } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
+import isEqual from "lodash/isEqual";
 import Vue from "vue";
 import LocationAdder from "~/components/organisms/locationAdder.vue";
 import EquipmentInformations from "~/components/organisms/EquipmentInformations.vue";
@@ -214,6 +218,8 @@ import EquipmentDialog from "~/components/organisms/EquipmentDialog.vue";
 import Fuse from "fuse.js";
 import { User, location } from "~/utils/models/repo";
 import { Equipment } from "~/utils/models/Equipment";
+import { Snack } from "~/utils/models/snack";
+
 export default {
   name: "Inventory",
   components: {
@@ -262,6 +268,7 @@ export default {
 
       isNewEquipment: false,
       loading: false,
+      snack: new Snack(),
     };
   },
 
@@ -321,7 +328,10 @@ export default {
       ? ["log", "hard"]
       : ["log"];
     this.selectOptions = this.equipmentForm[1].options;
-    await this.$accessor.equipment.fetchAll();
+    const equipRes = await this.$accessor.equipment.fetchAll();
+    if (!equipRes) {
+      this.snack.display("Erreur lors du chargement des équipements");
+    }
     const FTs = await safeCall(this.$store, RepoFactory.ftRepo.getAllFTs(this));
     const FAs = await safeCall(this.$store, RepoFactory.faRepo.getAllFAs(this));
     if (!res) {
@@ -346,7 +356,13 @@ export default {
         }
       });
     });
-    await this.$accessor.equipmentProposal.getEquipmentProposal();
+    const propRes =
+      await this.$accessor.equipmentProposal.getEquipmentProposal();
+    if (!propRes) {
+      this.snack.display(
+        "Erreur lors la récupération des équipements proposés"
+      );
+    }
     this.loading = false;
   },
 
