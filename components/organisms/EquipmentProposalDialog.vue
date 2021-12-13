@@ -133,13 +133,13 @@ import _ from "lodash";
 import Vue from "vue";
 import { Snack } from "~/utils/models/snack";
 
-export default {
+export default Vue.extend({
   name: "EquipmentProposalDialog",
   props: {
     equipment: Object,
     isNewEquipment: Boolean,
   },
-  data() {
+  data(): any {
     return {
       changeProposalForm: false,
       proposalValid: false,
@@ -194,7 +194,7 @@ export default {
   },
   computed: {
     possibleLocations(): any {
-      return this.$accessor.location.locations.filter((e) =>
+      return this.$accessor.location.locations.filter((e: any) =>
         e.neededBy.includes("INVENTAIRE")
       );
     },
@@ -205,7 +205,7 @@ export default {
     },
   },
   methods: {
-    getConfig(key: string) {
+    getConfig(key: string): any {
       return this.$accessor.config.getConfig(key);
     },
     async addEquipmentProposal() {
@@ -269,7 +269,7 @@ export default {
       (this.$refs.proposalForm as HTMLFormElement).reset();
     },
   },
-};
+});
 </script>
 
 <style></style>
