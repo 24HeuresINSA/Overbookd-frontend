@@ -1,14 +1,26 @@
 export interface FT {
   _id: string;
   FA: number;
-  count?: number;
-  general?: {
-    name: string;
-  };
+  count: number;
+
   status: string;
-  equipments: { _id: string; name: string; required: number }[];
-  timeframes: { start: Date; end: Date }[];
   validated: String[];
   refused: String[];
+
+  general?: {
+    name?: string;
+  };
+  details: {};
+
+  equipments: { _id: string; name: string; required: number }[];
+  timeframes: { start: Date; end: Date }[];
+
   comments: { time: Date; text: string; validator: string; topic?: string }[];
+}
+
+export enum SmallTypes {
+  ALIM = "ALIMENTATION ELECTRIQUE",
+  EAU = "EAU",
+  ECLAIRAGE = "ECLAIRAGE",
+  AUTRE = "AUTRES ELEC",
 }
