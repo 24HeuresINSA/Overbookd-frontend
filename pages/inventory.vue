@@ -329,9 +329,9 @@ export default Vue.extend({
       : ["log"];
     this.selectOptions = this.equipmentForm[1].options;
     const equipRes = await this.$accessor.equipment.fetchAll();
-    if (!equipRes) {
-      this.snack.display("Erreur lors du chargement des équipements");
-    }
+    // if (!equipRes) {
+    //   this.snack.display("Erreur lors du chargement des équipements");
+    // }
     const FTs = await safeCall(this.$store, RepoFactory.ftRepo.getAllFTs(this));
     const FAs = await safeCall(this.$store, RepoFactory.faRepo.getAllFAs(this));
     if (!res) {
