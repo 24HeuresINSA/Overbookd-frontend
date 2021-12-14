@@ -219,7 +219,7 @@ interface Data {
   equipmentsHeader: Header[];
   color: { [key: string]: string };
   v: string | null;
-  SMALL_TYPES: SmallTypes;
+  SMALL_TYPES: typeof SmallTypes;
 }
 
 const feedbacks = {
@@ -283,7 +283,7 @@ export default Vue.extend({
     me: function (): User {
       return this.$accessor.user.me;
     },
-    store: function () {
+    store: function (): any {
       return this.$accessor.FT;
     },
     validators: function (): string[] {
@@ -312,7 +312,7 @@ export default Vue.extend({
   },
 
   methods: {
-    getIconColor(validator: string): string {
+    getIconColor(validator: string): string | undefined {
       if (this.FT.validated) {
         if (this.FT.validated.find((v) => v === validator)) {
           return this.color.validated;
@@ -332,7 +332,7 @@ export default Vue.extend({
       return this.$accessor.config.getConfig(key);
     },
 
-    isValidated(validator) {
+    isValidated(validator: string): boolean {
       return this.FT.validated.find((v) => v === validator) !== undefined;
     },
 
@@ -345,15 +345,17 @@ export default Vue.extend({
     },
 
     updateForm(section: string, form: any) {
-      let newForm = {};
-      newForm[section] = form;
+      let newForm = {
+        section: form,
+      };
       this.$accessor.FT.assignFT(newForm);
     },
 
     getValidatorIcon(validator: string) {
       try {
-        return this.getConfig("teams").find((team) => team.name === validator)
-          .icon;
+        return this.getConfig("teams").find(
+          (team: { name: string }) => team.name === validator
+        ).icon;
       } catch (e) {
         console.log(`can't find icon of team ${validator}`);
       }
