@@ -19,8 +19,5 @@ export interface FT {
 }
 
 export enum SmallTypes {
-  ALIM = "ALIMENTATION ELECTRIQUE",
-  EAU = "EAU",
-  ECLAIRAGE = "ECLAIRAGE",
-  AUTRE = "AUTRES ELEC",
+  QUINCAILLEIE = "QUINCAILLEIE",
 }

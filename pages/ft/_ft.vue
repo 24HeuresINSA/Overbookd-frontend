@@ -67,7 +67,7 @@
       <v-col md="12">
         <LogisticsCard
           title="Matos"
-          :types="['petit']"
+          :types="Object.values(SMALL_TYPES)"
           :disabled="isValidated('log')"
           :store="store"
         ></LogisticsCard>
@@ -198,6 +198,7 @@ import FTInfoCard from "~/components/FTInfoCard.vue";
 import LogisticsCard from "~/components/organisms/form/LogisticsCard.vue";
 import CompleteTimeframeCard from "~/components/organisms/form/CompleteTimeframeCard.vue";
 import FormCard from "~/components/organisms/form/FormCard.vue";
+import { FT, SmallTypes } from "~/utils/models/FT";
 
 interface Data {
   FTID: number;
@@ -217,6 +218,8 @@ interface Data {
   selectedTimeframeIndex: number | null;
   equipmentsHeader: Header[];
   color: { [key: string]: string };
+  v: string | null;
+  SMALL_TYPES: SmallTypes;
 }
 
 const feedbacks = {
@@ -246,7 +249,7 @@ export default Vue.extend({
     FTInfoCard,
     LogisticsCard,
   },
-  data(): Data {
+  data: function (): Data {
     return {
       FTID: +this.$route.params.ft, // count
       schedules: [],
@@ -263,17 +266,18 @@ export default Vue.extend({
 
       selectedTimeframeIndex: null,
       feedbacks,
+      v: null,
 
       equipmentsHeader: [
         { text: "item", value: "name" },
         { text: "selectionné", value: "selectedAmount" },
       ],
       color,
+      SMALL_TYPES: SmallTypes,
     };
   },
-
   computed: {
-    FT: function () {
+    FT: function (): FT {
       return this.$accessor.FT.mFT;
     },
     me: function (): User {
@@ -332,24 +336,21 @@ export default Vue.extend({
       return this.FT.validated.find((v) => v === validator) !== undefined;
     },
 
-    hasRole(role) {
-      if (this.me.team) {
-        return this.me.team.includes(role);
-      }
-      return false;
+    hasRole(role: string) {
+      return this.$accessor.user.hasRole(role);
     },
 
     async saveFT() {
-      await this.store.saveFT();
+      await this.$accessor.FT.saveFT();
     },
 
-    updateForm(section, form) {
+    updateForm(section: string, form: any) {
       let newForm = {};
       newForm[section] = form;
-      this.store.assignFT(newForm);
+      this.$accessor.FT.assignFT(newForm);
     },
 
-    getValidatorIcon(validator) {
+    getValidatorIcon(validator: string) {
       try {
         return this.getConfig("teams").find((team) => team.name === validator)
           .icon;
