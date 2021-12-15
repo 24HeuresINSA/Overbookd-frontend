@@ -183,6 +183,12 @@ export default {
           to: "/assignment",
         },
         {
+          icon: "",
+          title: "Secu",
+          roles: "secu",
+          to: "/security",
+        },
+        {
           icon: "mdi-chart-areaspline-variant",
           title: "Stats 📈",
           roles: "hard",

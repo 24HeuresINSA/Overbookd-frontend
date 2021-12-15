@@ -1,6 +1,7 @@
 import { FT } from "~/utils/models/FT";
 
 export interface FA {
+  _id?: string;
   count?: number;
   status: string;
   general?: {

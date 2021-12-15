@@ -28,6 +28,7 @@ export const state = () => ({
     comments: [] as FormComment[],
     FTs: [] as FT[],
   } as FA,
+  FAs: [] as FA[],
 });
 
 export const getters = getterTree(state, {
@@ -324,6 +325,15 @@ export const actions = actionTree(
           await safeCall(this, repo.faRepo.updateFA(this, state.mFA));
         }
       }
+    },
+    fetchAll: async function ({ commit }) {
+      const repo = RepoFactory;
+      const res = await safeCall(this, repo.faRepo.getAllFAs(this));
+      if (res && res.data) {
+        commit("SET_ALL_FA", res.data);
+        return res;
+      }
+      return null;
     },
   }
 );
