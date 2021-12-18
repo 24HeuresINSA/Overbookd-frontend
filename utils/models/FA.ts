@@ -6,6 +6,10 @@ export interface FA {
   status: string;
   general?: {
     locations?: string[];
+    name?: string;
+    team?: string;
+    isValid?: boolean;
+    isRequiringPass?: boolean;
   };
   details: {};
   security: {};

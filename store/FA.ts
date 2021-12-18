@@ -224,6 +224,9 @@ export const mutations = mutationTree(state, {
     }
     state.mFA.general.locations = locations;
   },
+  SET_ALL_FA: function (state, allFA: FA[]) {
+    state.FAs = allFA.filter((fa) => !(fa.isValid === false));
+  },
 });
 
 export const actions = actionTree(
