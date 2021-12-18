@@ -10,7 +10,9 @@ export interface FT {
   general?: {
     name?: string;
   };
-  details: {};
+  details: {
+    locations?: string[];
+  };
 
   equipments: { _id: string; name: string; required: number }[];
   timeframes: { start: Date; end: Date }[];

@@ -96,7 +96,7 @@ export const actions = actionTree(
       }
     },
     saveFT: async function ({ state }) {
-      return safeCall(this, repo.updateFT(this, state.mFT));
+      return safeCall(this, repo.updateFT(this, state.mFT), "saved", "server");
     },
     assignFT: function ({ commit }, payload) {
       commit("ASSIGN_FT", payload);

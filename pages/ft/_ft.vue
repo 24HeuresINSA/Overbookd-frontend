@@ -342,12 +342,12 @@ export default Vue.extend({
 
     async saveFT() {
       await this.$accessor.FT.saveFT();
+      this.snack.display("FT sauvgardé 🥳");
     },
 
-    updateForm(section: string, form: any) {
-      let newForm = {
-        section: form,
-      };
+    updateForm(section: keyof FT, form: any) {
+      let newForm: Partial<FT> = {};
+      newForm[section] = form;
       this.$accessor.FT.assignFT(newForm);
     },
 

@@ -2,6 +2,16 @@
   <v-card v-if="FT">
     <v-card-title>Info</v-card-title>
     <v-card-text>
+      <v-autocomplete
+        v-if="locations"
+        label="Lieux"
+        multiple
+        :items="locations"
+        :value="mLocations"
+        item-text="name"
+        :disabled="isDisabled"
+        @change="selectLocations"
+      ></v-autocomplete>
       <v-simple-table>
         <template #default>
           <thead>
@@ -36,9 +46,44 @@ import Vue from "vue";
 
 export default Vue.extend({
   name: "FTInfoCard",
+  data() {
+    return {
+      isDisabled: false, // TODO :: should be a props
+    };
+  },
+  // props: {
+  //   isDisabled: {
+  //     type: Boolean,
+  //     default: false,
+  //   },
+  // },
   computed: {
     FT() {
       return this.$accessor.FT.mFT;
+    },
+    locations(): string[] {
+      return this.$accessor.location.signa.map((l) => l.name);
+    },
+    mLocations(): string[] | null {
+      if (
+        this.$accessor.FT.mFT.details &&
+        this.$accessor.FT.mFT.details.locations
+      ) {
+        return this.$accessor.FT.mFT.details.locations;
+      }
+      return null;
+    },
+  },
+  async mounted() {
+    await this.$accessor.location.getAllLocations();
+  },
+  methods: {
+    selectLocations(locations: string[]): void {
+      this.$accessor.FT.assignFT({
+        details: {
+          locations,
+        },
+      });
     },
   },
 });
