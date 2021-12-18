@@ -1,6 +1,11 @@
 <template>
   <div>
-    <v-data-table> </v-data-table>
+    <v-data-table :headers="headers" :items="items">
+      <template #[`item.pass`]="{ item }">
+        <span v-if="item.pass"> DEMANDE </span>
+        <span v-else> NON_DEMANDE </span>
+      </template>
+    </v-data-table>
   </div>
 </template>
 
@@ -21,8 +26,8 @@ export default Vue.extend({
           width: "200",
         },
         {
-          text: "Description",
-          value: "description",
+          text: "Pass",
+          value: "pass",
           sortable: true,
           align: "left",
           width: "200",
@@ -44,9 +49,9 @@ export default Vue.extend({
     items(): any {
       return this.FAs.map((fa) => {
         return {
-          name: fa._id,
-          description: fa.securityPasses,
-          action: "<v-btn icon>" + "<v-icon>mdi-pencil</v-icon>" + "</v-btn>",
+          name: fa.general!.name!,
+          pass: fa.general?.isRequiringPass,
+          fa: fa,
         };
       });
     },
