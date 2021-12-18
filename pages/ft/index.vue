@@ -25,9 +25,9 @@
         <v-col md="10">
           <v-data-table :headers="headers" :items="FTs">
             <template #[`item.status`]="row">
-              <v-avatar size="25" :color="color[row.item.status]">
+              <v-chip small :color="color[row.item.status]">
                 {{ row.item.count }}
-              </v-avatar>
+              </v-chip>
             </template>
             <template #[`item.action`]="row">
               <v-btn
@@ -160,25 +160,22 @@ export default Vue.extend({
     },
 
     async createNewFT() {
-      const blankFT: FT = {
-        FA: 0,
+      const blankFT: Partial<FT> = {
+        status: "draft",
         general: {
           name: "",
         },
-        status: "draft",
-        validated: [],
-        refused: [],
+        details: {},
         equipments: [],
         timeframes: [],
-        _id: "",
-        count: 0,
-        details: {},
+        validated: [],
+        refused: [],
         comments: [],
       };
       let res = await safeCall(
         this.$store,
         ftRepo.createFT(this, blankFT),
-        "FT 🥳"
+        "sent"
       );
       if (res) {
         await this.$router.push({
@@ -188,7 +185,12 @@ export default Vue.extend({
     },
 
     async deleteFT() {
-      await safeCall(this.$store, ftRepo.deleteFT(this, this.mFT), "FT del");
+      await safeCall(
+        this.$store,
+        ftRepo.deleteFT(this, this.mFT),
+        "sent",
+        "server"
+      );
       this.FTs = this.FTs.filter((ft) => ft.count !== this.mFT.count);
       this.isDialogOpen = false;
     },
