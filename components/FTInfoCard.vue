@@ -59,7 +59,6 @@ export default Vue.extend({
   // },
   computed: {
     FT() {
-      console.log("FTInfoCard FT", this.$store.state.FT.mFT);
       return this.$accessor.FT.mFT;
     },
     locations(): string[] {
