@@ -23,11 +23,11 @@
           <tbody>
             <tr>
               <td>FA</td>
-              <td v-if="FT.FA === undefined">
-                <a :href="`/fa/${FT.FA}`">{{ FT.FA }}</a>
-              </td>
-              <td v-else>
-                <span>FT rattaché a aucune FA</span>
+              <td v-if="FT.FA">
+                <a>{{ FT.FA }}</a>
+                <v-btn :href="`/fa/${FT.FA}`" icon small>
+                  <v-icon small>mdi-link</v-icon>
+                </v-btn>
               </td>
             </tr>
             <tr>
@@ -59,6 +59,7 @@ export default Vue.extend({
   // },
   computed: {
     FT() {
+      console.log("FTInfoCard FT", this.$store.state.FT.mFT);
       return this.$accessor.FT.mFT;
     },
     locations(): string[] {
