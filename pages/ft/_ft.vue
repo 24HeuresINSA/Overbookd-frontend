@@ -116,7 +116,7 @@
         z-index: 30;
       "
     >
-      <v-btn v-if="hasRole('human')" color="red" @click="readyForAssignment"
+      <v-btn v-if="hasRole('humain')" color="red" @click="readyForAssignment"
         >prét a validation
       </v-btn>
       <v-btn

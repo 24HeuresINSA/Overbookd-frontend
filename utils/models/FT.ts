@@ -21,5 +21,5 @@ export interface FT {
 }
 
 export enum SmallTypes {
-  QUINCAILLEIE = "QUINCAILLEIE",
+  QUINCAILLERIE = "QUINCAILLERIE",
 }
