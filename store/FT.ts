@@ -155,5 +155,15 @@ export const actions = actionTree(
     addComment: async function ({ dispatch, commit, state }, comment) {
       commit("ADD_COMMENT", comment);
     },
+    readyForAssignment: async function ({ dispatch, commit }, by: string) {
+      await dispatch("addComment", {
+        topic: "ready",
+        text: "FT prêt a validation",
+        time: new Date(),
+        validator: by,
+      });
+      commit("UPDATE_STATUS", "ready");
+      await dispatch("saveFT");
+    },
   }
 );

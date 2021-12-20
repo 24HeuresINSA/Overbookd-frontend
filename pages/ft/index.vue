@@ -19,6 +19,20 @@
                 clearable
                 dense
               ></v-select>
+              <label>Status</label>
+              <v-btn-toggle
+                v-model="filters.status"
+                tile
+                style="flex-direction: column"
+                color="deep-purple accent-3"
+                group
+              >
+                <v-btn x-small value="draft">Draft</v-btn>
+                <v-btn x-small value="submitted">Soumise</v-btn>
+                <v-btn x-small value="refused">Refusé</v-btn>
+                <v-btn x-small value="validated">Validé</v-btn>
+                <v-btn x-small value="ready">Prêt a affectation</v-btn>
+              </v-btn-toggle>
               <v-switch
                 v-model="filters.isDeleted"
                 label="FT supprimées"
@@ -99,6 +113,7 @@ interface Data {
     search: string;
     teams: string;
     isDeleted: boolean;
+    status: string;
   };
 }
 
@@ -108,6 +123,7 @@ const color = {
   submitted: "orange",
   validated: "green",
   refused: "red",
+  ready: "#bf2bbd",
 };
 
 export default Vue.extend({
@@ -137,6 +153,7 @@ export default Vue.extend({
       filters: {
         search: "",
         teams: "",
+        status: "",
         isDeleted: false,
       },
       mFT: undefined,
@@ -148,7 +165,7 @@ export default Vue.extend({
     filteredFTs(): FT[] {
       let res = this.FTs;
       const { FTs, filters } = this;
-      const { search, teams, isDeleted } = filters;
+      const { search, teams, isDeleted, status } = filters;
 
       if (isDeleted) {
         res = res.filter((e) => e.isValid === false);
@@ -163,6 +180,9 @@ export default Vue.extend({
       });
       if (search) {
         res = fuse.search(search).map((e) => e.item);
+      }
+      if (status) {
+        res = res.filter((e) => e.status === status);
       }
       return res;
     },

@@ -116,6 +116,9 @@
         z-index: 30;
       "
     >
+      <v-btn v-if="hasRole('human')" color="red" @click="readyForAssignment"
+        >prét a validation
+      </v-btn>
       <v-btn
         v-if="validators.length === 1"
         color="red"
@@ -233,6 +236,7 @@ const color = {
   submitted: "grey",
   validated: "green",
   refused: "red",
+  ready: "orange",
 };
 
 export interface schedule {
@@ -312,6 +316,9 @@ export default Vue.extend({
   },
 
   methods: {
+    readyForAssignment() {
+      this.$accessor.FT.readyForAssignment(this.me.lastname);
+    },
     getIconColor(validator: string): string | undefined {
       if (this.FT.validated) {
         if (this.FT.validated.find((v) => v === validator)) {
