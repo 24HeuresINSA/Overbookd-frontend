@@ -47,6 +47,12 @@
                 {{ row.item.count }}
               </v-chip>
             </template>
+            <template #item.validation="{ item }">
+              <ValidatorsIcons
+                :form="item"
+                validators-key="ft_validators"
+              ></ValidatorsIcons>
+            </template>
             <template #[`item.action`]="row">
               <v-btn
                 style="margin: 5px"
@@ -101,6 +107,7 @@ import { Header } from "~/utils/models/Data";
 import Vue from "vue";
 import { FT } from "~/utils/models/FT";
 import Fuse from "fuse.js";
+import ValidatorsIcons from "~/components/atoms/validators-icons.vue";
 
 interface Data {
   color: { [key: string]: string };
@@ -128,6 +135,7 @@ const color = {
 
 export default Vue.extend({
   name: "Index",
+  components: { ValidatorsIcons },
   data(): Data {
     return {
       color,
@@ -136,6 +144,7 @@ export default Vue.extend({
           text: "Status",
           value: "status",
         },
+        { text: "Validation", value: "validation" },
         {
           text: "Nom",
           value: "general.name",
