@@ -19,11 +19,15 @@
                 clearable
                 dense
               ></v-select>
+              <v-switch
+                v-model="filters.isDeleted"
+                label="FT supprimées"
+              ></v-switch>
             </v-card-text>
           </v-card>
         </v-col>
         <v-col md="10">
-          <v-data-table :headers="headers" :items="FTs">
+          <v-data-table :headers="headers" :items="filteredFTs">
             <template #[`item.status`]="row">
               <v-chip small :color="color[row.item.status]">
                 {{ row.item.count }}
@@ -82,6 +86,7 @@ import ftRepo from "../../repositories/ftRepo";
 import { Header } from "~/utils/models/Data";
 import Vue from "vue";
 import { FT } from "~/utils/models/FT";
+import Fuse from "fuse.js";
 
 interface Data {
   color: { [key: string]: string };
@@ -93,6 +98,7 @@ interface Data {
   filters: {
     search: string;
     teams: string;
+    isDeleted: boolean;
   };
 }
 
@@ -131,10 +137,35 @@ export default Vue.extend({
       filters: {
         search: "",
         teams: "",
+        isDeleted: false,
       },
       mFT: undefined,
       isDialogOpen: false,
     };
+  },
+
+  computed: {
+    filteredFTs(): FT[] {
+      let res = this.FTs;
+      const { FTs, filters } = this;
+      const { search, teams, isDeleted } = filters;
+
+      if (isDeleted) {
+        res = res.filter((e) => e.isValid === false);
+      } else {
+        res = res.filter((e) => e.isValid !== false); // DO NOT CHANGE THIS LINE
+      }
+      if (teams) {
+        res = res.filter((e) => e.team === teams);
+      }
+      const fuse = new Fuse(res, {
+        keys: ["general.name", "details.description"],
+      });
+      if (search) {
+        res = fuse.search(search).map((e) => e.item);
+      }
+      return res;
+    },
   },
 
   async mounted() {
