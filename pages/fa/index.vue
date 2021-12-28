@@ -253,6 +253,9 @@ export default {
   },
 
   methods: {
+    hasRole(role) {
+      return this.$accessor.user.hasRole(role);
+    },
     preDelete(fa) {
       this.mFA = fa;
       this.isDeleteFAOpen = true;
