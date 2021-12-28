@@ -78,9 +78,7 @@
                   v-model="isDeletedFilter"
                   label="Afficher les FA supprimées"
                 ></v-switch>
-                <v-btn v-if="hasRole(['log'])" text @click="exportCSV"
-                  >Télécharger ces FA</v-btn
-                >
+                <v-btn text @click="exportCSV">Télécharger ces FA</v-btn>
               </v-card-text>
             </v-card>
           </v-container>
@@ -530,7 +528,6 @@ export default {
         ],
       ];
 
-      console.log("forms:", forms);
       forms.forEach((form) => {
         headers += this.parseHeaders(form[0].values(), form[1]);
       });
@@ -540,11 +537,7 @@ export default {
         "general.inCharge.username"
       );
 
-      console.log("headers: ", headers);
-
       const FAs = this.selectedFAs;
-      console.log("FAs:", FAs);
-
       let validators = this.$accessor.config.getConfig("fa_validators");
       csv += headers + "equipment|début|fin|qté|" + validators.join("|") + "\n";
 
