@@ -118,20 +118,6 @@ export const actions = actionTree(
       return false;
     },
 
-    // hasRole(state, roles: string | string[]) {
-    //   if (roles === undefined) {
-    //     return false;
-    //   }
-    //   const teams = state.state.me.team;
-    //   if (teams === undefined) {
-    //     return false;
-    //   }
-    //   if (typeof roles == "string") {
-    //     roles = [roles];
-    //   }
-    //   return roles.some((r) => teams.includes(r));
-    // },
-
     async acceptSelection({ commit }, timeslotIDS: string[]) {
       const res = await safeCall(
         this,
@@ -141,6 +127,12 @@ export const actions = actionTree(
         commit("UPDATE_USER", res.data);
       }
       return;
+    },
+    async findUserById({ commit }, id: string) {
+      const res = await UserRepo.getUser(this, id);
+
+      if (res && res.data) commit("SET_SELECTED_USER", res.data);
+      return res;
     },
   }
 );

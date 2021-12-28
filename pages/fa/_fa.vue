@@ -163,6 +163,10 @@
       "
     >
       <div>
+        <v-btn v-if="FA.count > 1" small fab :href="`/fa/${FA.count - 1}`">
+          <v-icon small>mdi-arrow-left</v-icon>
+        </v-btn>
+
         <v-btn
           v-if="validators.length === 1"
           color="red"
@@ -247,6 +251,9 @@
         color="red"
         @click="undelete"
         >récupérer
+      </v-btn>
+      <v-btn small fab :href="`/fa/${FA.count + 1}`">
+        <v-icon small>mdi-arrow-right</v-icon>
       </v-btn>
     </div>
 
@@ -351,7 +358,7 @@ export default {
 
       refuseComment: "",
       isSnackbar: false,
-      snackbarMessage: "la FA a bien ete sauvgarder 😅",
+      snackbarMessage: "la FA à bien été sauvegardée 😅",
       schedule: {
         date: undefined,
         start: undefined,

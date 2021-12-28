@@ -1,4 +1,4 @@
-import { mutationTree, actionTree, getterTree } from "typed-vuex";
+import { actionTree, getterTree, mutationTree } from "typed-vuex";
 import { RepoFactory } from "~/repositories/repoFactory";
 import { location } from "~/utils/models/repo";
 import { safeCall } from "~/utils/api/calls";
@@ -15,9 +15,9 @@ export const state = (): State => ({
 });
 
 export const getters = getterTree(state, {
-  signa: (state) => {
+  signa(state): location[] {
     return state.locations.filter((e) => {
-      return e.neededBy.length == 1 && e.neededBy[0] == "SIGNA";
+      return e.neededBy.includes("SIGNA");
     });
   },
   inventaire: (state) => {
@@ -30,16 +30,10 @@ export const getters = getterTree(state, {
 export const mutations = mutationTree(state, {
   SET_LOCATIONS(state, locations: location[]) {
     state.locations = locations;
-    console.log("locations in state :", state.locations);
+    // console.log("locations in state :", state.locations);
   },
   SET_LOCATION(state, location: location) {
-    const id = state.locations.findIndex((l) => l.name === location.name);
-    if (id !== -1) {
-      state.locations[id] = location;
-      // state.locations = [...state.locations];
-    } else {
-      state.locations.push(location);
-    }
+    state.locations.push(location);
   },
   DELETE_LOCATION(state, location: location) {
     state.locations = state.locations.filter((l) => l._id !== location._id);

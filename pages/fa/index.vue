@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Fiche Animation 🎉</h1>
+    <h1>Fiche Activité 🎉</h1>
 
     <v-container style="display: grid; width: 100%; margin: 0">
       <v-row>
@@ -90,7 +90,7 @@
           <v-data-table
             :headers="headers"
             :items="selectedFAs"
-            :items-per-page="20"
+            :items-per-page="-1"
             class="elevation-1"
           >
             <template #[`item.validation`]="{ item }">
@@ -104,7 +104,7 @@
                     ? `text-decoration:line-through;`
                     : `text-decoration:none;`
                 "
-                >{{ item.general.name }}</a
+                >{{ item.general ? item.general.name : "" }}</a
               >
             </template>
             <template #[`item.action`]="row">
@@ -118,15 +118,7 @@
                   >
                     <v-icon small>mdi-circle-edit-outline</v-icon>
                   </v-btn>
-                  <v-btn
-                    class="mx-2"
-                    icon
-                    small
-                    @click="
-                      mFA = row.item;
-                      isDeleteFAOpen = true;
-                    "
-                  >
+                  <v-btn class="mx-2" icon small @click="preDelete(row.item)">
                     <v-icon small>mdi-delete</v-icon>
                   </v-btn>
                 </td>
@@ -207,7 +199,7 @@ export default {
         { text: "status", value: "status" },
         { text: "validation", value: "validation" },
         { text: "nom", value: "general.name" },
-        { text: "equipe", value: "general.team" },
+        { text: "équipe", value: "general.team" },
         { text: "Resp", value: "general.inCharge.username" },
         { text: "action", value: "action" },
       ],
@@ -252,12 +244,18 @@ export default {
   async mounted() {
     this.validators = this.$accessor.config.getConfig("fa_validators");
     // get FAs
-    this.FAs = (await this.$axios.get("/FA")).data;
+    const res = await safeCall(this.$store, RepoFactory.faRepo.getAllFAs(this));
+    if (res) {
+      this.FAs = res.data;
+    } else {
+      alert("error");
+    }
   },
 
   methods: {
-    hasRole(role) {
-      return hasRole(this, role);
+    preDelete(fa) {
+      this.mFA = fa;
+      this.isDeleteFAOpen = true;
     },
 
     getConfig(key) {
@@ -285,7 +283,7 @@ export default {
       if (this.isDeletedFilter === false) {
         return FAs.filter((FA) => FA.isValid !== false);
       }
-      return FAs;
+      return FAs.filter((FA) => FA.isValid === false);
     },
 
     filterByValidatorStatus(FAs) {
@@ -298,8 +296,7 @@ export default {
             return FA.refused.includes(validator);
           } else if (value === 2) {
             return (
-              !FA.validated.includes(validator) &&
-              (FA.status === "submitted" || FA.status === "refused")
+              !FA.validated.includes(validator) && FA.status === "submitted"
             );
           }
           return true;
@@ -343,14 +340,17 @@ export default {
       }
     },
     async deleteFA() {
-      await safeCall(
+      const res = await safeCall(
         this.$store,
         RepoFactory.faRepo.deleteFA(this, this.mFA),
-        "FA deleted 🥳"
+        "FA deleted 🥳",
+        "FA not deleted 😢"
       );
-      this.FAs = this.FAs.filter((e) => e.count !== this.mFA.count);
-      this.isDeleteFAOpen = false;
-      this.mFA = undefined;
+      if (res) {
+        this.FAs = this.FAs.filter((e) => e.count !== this.mFA.count);
+        this.isDeleteFAOpen = false;
+        this.mFA = undefined;
+      }
     },
 
     nextPage() {

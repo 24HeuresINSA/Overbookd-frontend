@@ -8,18 +8,25 @@ import {
 import { FT } from "~/utils/models/FT";
 import { safeCall } from "~/utils/api/calls";
 import { RepoFactory } from "~/repositories/repoFactory";
+import { FormComment } from "~/utils/models/Comment";
 
 export const state = () => ({
   mFA: {
     status: "draft",
+
+    general: {},
+    details: {},
+    security: {},
+
     equipments: [] as any,
     timeframes: [] as any,
     validated: [] as any,
     refused: [] as any,
-    FTs: [] as FT[],
     securityPasses: [] as SecurityPass[],
     signalisation: [] as Signalisation[],
     electricityNeeds: [] as ElectricityNeed[],
+    comments: [] as FormComment[],
+    FTs: [] as FT[],
   } as FA,
 });
 
@@ -46,12 +53,22 @@ export const mutations = mutationTree(state, {
       Object.assign(mFA[key], data[key]);
     }
   },
-  SET_FA: function (state, mFA) {
+  SET_FA: function (state, mFA: FA) {
+    mFA.timeframes = mFA.timeframes.map((tf) => {
+      return {
+        ...tf,
+        start: new Date(tf.start),
+        end: new Date(tf.end),
+      };
+    });
     state.mFA = mFA;
   },
   RESET_FA: function (state) {
     state.mFA = {
       status: "draft",
+      general: {},
+      details: {},
+      security: {},
       equipments: [],
       timeframes: [],
       validated: [],
@@ -116,7 +133,7 @@ export const mutations = mutationTree(state, {
         time: new Date(),
         text: `valide par ${validator}`,
         validator,
-        topic: "valide",
+        topic: "valider",
       });
     }
   },
@@ -139,7 +156,7 @@ export const mutations = mutationTree(state, {
     state.mFA.comments.push({
       time: new Date(),
       text: comment,
-      topic: "refuse",
+      topic: "refuser",
       validator,
     });
   },
@@ -198,13 +215,22 @@ export const mutations = mutationTree(state, {
     if (state.mFA.electricityNeeds === undefined) {
       state.mFA.electricityNeeds = [];
     }
-    state.mFA.electricityNeeds.push(electricityNeed);
+    state.mFA.electricityNeeds.push({ ...electricityNeed });
+  },
+  SET_LOCATIONS: function (state, locations) {
+    if (state.mFA.general === undefined) {
+      state.mFA.general = {};
+    }
+    state.mFA.general.locations = locations;
   },
 });
 
 export const actions = actionTree(
   { state },
   {
+    setLocations: async ({ commit }, locations: string[]) => {
+      commit("SET_LOCATIONS", locations);
+    },
     addElectricityNeed({ commit }, electricityNeed) {
       commit("ADD_ELECTRICITY_NEED", electricityNeed);
     },
@@ -252,8 +278,8 @@ export const actions = actionTree(
     deleteEquipment: function ({ commit }, payload) {
       commit("DELETE_EQUIPMENT", payload);
     },
-    setFA: function ({ commit }, payload) {
-      commit("SET_FA", payload);
+    setFA: function ({ commit }, FA: FA) {
+      commit("SET_FA", FA);
     },
     undelete: function ({ commit }) {
       commit("UNDELETE");
@@ -270,8 +296,8 @@ export const actions = actionTree(
     resetFA: function ({ commit }, payload) {
       commit("RESET_FA", payload);
     },
-    addComment: function ({ commit }, payload) {
-      commit("ADD_COMMENT", payload);
+    addComment: function ({ commit }, comment: FormComment) {
+      commit("ADD_COMMENT", comment);
     },
     addNewFT: async function ({ commit, state, dispatch }, name) {
       const repo = RepoFactory;

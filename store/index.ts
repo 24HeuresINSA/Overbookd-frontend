@@ -7,9 +7,11 @@ import * as config from "./config";
 import * as user from "./user";
 import * as transaction from "./transaction";
 import * as FA from "./FA";
+import * as FT from "./FT";
 import * as timeslot from "./timeslot";
 import * as location from "./location";
 import * as equipment from "./equipment";
+import * as equipmentProposal from "./equipmentProposal";
 
 export const state = () => ({});
 
@@ -33,8 +35,10 @@ export const accessorType = getAccessorType({
     user,
     transaction,
     FA,
+    FT,
     timeslot,
     location,
     equipment,
+    equipmentProposal,
   },
 });
