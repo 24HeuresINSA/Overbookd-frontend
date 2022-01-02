@@ -136,6 +136,7 @@ export default {
     },
 
     onSelectedUser(user) {
+      this.$accessor.assignment.setUser(user);
       this.$emit("selected-user", user);
     },
   },

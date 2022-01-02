@@ -40,7 +40,13 @@
 <script>
 export default {
   name: "OverCalendar",
-  props: ["events"],
+  props: [
+    {
+      name: "events",
+      type: Array,
+      default: () => [],
+    },
+  ],
 
   data() {
     return {
@@ -181,21 +187,23 @@ export default {
     },
     isUserAvailableInTimeframe(timeframe) {
       // timeframe date object
-      const availabilities = this.events.filter((e) => !e.FTID);
-      let isUserAvailableInTimeframe = false;
-      availabilities.forEach((availability) => {
-        if (availability.schedule) {
-          let start = new Date(availability.schedule.start);
-          let end = new Date(availability.schedule.end);
-          if (
-            start.getTime() <= timeframe.getTime() + 5000 &&
-            end.getTime() >= timeframe.getTime() + 5000
-          ) {
-            isUserAvailableInTimeframe = true;
+      if (this.events) {
+        const availabilities = this.events.filter((e) => !e.FTID);
+        let isUserAvailableInTimeframe = false;
+        availabilities.forEach((availability) => {
+          if (availability.schedule) {
+            let start = new Date(availability.schedule.start);
+            let end = new Date(availability.schedule.end);
+            if (
+              start.getTime() <= timeframe.getTime() + 5000 &&
+              end.getTime() >= timeframe.getTime() + 5000
+            ) {
+              isUserAvailableInTimeframe = true;
+            }
           }
-        }
-      });
-      return isUserAvailableInTimeframe;
+        });
+        return isUserAvailableInTimeframe;
+      }
     },
   },
 };
