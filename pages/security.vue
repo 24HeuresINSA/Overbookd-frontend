@@ -2,8 +2,15 @@
   <div>
     <v-data-table :headers="headers" :items="items">
       <template #[`item.pass`]="{ item }">
-        <span v-if="item.pass"> DEMANDE </span>
-        <span v-else> NON_DEMANDE </span>
+        <span v-if="item.pass">
+          <v-icon color="green">mdi-check-bold</v-icon>
+        </span>
+        <span v-else> <v-icon color="red">mdi-close-thick</v-icon> </span>
+      </template>
+      <template #[`item.action`]="{ item }">
+        <v-btn v-if="item.pass" color="red" @click="generatePass(item)">
+          <v-icon></v-icon>
+        </v-btn>
       </template>
     </v-data-table>
   </div>

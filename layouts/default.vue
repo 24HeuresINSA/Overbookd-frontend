@@ -183,8 +183,8 @@ export default {
           to: "/assignment",
         },
         {
-          icon: "",
-          title: "Secu",
+          icon: "mdi-human-greeting",
+          title: "Securité",
           roles: "secu",
           to: "/security",
         },
