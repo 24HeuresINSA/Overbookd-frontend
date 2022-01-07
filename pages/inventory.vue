@@ -28,7 +28,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="primary" text @click="clear"> Clear </v-btn>
+              <button color="primary" text @click="clear">Clear</button>
             </v-card-actions>
           </v-card>
           <br />
@@ -62,14 +62,15 @@
               </v-chip-group>
             </v-card-text>
             <v-card-actions v-if="hasRole(['log'])">
-              <v-btn
+              <button
                 color="primary"
                 text
                 @click="$refs.locationAdder.openDialog()"
-                >Ajouter</v-btn
               >
-              <!-- <v-btn color="primary" text @click="tryDeleteLocation()"
-                >Supprimer</v-btn
+                Ajouter
+              </button>
+              <!-- <button color="primary" text @click="tryDeleteLocation()"
+                >Supprimer</button
               > -->
             </v-card-actions>
           </v-card>
@@ -81,7 +82,7 @@
               <b>{{ nbProposals }}</b></v-card-subtitle
             >
             <v-card-text>
-              <v-btn @click="openProposalPage()"> Voir les propositions </v-btn>
+              <button @click="openProposalPage()">Voir les propositions</button>
             </v-card-text>
           </v-card>
         </v-col>
@@ -92,32 +93,46 @@
             group-by="type"
             :item-class="rowClass"
             dense
-            :items-per-page="50"
+            :items-per-page="10"
             :loading="loading"
           >
             <template #[`item.action`]="{ item }">
               <v-tooltip bottom>
                 <template #activator="{ on }">
-                  <v-btn icon small @click="showItemInfos(item)" v-on="on">
-                    <v-icon small>mdi-help-circle</v-icon>
-                  </v-btn>
+                  <button icon small @click="showItemInfos(item)" v-on="on">
+                    <!-- <v-icon small>mdi-help-circle</v-icon> -->
+                    ?
+                  </button>
                 </template>
                 Afficher les informations de l'objet
               </v-tooltip>
               <v-tooltip bottom>
                 <template #activator="{ on }">
-                  <v-btn icon small @click="itemChangeProposal(item)" v-on="on">
-                    <v-icon small>mdi-book-edit-outline </v-icon>
-                  </v-btn>
+                  <button
+                    icon
+                    small
+                    @click="itemChangeProposal(item)"
+                    v-on="on"
+                  >
+                    <!-- <v-icon small>mdi-book-edit-outline </v-icon> -->
+                    E
+                  </button>
                 </template>
                 Propose des changements sur l'objet (et voit ses infos)
               </v-tooltip>
-              <v-btn v-if="hasRole('log')" icon small @click="edit(item)">
-                <v-icon small>mdi-circle-edit-outline</v-icon>
-              </v-btn>
-              <v-btn v-if="hasRole('log')" icon small @click="deleteItem(item)">
-                <v-icon small>mdi-delete</v-icon>
-              </v-btn>
+              <button v-if="hasRole('log')" icon small @click="edit(item)">
+                <!-- <v-icon small>mdi-circle-edit-outline</v-icon> -->
+                EA
+              </button>
+              <button
+                v-if="hasRole('log')"
+                icon
+                small
+                @click="deleteItem(item)"
+              >
+                <!-- <v-icon small>mdi-delete</v-icon> -->
+                D
+              </button>
             </template>
 
             <template #[`item.borrow`]="{ item }">
@@ -128,7 +143,7 @@
             </template>
             <template #[`group.header`]="{ group, headers, toggle, isOpen }">
               <td :colspan="headers.length" class="primary">
-                <v-btn
+                <button
                   :ref="group"
                   small
                   icon
@@ -137,7 +152,7 @@
                 >
                   <v-icon v-if="isOpen">mdi-chevron-up</v-icon>
                   <v-icon v-else>mdi-chevron-down</v-icon>
-                </v-btn>
+                </button>
                 <span class="mx-5 font-weight-bold">{{ group }}</span>
               </td>
             </template>
@@ -155,21 +170,21 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-btn
+    <button
       v-if="hasRole(allowedTeams)"
       fab
       style="right: 20px; bottom: 45px; position: fixed"
       @click="newEquip"
     >
       <v-icon> mdi-plus </v-icon>
-    </v-btn>
-    <v-btn
+    </button>
+    <button
       fab
       style="right: 80px; bottom: 45px; position: fixed"
       @click="newProposal"
     >
       <v-icon>mdi-clipboard-edit-outline</v-icon>
-    </v-btn>
+    </button>
 
     <EquipmentProposalDialog
       ref="propDialog"
