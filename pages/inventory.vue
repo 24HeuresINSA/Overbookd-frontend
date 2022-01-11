@@ -28,7 +28,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <button color="primary" text @click="clear">Clear</button>
+              <v-btn color="primary" text @click="clear">Clear</v-btn>
             </v-card-actions>
           </v-card>
           <br />
@@ -62,13 +62,13 @@
               </v-chip-group>
             </v-card-text>
             <v-card-actions v-if="hasRole(['log'])">
-              <button
+              <v-btn
                 color="primary"
                 text
                 @click="$refs.locationAdder.openDialog()"
               >
                 Ajouter
-              </button>
+              </v-btn>
               <!-- <button color="primary" text @click="tryDeleteLocation()"
                 >Supprimer</button
               > -->
@@ -82,7 +82,7 @@
               <b>{{ nbProposals }}</b></v-card-subtitle
             >
             <v-card-text>
-              <button @click="openProposalPage()">Voir les propositions</button>
+              <v-btn @click="openProposalPage()">Voir les propositions</v-btn>
             </v-card-text>
           </v-card>
         </v-col>
@@ -170,21 +170,21 @@
         </v-col>
       </v-row>
     </v-container>
-    <button
+    <v-btn
       v-if="hasRole(allowedTeams)"
       fab
       style="right: 20px; bottom: 45px; position: fixed"
       @click="newEquip"
     >
       <v-icon> mdi-plus </v-icon>
-    </button>
-    <button
+    </v-btn>
+    <v-btn
       fab
       style="right: 80px; bottom: 45px; position: fixed"
       @click="newProposal"
     >
       <v-icon>mdi-clipboard-edit-outline</v-icon>
-    </button>
+    </v-btn>
 
     <EquipmentProposalDialog
       ref="propDialog"
